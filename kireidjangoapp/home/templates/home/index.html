@@ -1,0 +1,120 @@
+{% extends 'home/base.html'%}
+
+{% block title%}Kirei{% endblock %}
+{% block content %}
+
+
+{% load static %}
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+  </ol>
+
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img class="d-block w-100" src="{% static 'home/images/banner01.png' %}" alt="Image 1">
+      <a href="{% url 'customers:register' %}"><button class="btn-imagen"></button></a>
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="{% static 'home/images/banner05.png' %}" alt="Image 5">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="{% static 'home/images/banner02.png' %}" alt="Image 2">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="{% static 'home/images/banner03.png' %}" alt="Image 3">
+    </div>
+  </div>
+
+  <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Anterior</span>
+  </a>
+
+  <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </a>
+</div>
+
+
+<div class="jumbotron text-center" id="mission-title" style = "margin-bottom:0em;">
+  <h2 class="display-5">STYLING DE MANOS, CEJAS, PESTAÑAS Y MUCHO MÁS</h2>
+  <p>Somos la solución más eficiente en belleza, cosmética, salud y cuidado personal en Capital Federal.</p>
+</div>
+<!-- secciones -->
+<div class="container-fluid g-0" id="banner04">
+  <img src="../static/home/images/banner04.png" class="d-block w-100" alt="...">
+</div>
+
+
+<!-- Servicios -->
+
+<div class="container-fluid text-center bg-grey" id="servicios">
+  <h2>Nuestros servicios</h2>
+  <div class="row text-center">
+    <div class="col-sm-4">
+      <div class="thumbnail">
+        <img src="../static/home/images/serv2.png" alt="pestanias">
+        <p><strong>Lifting de pestañas</strong></p>
+        <p>Con esta técnica tus pestañas obtendrán un look de alargamiento y ligeramente curvado </p>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="thumbnail">
+        <img src="../static/home/images/serv7.jpg" alt="Rellenos con Acido Hialuronico">
+        <p><strong>Rellenos con Acido Hialuronico</strong></p>
+        <p>Ideal para aumentar volúmenes y grandes defectos o déficit de volumen faciales</p>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="thumbnail">
+        <img src="../static/home/images/serv3.webp" alt="Punta de diamante">
+        <p><strong>Punta de diamante</strong></p>
+        <p>La punta de diamante permite tratar en suavemente la piel, con un arrastre uniforme y controlado</p>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="thumbnail">
+        <img src="../static/home/images/serv4.jpg" alt="Nails">
+        <p><strong>Gel & Kapping Nails</strong></p>
+        <p>Ideal para lucir tus uñas por más tiempo y más fuertes.</p>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="thumbnail">
+        <img src="../static/home/images/serv6.webp" alt="Limpieza Facial">
+        <p><strong>Limpieza Facial</strong></p>
+        <p>Mejora el aspecto de la piel, remueve células muertas, toxinas, imperfecciones y puntos negros.</p>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="thumbnail">
+        <img src="../static/home/images/serv1.jpg" alt="cejas">
+        <p><strong>Diseño de cejas</strong></p>
+        <p>Trabajamos con una técnica exclusiva que respeta y realza tu fisonomía.</p>
+      </div>
+    </div>
+  </div>
+  <br>
+  <button class="btn d-flex justify-content-center mx-auto w-20">Ver más</button>
+  <br>
+</div>
+{% load crispy_forms_tags %}
+<div class="row" id="contact-form-div-form">
+  <div class="col-md-6 d-flex align-items-center text-center justify-content-center" id="contact-title">
+      <h2 class="fs-4 card-title fw-bold mb-3 text-center text-uppercase">Contacto</h2>
+  </div>
+  
+  <div class="col-md-6">
+    <form class="form-group contact-form ">
+      {% csrf_token %}
+      {{form|crispy}}                
+      <button class="btn d-flex justify-content-center mx-auto w-25" type="submit">Enviar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
