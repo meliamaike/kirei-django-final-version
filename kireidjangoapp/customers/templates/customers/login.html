@@ -47,14 +47,15 @@
 </section>
 {% endblock %} {% endcomment %}
 
+{% comment %} {% if show_modal %} {% endcomment %}
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Iniciar sesión</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="login-modal-btn">
+            <span class = "close-modal" aria-hidden="true">&times;</span>
           </button>
         </div>
         <!-- Modal Body -->
@@ -65,7 +66,7 @@
               <div class="mb-3">
              
                     {% csrf_token %}
-                    {% comment %} {% crispy login_form %} {% endcomment %}
+                    {% comment %} {% crispy form %} {% endcomment %}
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-primary ms-auto">
                       Ingresar
@@ -87,3 +88,4 @@
       </div>
     </div>
   </div>
+  {% comment %} {% endif %} {% endcomment %}

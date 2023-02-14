@@ -110,22 +110,20 @@ class RegisterForm(SignupForm):
 
 
 class CustomerLoginForm(LoginForm):
-    pass
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.fields["login"].label = "Email"
+        self.fields["password"].label = "Contraseña"
+        self.fields["remember"].label = "Recuérdame"
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            "login",
+            "password",
+            "remember",
+            Submit("submit", "INICIAR SESION", css_class="btn-primary"),
+        )
 
-
-# def __init__(self, *args, **kwargs):
-#     super().__init__(*args, **kwargs)
-#     self.helper = FormHelper(self)
-#     self.fields["login"].label = "Email"
-#     self.fields["password"].label = "Contraseña"
-#     self.fields["remember"].label = "Recuérdame"
-#     self.helper.form_method = "post"
-#     self.helper.layout = Layout(
-#         "login",
-#         "password",
-#         "remember",
-#         Submit("submit", "INICIAR SESION", css_class="btn-primary"),
-#     )
-
-#     self.fields["password"].widget.attrs["placeholder"] = ""
-#     self.fields["login"].widget.attrs["placeholder"] = ""
+        self.fields["password"].widget.attrs["placeholder"] = ""
+        self.fields["login"].widget.attrs["placeholder"] = ""

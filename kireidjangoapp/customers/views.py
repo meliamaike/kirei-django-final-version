@@ -25,24 +25,23 @@ def signup_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             customer = form.signup(request)
+            login(request, customer,backend="django.contrib.auth.backends.ModelBackend")
             return redirect("home:index")
     else:
         form = RegisterForm()
-    return render(request, "customers/register.html", {"form": form})
-
+    return render(request, 'home/index.html', {"form": form})
 
 def customer_login(request):
-    
+    form = CustomerLoginForm(request=request)
     if request.method == 'POST':
-        
-        form = CustomerLoginForm(request.POST)
+        form = CustomerLoginForm(data=request.POST, request=request)
         print("FORMULARIO: ", form)
         if form.is_valid():
             # Authenticate the user
             email = form.cleaned_data.get('login')
             print("Email: ", email)
-            print("Pass: ", password)
             password = form.cleaned_data.get('password')
+            print("Pass: ", password)
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 # Log the user in
@@ -56,7 +55,8 @@ def customer_login(request):
             print(form.errors)
     else:
         form = CustomerLoginForm()
-    return render(request, 'customers/login.html', {'form': form})
+    return render(request, 'home/index.html', {'form': form})
+    #return render(request, 'home/index.html', {'form': form})
 
 
 
