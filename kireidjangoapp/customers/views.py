@@ -27,9 +27,11 @@ def signup_view(request):
             customer = form.signup(request)
             login(request, customer,backend="django.contrib.auth.backends.ModelBackend")
             return redirect("home:index")
-    else:
-        form = RegisterForm()
-    return render(request, 'home/index.html', {"form": form})
+        else:
+                print(form.errors)
+    # else:
+    #     form = RegisterForm()
+    # return render(request, 'home/index.html', {"form": form})
 
 def customer_login(request):
     form = CustomerLoginForm(request=request)
@@ -53,10 +55,10 @@ def customer_login(request):
                 form.add_error(None, 'Invalid login')
         else:
             print(form.errors)
-    else:
-        form = CustomerLoginForm()
-    return render(request, 'home/index.html', {'form': form})
-    #return render(request, 'home/index.html', {'form': form})
+    # else:
+    #     form = CustomerLoginForm()
+    # return render(request, 'home/index.html', {'form': form})
+    # #return render(request, 'home/index.html', {'form': form})
 
 
 

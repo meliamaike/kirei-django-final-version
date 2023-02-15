@@ -3,6 +3,7 @@ from django.urls import path
 from customers import views
 
 from django.contrib.auth import views as auth_views
+from home.views import index
 
 app_name = "customers"
 

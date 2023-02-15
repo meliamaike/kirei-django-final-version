@@ -41,19 +41,7 @@ class RegisterForm(SignupForm):
 
     class Meta:
         model = get_user_model()
-        # fields = (
-        #     "first_name",
-        #     "last_name",
-        #     "document_number",
-        #     "email",
-        #     "area_code",
-        #     "phone_number",
-    
-        # )
 
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
@@ -61,6 +49,7 @@ class RegisterForm(SignupForm):
     #     self.fields["email"].label = "Email"
     #     self.fields["password1"].label = "Contraseña"
     #     self.fields["password2"].label = "Confirmá tu contraseña"
+    #     self.fields["email"].widget.attrs["placeholder"] = ""
     #     self.fields["password1"].widget.attrs["placeholder"] = ""
     #     self.fields["password2"].widget.attrs["placeholder"] = ""
     #     self.helper.layout = Layout(
@@ -69,42 +58,18 @@ class RegisterForm(SignupForm):
     #             Column("last_name", css_class="form-group col-md-6"),
     #             css_class="form-row",
     #         ),
-    #         Row(
-    #             Column("document_type", css_class="form-group col-md-6"),
-    #             Column("document_number", css_class="form-group col-md-6"),
-    #             css_class="form-row",
-    #         ),
     #         "email",
     #         Row(
-    #             Column("country_code", css_class="form-group col-md-6"),
-    #             Column("area_code", css_class="form-group col-md-6"),
+    #             Column("document_number", css_class="form-group col-md-6"),
+    #             Column("phone_number", css_class="form-group col-md-6"),
     #             css_class="form-row",
     #         ),
-    #         "phone_number",
     #         Row(
     #             Column("password1", css_class="form-group col-md-6"),
     #             Column("password2", css_class="form-group col-md-6"),
     #         ),
-    #         Submit("submit", "Registrarme", css_class="btn-primary"),
+    #         Submit("submit", "Ingresar", css_class="btn btn-primary mt-3"),
     #     )
-
-    # def save(self):
-    #     if self.is_valid():
-    #         data = self.cleaned_data
-    #         customer = Customer.objects.create(
-    #             first_name=data["first_name"],
-    #             last_name=data["last_name"],
-    #             email=data["email"],
-    #             document_type=data["document_type"],
-    #             document_number=data["document_number"],
-    #             country_code=data["country_code"],
-    #             area_code=data["area_code"],
-    #             phone_number=data["phone_number"],
-    #             password=make_password(data["password1"]),
-    #         )
-    #         customer.save()
-    #     return customer
-
 
 # Form de Login
 
@@ -118,12 +83,11 @@ class CustomerLoginForm(LoginForm):
         self.fields["password"].label = "Contraseña"
         self.fields["remember"].label = "Recuérdame"
         self.helper.form_method = "post"
-        self.helper.layout = Layout(
-            "login",
-            "password",
-            "remember",
-            Submit("submit", "INICIAR SESION", css_class="btn-primary"),
-        )
+        # self.helper.layout = Layout(
+        #     "login",
+        #     "password",
+        #     "remember",
+        # )
 
         self.fields["password"].widget.attrs["placeholder"] = ""
         self.fields["login"].widget.attrs["placeholder"] = ""

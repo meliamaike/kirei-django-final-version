@@ -1,35 +1,4 @@
-{% comment %} {% extends "home/base.html" %}
-
-{% block content %}      
-<!--Registro--> 
-<section class="mh-100" id="registrar-seccion">
-    <div class="container h-100">
-        <div class="row justify-content-sm-center h-100 py-4">
-            <div class="col-xxl-6 col-xl-8 col-lg-7 col-md-9 col-sm-11">
-                <div class="card shadow-lg">
-                    <div class="card-body p-5">
-                        {% load crispy_forms_tags %}
-                        <h1 class="fs-4 card-title fw-bold mb-4">Registrate ahora</h1>
-						<form method="POST">
-							{% csrf_token %}
-							{% crispy register_form %}         
-						</form>
-					</div>
-                    <div class="card-footer py-3 border-0">
-                        <div class="text-center">
-                            Ya tenes una cuenta? <a href="/login" class="text-dark">Ingresá</a>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-</section>
-
-
-{% endblock %} {% endcomment %}
-
+{% if register_form %}
 <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -40,12 +9,10 @@
           </button>
         </div>
         <div class="modal-body">
-          {% load crispy_forms_tags %}
-          <form action="{% url 'customers:register' %}" method="POST">
+          <form action="{{ current_url }}" method="POST">
             {% csrf_token %}
-            {% comment %} {% crispy register_form %} {% endcomment %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary ms-auto">
+            {{ register_form.as_p}}            
+            <button type="submit" class="btn btn-primary ms-auto" name="register_form_submit">
               Registrarme
           </button>
           </form>
@@ -58,3 +25,4 @@
       </div>
     </div>
   </div>
+  {% endif %}

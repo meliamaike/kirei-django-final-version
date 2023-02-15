@@ -108,13 +108,15 @@
   <div class="col-md-6 d-flex align-items-center text-center justify-content-center" id="contact-title">
       <h2 class="fs-4 card-title fw-bold mb-3 text-center text-uppercase">Contacto</h2>
   </div>
-  
+  {% if contact_form %}
   <div class="col-md-6">
-    <form class="form-group contact-form ">
+    <form class="form-group contact-form " action="{% url 'home:index' %}" method="POST">
       {% csrf_token %}
-      {{form|crispy}}                
-      <button class="btn d-flex justify-content-center mx-auto w-25" type="submit">Enviar</button>
+      {{contact_form|crispy}}
+      {% comment %} {{ contact_form.as_p }}                 {% endcomment %}
+      <button class="btn d-flex justify-content-center mx-auto w-25" type="submit" name="contact_form_submit">Enviar</button>
     </form>
   </div>
 </div>
+{% endif %}
 {% endblock %}

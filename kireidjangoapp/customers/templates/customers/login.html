@@ -1,53 +1,6 @@
-{% comment %} {% extends "home/base.html" %}
-
-{% block content %}      
-
-
-{% load crispy_forms_tags %}
-
-
-<!--Login--> 
-<section class="h-100" id="login-seccion">
-  <div class="container h-100">
-      <div class="row justify-content-sm-center h-100">
-            <div class="col-xxl-6 col-xl-8 col-lg-7 col-md-9 col-sm-11">
-              <div class="card shadow-lg">
-                  <div class="card-body p-5">
-                      <h1 class="fs-4 card-title fw-bold mb-4">Iniciar sesión</h1>
-                      <form method="POST" class="needs-validation" novalidate="" autocomplete="off">
-                          <div class="mb-3">
-                                {% csrf_token %}
-                                {% crispy login_form %}  
-                                <div class="mb-3">
-                                    <a href="{% url 'customers:password_reset'%}" class="float-end">
-                                        Olvidé mi contraseña
-                                    </a>
-                                </div>
-                          </div>
-                          <br>
-                          <br>
-                          <div class="mb-3">
-                            <div class="d-flex align-items-center">
-                                <button type="submit" class="btn btn-primary ms-auto">
-                                    Ingresar
-                                </button>
-                            </div>
-                          </div>    
-                      </form>
-                  </div>
-                  <div class="card-footer py-3 border-0">
-                      <div class="text-center">
-                        ¿No tenés cuenta? <a href="{% url 'customers:register'%}" class="text-dark"> Registrate </a>
-                    </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</section>
-{% endblock %} {% endcomment %}
 
 {% comment %} {% if show_modal %} {% endcomment %}
+{% if login_form %}
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -62,13 +15,11 @@
         <div class="modal-body">
           {% load crispy_forms_tags %}
           <!-- Your Login Form Here -->
-              <form action="{% url 'customers:login' %}" method="POST" class="needs-validation" novalidate="" autocomplete="off">   
+              <form action="{{ current_url }}" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">   
               <div class="mb-3">
-             
                     {% csrf_token %}
-                    {% comment %} {% crispy form %} {% endcomment %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary ms-auto">
+                    {{ login_form.as_p }}
+                    <button type="submit" class="btn btn-primary ms-auto" name="login_form_submit">
                       Ingresar
                   </button>
                     <div class="mb-3 ">
@@ -79,13 +30,12 @@
                         <br>
                     </div>
                     <div class="d-flex align-items-center">
-                      
+
                   </div>
-                    
                 </div>  
             </form>
         </div>
       </div>
     </div>
   </div>
-  {% comment %} {% endif %} {% endcomment %}
+  {% endif %}
