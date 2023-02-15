@@ -16,26 +16,35 @@
           {% load crispy_forms_tags %}
           <!-- Your Login Form Here -->
               <form action="{{ current_url }}" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">   
-              <div class="mb-3">
+              <div class="mb-3 mx-3">
                     {% csrf_token %}
-                    {{ login_form.as_p }}
-                    <button type="submit" class="btn btn-primary ms-auto" name="login_form_submit">
-                      Ingresar
-                  </button>
-                    <div class="mb-3 ">
-                        <a href="{% url 'customers:password_reset'%}" class="float-start">
-                            Olvidé mi contraseña
-                        </a>
-                        <br>
-                        <br>
+                    <div class="form-group row">
+                      <label class="form-label">{{ login_form.login.label_tag }}</label>
+                        {{ login_form.login}}
+                    </div>
+                    <div class="form-group row">
+                      <label class="form-label">{{ login_form.password.label_tag }}</label>
+                        {{ login_form.password }}
                     </div>
                     <div class="d-flex align-items-center">
-
-                  </div>
+                      <a href="{% url 'customers:password_reset'%}" class="float-start">
+                        Olvidé mi contraseña
+                      </a>
+                      <button type="submit" class="btn btn-primary ms-auto" name="login_form_submit">
+                        Ingresar
+                    </button>
+                    </div>
                 </div>  
             </form>
+            <br>
+            <br>
+          </div>
+          <div class="card bg-light py-3 border-0">
+            <div class="header text-center">
+              ¿No tenés cuenta? <a href="{% url 'customers:register'%}" class="text-dark"> Registrate </a>
+            </div>
         </div>
-      </div>
+        </div>
     </div>
   </div>
   {% endif %}
