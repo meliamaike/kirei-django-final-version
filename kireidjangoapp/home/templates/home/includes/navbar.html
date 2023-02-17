@@ -12,7 +12,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="btn btn-outline-primary btn-profile" href="/profile">Mi perfil</a>
+              <a class="nav-link" href="/products">Comprar productos</a>
             </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -23,6 +23,12 @@
                   <a class="dropdown-item" href="/booking/details">Mis Reservas</a>
                   <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
                 </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'carts:cart_detail' %}">
+                  <i class="fa fa-shopping-cart"></i>
+                  <span class="badge badge-pill badge-secondary">{{request.session.cart|length}}</span>
+                </a>
               </li>
           </ul>
         </div>
@@ -36,6 +42,9 @@
             <a class="nav-link" href="#">Servicios</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="#">Productos</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="#">Turnos</a>
           </li>
         </ul>
@@ -47,9 +56,9 @@
             <a class="btn btn-primary" data-toggle="modal" data-target="#loginModal">Ingresar</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'carts:cart_detail' %}">
               <i class="fa fa-shopping-cart"></i>
-              <span class="badge badge-pill badge-secondary">0</span>
+              <span class="badge badge-pill badge-secondary">{{request.session.cart|length}}</span>
             </a>
           </li>
         </ul>

@@ -22,11 +22,13 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Other apps
+    'cart',
     "crispy_forms",
     'crispy_bootstrap4',
     # My Apps
     "agendas.apps.AgendasConfig",
     "appointments.apps.AppointmentsConfig",
+    "carts.apps.CartsConfig",
     "customers.apps.CustomersConfig",
     "home.apps.HomeConfig",
     "invoices.apps.InvoicesConfig",
@@ -100,6 +102,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'cart.context_processor.cart_total_amount',
             ],
         },
     },
@@ -171,3 +174,7 @@ ACCOUNT_FORMS = {
     'signup': 'customers.forms.RegisterForm',
     'login': 'customers.forms.CustomerLoginForm',
 }
+
+# DJANGO-SHOPPING-CART
+
+CART_SESSION_ID = 'cart'

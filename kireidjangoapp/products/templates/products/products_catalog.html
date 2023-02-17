@@ -1,0 +1,46 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+  <div class="container my-4">
+    <h1>Productos</h1>
+
+    <form class="mb-3" method="get">
+      <div class="form-group">
+        <label for="category">Filtrar por categoría:</label>
+        <select class="form-control" name="category" id="category">
+          <option value="">Todos</option>
+          {% for category in categories %}
+            <option value="{{ category.category }}" {% if category.category == selected_category %}selected{% endif %}>
+              {{ category.category }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit">Filtrar</button>
+    </form>
+
+
+    {% if products %}
+      <div class="row">
+        {% for product in products %}
+          <div class="col-md-4 mb-4">
+            <div class="card">
+            <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}">
+                <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}">
+                </a>
+              <div class="card-body">
+                <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}">
+                <h2 class="card-title">{{ product.name }}</h2>
+                </a>
+                <p class="card-text">{{ product.description }}</p>
+                <p class="card-text">{{ product.price }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No se encontraron productos.</p>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -9,11 +9,20 @@ class Product(models.Model):
         default="",
         help_text="Ingrese una breve descripción del producto.",
     )
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.FloatField()
     stock = models.PositiveIntegerField(default=0)
-    product_image = models.ImageField(
-        upload_to="products/"
+    image = models.ImageField(
+        upload_to="products/static/images"
     )  # modificar ruta de guardado de imagen
 
     def is_in_stock(self):
         return self.stock > 0
+
+    category = models.CharField(max_length=255, default= "")
+    is_available = models.BooleanField(default=True)
+
+
+
+ 
+
+

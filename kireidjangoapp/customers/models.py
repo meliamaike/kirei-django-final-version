@@ -24,18 +24,16 @@ class CustomerManager(BaseUserManager):
         is_staff=is_staff,
         is_superuser=is_superuser,
     )
-        # user.password = make_password("meliama95")
-        user.my_set_password(raw_password=password)
+        user.my_set_password(raw_password=password)#doesn't exist.
         user.save()
         return user
 
     def create_superuser(self, email, password, **extra_fields):
         user = self.model(
             email=self.normalize_email(email),
-            #username=username,
             **extra_fields
         )
-        user.my_set_password(raw_password=password)
+        user.set_password(raw_password=password)
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
@@ -68,4 +66,10 @@ class Customer(AbstractBaseUser):
 
     def __str__(self):
         return self.email
+    
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser
 

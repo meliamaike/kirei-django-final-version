@@ -1,0 +1,67 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+      </div>
+      <div class="col-md-6">
+        <h1 class="mb-4">{{ product.name }}</h1>
+        <h2>Description</h2>
+        <p class="mb-4">{{ product.description }}</p>
+        <h2>Price</h2>
+        <p class="mb-4">{{ product.price }}</p>
+        <h2>Stock</h2>
+        <p class="mb-4">{{ product.stock }}</p>
+        <h2>Category</h2>
+        <p class="mb-4">{{ product.category }}</p>
+        <div class="counter mb-4">
+            <button class="minus-btn btn btn-secondary">-</button>
+            <input type="text" value="1" class="quantity form-control d-inline-block w-25 mx-2">
+            <button class="plus-btn btn btn-secondary">+</button>
+        </div>
+        <a href="{% url 'carts:item_increment' id=product.id %}" class="add-to-cart-btn btn btn-primary" id="add-to-cart-btn" {% if not product.is_in_stock %}disabled{% endif %}>Add to Cart</a>
+        {% if not product.is_in_stock %}
+            <p class="text-danger mt-3">Sorry, this product is out of stock.</p>
+        {% endif %}
+    </div>
+    </div>
+  </div>
+
+  <script>
+    // Get references to the input and button elements
+    var quantityInput = document.querySelector('.quantity');
+    var addToCartButton = document.querySelector('#add-to-cart-btn');
+
+    // Disable the "Add to Cart" button if the quantity is greater than the available stock
+    quantityInput.addEventListener('input', function() {
+        var quantity = parseInt(quantityInput.value);
+        if (quantity > {{ product.stock }}) {
+            addToCartButton.disabled = true;
+        } else {
+            addToCartButton.disabled = false;
+        }
+    });
+
+    // Add event listeners to the plus and minus buttons to increment and decrement the quantity
+    var minusButton = document.querySelector('.minus-btn');
+    var plusButton = document.querySelector('.plus-btn');
+    minusButton.addEventListener('click', function() {
+        var quantity = parseInt(quantityInput.value);
+        if (quantity > 1) {
+            quantityInput.value = quantity - 1;
+            if (quantity - 1 <= {{ product.stock }}) {
+                addToCartButton.disabled = false;
+            }
+        }
+    });
+    plusButton.addEventListener('click', function() {
+        var quantity = parseInt(quantityInput.value);
+        quantityInput.value = quantity + 1;
+        if (quantity + 1 > {{ product.stock }}) {
+            addToCartButton.disabled = true;
+        }
+    });
+  </script>
+{% endblock %}
