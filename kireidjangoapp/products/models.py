@@ -18,11 +18,5 @@ class Product(models.Model):
     def is_in_stock(self):
         return self.stock > 0
 
-    category = models.CharField(max_length=255, default= "")
+    category = models.CharField(max_length=255, default="")
     is_available = models.BooleanField(default=True)
-
-
-
- 
-
-

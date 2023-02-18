@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 
@@ -22,9 +21,9 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Other apps
-    'cart',
+    "cart",
     "crispy_forms",
-    'crispy_bootstrap4',
+    "crispy_bootstrap4",
     # My Apps
     "agendas.apps.AgendasConfig",
     "appointments.apps.AppointmentsConfig",
@@ -71,16 +70,16 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # For Allauth
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_RATE_LIMITS = {}
-ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE=False
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 # # ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
 # # # ACCOUNT_EMAIL_VERIFICATION = "mandatory"
@@ -102,8 +101,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                'cart.context_processor.cart_total_amount',
+                "cart.context_processor.cart_total_amount",
+                "carts.context_processors.cart_total_quantity",
             ],
+            'libraries':{
+            'my_filters': 'products.templatetags.my_filters',
+            
+            }
         },
     },
 ]
@@ -171,10 +175,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 ACCOUNT_FORMS = {
-    'signup': 'customers.forms.RegisterForm',
-    'login': 'customers.forms.CustomerLoginForm',
+    "signup": "customers.forms.RegisterForm",
+    "login": "customers.forms.CustomerLoginForm",
 }
 
 # DJANGO-SHOPPING-CART
 
-CART_SESSION_ID = 'cart'
+CART_SESSION_ID = "cart"
