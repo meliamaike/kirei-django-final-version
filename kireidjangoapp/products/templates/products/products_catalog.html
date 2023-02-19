@@ -28,13 +28,14 @@
           <div class="col-md-4 mb-4">
             <div class="card">
             <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}">
-                <img class="card-img-top" src="{% static product.image.url %}" alt="{{ product.name }}">
+                {% comment %} <img class="card-img-top" src="{% static product.image.url %}" alt="{{ product.name }}"> {% endcomment %}
+                <img src="https://http2.mlstatic.com/intragen-sebum-balance-shampoo-purificante-pelo-graso-250ml-S_756594-MLA31643193166_072019-R.jpg" class="card-img-top" alt="...">
+
             </a>
               <div class="card-body">
                 <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}">
                 <h2 class="card-title">{{ product.name }}</h2>
                 </a>
-                <p class="card-text">{{ product.description }}</p>
                 <p class="card-text">{{ product.price }}</p>
               </div>
             </div>
