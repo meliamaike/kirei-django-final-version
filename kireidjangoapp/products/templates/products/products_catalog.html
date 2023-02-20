@@ -3,47 +3,179 @@
 {% load static %}
 
 {% block content %}
-  <div class="container my-4">
-    <h1>Productos</h1>
 
-    <form class="mb-3" method="get">
-      <div class="form-group">
-        <label for="category">Filtrar por categoría:</label>
-        <select class="form-control" name="category" id="category">
-          <option value="">Todos</option>
-          {% for category in categories %}
-            <option value="{{ category.category }}" {% if category.category == selected_category %}selected{% endif %}>
-              {{ category.category }}
-            </option>
-          {% endfor %}
-        </select>
+
+<div class="container py-5">
+  <div class="row">
+    <div class="col-md-3 py-5">
+      <div class="container-breadcrumb">
+        <nav class="breadcrumb">
+          <a class="breadcrumb-item" href="/">Inicio</a>
+          <span class="breadcrumb-item active">Tienda</span>
+        </nav>
       </div>
-      <button class="btn btn-primary" type="submit">Filtrar</button>
-    </form>
-
-
-    {% if products %}
-      <div class="row">
-        {% for product in products %}
-          <div class="col-md-4 mb-4">
-            <div class="card">
-            <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}">
-                {% comment %} <img class="card-img-top" src="{% static product.image.url %}" alt="{{ product.name }}"> {% endcomment %}
-                <img src="https://http2.mlstatic.com/intragen-sebum-balance-shampoo-purificante-pelo-graso-250ml-S_756594-MLA31643193166_072019-R.jpg" class="card-img-top" alt="...">
-
-            </a>
-              <div class="card-body">
-                <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}">
-                <h2 class="card-title">{{ product.name }}</h2>
-                </a>
-                <p class="card-text">{{ product.price }}</p>
+      <div class="card mt-5">
+        <div class="card-body">
+          <h5 class="card-title">Filtrar por precio</h5>
+          <form method="GET" action="{% url 'products:product_catalog'%}">
+            <div class="price_slider_wrapper position-relative my-4">
+              <div class="d-flex justify-content-center">
+                <input id="price_slider" 
+                       type="text" 
+                       data-slider-min="{{ min_price }}" 
+                       data-slider-max="{{ max_price }}" 
+                       data-slider-step="10" 
+                       data-slider-value="[{{ selected_min_price|default:min_price }}, {{ selected_max_price|default:max_price }}]"
+                       class="position-absolute top-0 start-50 translate-middle-x w-100 bg-transparent slider-primary" 
+                       data-slider-tooltip="hide">
+                       
+              </div>
+              <div class="row g-0 align-items-center price_slider_amount my-4">
+                <div class="col-8 text-center">
+                  <div class="price_label">
+                    Precio: <span class="from">${{ selected_min_price|default:min_price }}</span> — <span class="to">${{ selected_max_price|default:max_price }}</span>
+                  </div>
+                </div>
+                <div class="col-4 text-end">
+                  <button type="submit" class="btn btn-primary">Filtrar</button>
+                </div>
               </div>
             </div>
-          </div>
-        {% endfor %}
+          </form>
+        </div>
       </div>
-    {% else %}
-      <p>No se encontraron productos.</p>
-    {% endif %}
+      <div class="card">
+        <div class="card-body">
+            <div class="form-group">
+                <h5 for="category">Categorías</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="?category=" class="text-muted{% if not selected_category %}active{% endif %}" style="text-decoration: none;">Todos</a>
+                        <span class="badge badge-secondary badge-pill">{{ products.count }}</span>
+                    </li>
+                    {% for category in categories %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="?category={{ category.category }}" class="text-muted{% if category.category == selected_category %}active{% endif %}" style="text-decoration: none;">{{ category.category }}</a>
+                            {% for category, count in counts.items %}
+                              <span class="badge badge-secondary badge-pill">{{ count }}</span>
+                            {% endfor %}
+                        </li>
+                    {% endfor %}
+
+                </ul>            
+            </div>
+        </div>
+    </div>
+    
+      
+    </div>
+
+    <div class="col-md-9">
+      <div class="container">
+        <div class="row align-items-center mt-5">
+          <div class="col-12 my-2">
+            <h1 class="">Tienda</h1>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-12 col-md-6">
+            <p class="mb-0">Mostrando los {{ products.count }} resultados</p>
+          </div>
+          <div class="col-12 col-md-6">
+            <form class="form-inline d-flex justify-content-end">
+              <label class="mr-2" for="orderby">Pedido de la tienda:</label>
+              <select class="form-control" id="orderby" name="orderby">
+                <option value="popularity" selected>Ordenar por popularidad</option>
+                <option value="date">Ordenar por los últimos</option>
+                <option value="price">Ordenar por precio: bajo a alto</option>
+                <option value="price-desc">Ordenar por precio: alto a bajo</option>
+              </select>
+            </form>
+          </div>
+        </div>
+
+        {% if products %}
+  <div class="row">
+    {% for product in products %}
+      <div class="col-12 col-md-4 mb-4">
+        <div class="card">
+          <a href="https://braviakombucha.com/product/bravia-kombucha-lata-grande-473ml-x-12-unidades-mix-sabores-incluye-envio/" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
+            <img class="card-img-top" src="https://braviakombucha.com/wp-content/uploads/2022/01/kombus-34-300x500.jpg" alt="" decoding="async" loading="lazy">
+          </a>
+          {% comment %} <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}">
+            <img class="card-img-top" src="{% static product.image.url %}" alt="{{ product.name }}"> 
+          </a> {% endcomment %}
+          <div class="card-body">
+            <h7 class="card-category text-muted">{{ product.category }}</h7>
+            <h4 class="card-title mb-3">
+              <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}" style="text-decoration: none;color:black;">
+                <strong>{{ product.name }}</strong>
+              </a>
+            </h4>
+            <span class="price-amount">
+              <bdi>
+                <span class="price-currency-symbol">$</span>{{ product.price }}
+              </bdi>
+            </span>
+            <br>
+            <a href="{% url 'carts:catalog_item_increment' product.id %}" data-quantity="1" class="btn btn-primary mt-3" data-product_id="{{ product.id }}" aria-label="Añade {{ product.name }} a tu carrito" rel="nofollow">Añadir al carrito</a>
+          </div>
+          
+        </div>
+      </div>
+    {% endfor %}
   </div>
+  {% comment %} Paginator {% endcomment %}
+  {% if is_paginated %}
+  <nav aria-label="Product pages">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Previous</span>
+          </a>
+        </li>
+      {% endif %}
+      {% for page in page_obj.paginator.page_range %}
+        {% if page_obj.number == page %}
+          <li class="page-item active"><a class="page-link" href="#">{{ page }}</a></li>
+        {% elif page > page_obj.number|add:'-3' and page < page_obj.number|add:'3' %}
+          <li class="page-item"><a class="page-link" href="?page={{ page }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}">{{ page }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Next</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}
+
+{% else %}
+  <p>No se encontraron productos.</p>
+{% endif %}
+
+  </div>
+</div>
+<script>
+  var priceSlider = new Slider('#price_slider', {
+    tooltip: 'hide'
+  });
+  
+  priceSlider.on('slide', function(sliderValue) {
+    var minPrice = sliderValue[0];
+    var maxPrice = sliderValue[1];
+    $('#min_price').val(minPrice);
+    $('#max_price').val(maxPrice);
+    $('.price_label .from').text('$' + minPrice);
+    $('.price_label .to').text('$' + maxPrice);
+  });
+</script>
+
 {% endblock %}
+

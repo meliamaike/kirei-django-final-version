@@ -104,10 +104,9 @@ TEMPLATES = [
                 "cart.context_processor.cart_total_amount",
                 "carts.context_processors.cart_total_quantity",
             ],
-            'libraries':{
-            'my_filters': 'products.templatetags.my_filters',
-            
-            }
+            "libraries": {
+                "my_filters": "products.templatetags.my_filters",
+            },
         },
     },
 ]
