@@ -1,6 +1,7 @@
 from django.db import models
 from shoppingcarts.models import ShoppingCart
 from customers.models import Customer
+from products.models import Product
 
 
 class Order(models.Model):
@@ -13,3 +14,5 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         self.total_amount = self.shopping_cart.total_amount
         super().save(*args, **kwargs)
+
+

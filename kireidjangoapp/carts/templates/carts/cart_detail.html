@@ -37,22 +37,22 @@
                   </div>
                 </div>
                 <div class="col-md-3 col-sm-12 my-4 mb-md-0 d-flex align-items-center justify-content-center flex-column">
-                  {% if value.quantity <= value.stock %}
+                  {% if value.quantity < value.stock %}
                   <div class="btn-group" role="group">
                     <a class="btn btn-outline-secondary" href="{% url 'carts:item_decrement' value.product_id %}">-</a>
-                    <input type="text" class="form-control text-center quantity-input" name="quantity" min="1" max="{{ value.stock }}" value="{{ value.quantity }}" required/>
+                    <input type="text" id="quantity-input-{{ value.product_id }}" class="form-control text-center quantity-input" name="quantity" min="1" max="{{ value.stock }}" value="{{ value.quantity }}" required />
                     <a class="btn btn-outline-secondary" href="{% url 'carts:item_increment' value.product_id %}">+</a>
                   </div> 
-                  <div class="text-center text-muted mt-4">
-                      {{ value.stock }} disponibles
+                  <div id="text-quantity-message" class="text-center text-muted mt-2">
+                    {{ value.stock|sub:value.quantity }} disponibles
                     </div>
                   {% else %}
                   <div class="btn-group" role="group">
                   <a class="btn btn-outline-secondary" href="{% url 'carts:item_decrement' value.product_id %}">-</a>
-                    <input type="text" class="form-control text-center quantity-input" name="quantity" min="1" max="{{ value.stock }}" value="{{ value.quantity }}" disabled/>
+                    <input type="text" id="quantity-input-{{ value.product_id }}" class="form-control text-center quantity-input" name="quantity" min="1" max="{{ value.stock }}" value="{{ value.quantity }}"/>
                     <a class="btn btn-outline-secondary" href="" disabled>+</a>
                   </div>             
-                    <div class="text-center text-danger mt-2">Supera las unidades disponibles</div>
+                    <div class="text-center text-danger mt-2" id="text-quantity-message">{{ value.stock|sub:value.quantity }} disponibles</div>
                   {% endif %}
                 </div>
                 <div class="col-md-3 col-sm-12 my-4 mb-md-0 pb-5 d-flex align-items-center justify-content-center">
@@ -100,5 +100,72 @@
       </div>
     
   </div>
+
+  {% comment %} <script>
+    {% for key, value in request.session.cart.items %}
+    const inputField = document.getElementById('quantity-input-'+{{ value.product_id }});
+    const incrementButton = inputField.nextElementSibling;
+    const decrementButton = inputField.previousElementSibling;
+    inputField.addEventListener('input', () => {
+      const currentValue = parseInt(inputField.value);
+      const maxQuantity = parseInt(inputField.max);
+      const availableQuantity = parseInt({{ value.stock }});
+      const productId = {{ value.product_id }};
+      if (currentValue <= maxQuantity && currentValue > 0) {
+        // Update the cart by making a GET request to the relevant URL.
+        console.log("AVQ",availableQuantity)
+        console.log("carts/many_items_add/"+ productId)
+        
+        
+       
+
+
+        
+        // Enable or disable the increment/decrement buttons based on the updated quantity.
+        incrementButton.disabled = currentValue >= maxQuantity;
+        decrementButton.disabled = currentValue <= 1;
+      } else {
+        // Reset the input field to the previous value.
+        inputField.value = "{{ value.quantity }}";
+      }
+    });
+    {% endfor %}
+  </script> {% endcomment %}
+  
+  <script>
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    
+    quantityInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            const productId = input.id.split('-')[2];
+            console.log("PD: ",productId);
+            const maxQuantity = input.max;
+            const quantity = parseInt(input.value);
+    
+            console.log(document.getElementById('text-quantity-message'));
+            setTimeout(()=>{
+
+            },10000)
+            if (quantity > maxQuantity) {
+
+                input.disabled = false;
+                document.getElementById('text-quantity-message').innerHTML = 'Supera las unidades disponibles';
+
+            } else if (quantity < 1) {
+              document.getElementById('text-quantity-message').innerHTML = 'Puedes comprar desde 1 unidad.';
+
+            }else{
+
+                // construct the URL with the quantity and product ID
+                var url = '/carts/replace_items_quantity/' + productId + '/' + quantity + '/';
+
+                // redirect to the URL
+                window.location.href = url;
+            }
+        });
+    });
+    </script>
+    
+
   {% endblock %}
 

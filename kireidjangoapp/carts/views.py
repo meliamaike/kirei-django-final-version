@@ -57,6 +57,14 @@ def many_items_add(request, id, quantity):
     return redirect("carts:cart_detail")
 
 @login_required(login_url="/login")
+def replace_items_quantity(request, id, quantity):
+    print("cantidad: ", quantity)
+    cart = Cart(request)
+    product = Product.objects.get(id=id)
+    cart.replace(product=product, quantity=quantity)
+    return redirect("carts:cart_detail")
+
+@login_required(login_url="/login")
 def catalog_item_increment(request, id):
     cart = Cart(request)
     product = Product.objects.get(id=id)

@@ -21,18 +21,22 @@
             <div class="price_slider_wrapper position-relative my-4">
               <div class="d-flex justify-content-center">
                 <input id="price_slider" 
-                       type="text" 
+                       type="text"
+                       class="position-absolute top-0 start-50 translate-middle-x w-100 bg-transparent slider-primary" 
+                       value=""
                        data-slider-min="{{ min_price }}" 
                        data-slider-max="{{ max_price }}" 
                        data-slider-step="10" 
-                       data-slider-value="[{{ selected_min_price|default:min_price }}, {{ selected_max_price|default:max_price }}]"
-                       class="position-absolute top-0 start-50 translate-middle-x w-100 bg-transparent slider-primary" 
-                       data-slider-tooltip="hide">
-                       
+                       data-slider-value="[{{ selected_min_price|default:min_price }}, {{ selected_max_price|default:max_price }}]"/>                       
               </div>
+
               <div class="row g-0 align-items-center price_slider_amount my-4">
                 <div class="col-8 text-center">
                   <div class="price_label">
+                    <label class="visually-hidden" for="min_price">Precio mínimo</label>
+                    <input type="text" id="min_price" name="min_price" value="{{ selected_min_price|default:min_price }}" data-min="{{ min_price }}" placeholder="Precio mínimo" class="form-control" style="display: none;">
+                    <label class="visually-hidden" for="max_price">Precio máximo</label>
+                    <input type="text" id="max_price" name="max_price" value="{{ selected_max_price|default:max_price }}" data-max="{{ max_price }}" placeholder="Precio máximo" class="form-control" style="display: none;">
                     Precio: <span class="from">${{ selected_min_price|default:min_price }}</span> — <span class="to">${{ selected_max_price|default:max_price }}</span>
                   </div>
                 </div>
@@ -82,14 +86,18 @@
             <p class="mb-0">Mostrando los {{ products.count }} resultados</p>
           </div>
           <div class="col-12 col-md-6">
-            <form class="form-inline d-flex justify-content-end">
-              <label class="mr-2" for="orderby">Pedido de la tienda:</label>
+            <form method = "GET" action="{% url 'products:product_catalog'%}" class="form-inline d-flex justify-content-end" id="product-search-form" >
+              <label class="visually-hidden mr-2" for="orderby">Filtros</label>
               <select class="form-control" id="orderby" name="orderby">
-                <option value="popularity" selected>Ordenar por popularidad</option>
-                <option value="date">Ordenar por los últimos</option>
-                <option value="price">Ordenar por precio: bajo a alto</option>
-                <option value="price-desc">Ordenar por precio: alto a bajo</option>
+                <option value="popularity" selected>Ordenar por más vendido</option>
+                <option value="date">Ordenar por los últimos agregados</option>
+                <option value="price">Ordenar por menor precio</option>
+                <option value="price-desc">Ordenar por mayor precio</option>
               </select>
+              {% comment %} <input type="hidden" name="paged" value="1"> {% endcomment %}
+              <input type="hidden" name="min_price" value="{{ min_price }}">
+              <input type="hidden" name="max_price" value="{{ max_price }}">
+              {% comment %} <button type="submit" class="btn btn-primary">Buscar</button> {% endcomment %}
             </form>
           </div>
         </div>
@@ -174,6 +182,13 @@
     $('#max_price').val(maxPrice);
     $('.price_label .from').text('$' + minPrice);
     $('.price_label .to').text('$' + maxPrice);
+  });
+
+  const form = document.getElementById('product-search-form');
+  const select = form.querySelector('#orderby');
+
+  select.addEventListener('change', () => {
+    form.submit();
   });
 </script>
 

@@ -17,4 +17,9 @@ urlpatterns = [
         name="many_items_add",
     ),
     path("carts/catalog_item_increment/<int:id>/", views.catalog_item_increment, name="catalog_item_increment"),
+    path(
+        "carts/replace_items_quantity/<int:id>/<int:quantity>/",
+        views.replace_items_quantity,
+        name="replace_items_quantity",
+    ),
 ]
