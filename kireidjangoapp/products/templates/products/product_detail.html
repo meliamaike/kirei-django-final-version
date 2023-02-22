@@ -1,0 +1,149 @@
+{% extends 'home/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container m-5 px-0 py-5">
+    <div class="row">
+      <div class="col-md-7">
+        <div class="card">
+        {% comment %} <img src="{% static product.image.url %}" alt="{{ product.name }}" class="img-fluid"> {% endcomment %}
+        <img src="https://http2.mlstatic.com/intragen-sebum-balance-shampoo-purificante-pelo-graso-250ml-S_756594-MLA31643193166_072019-R.jpg" class="card-img-top" alt="...">
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="card h-100">
+          <div class="card-body mt-4">
+                <h1 class="card-title font-weight-bold mt-4" >{{ product.name }}</h1>
+                <div class="row">
+                <div class="col-sm-12">
+                    <p class="card-subtitle h1 my-5">${{ product.price }}</p>
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-sm-12">
+                    <h6 class="card-subtitle mb-4 text-muted">Descripción:</h6> 
+                    <p class="card-text mb-4">{{ product.description }}</p>
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-sm-12 my-4">
+                    <h6 class="card-subtitle mb-3 text-muted">Disponibilidad: 
+                    {% if product.is_in_stock %}
+                    <span class="text-success card-text h6 font-weight-bold">Stock disponible</span>
+                    {% else %}
+                    <span class="text-danger card-text h6 font-weight-bold">Sin stock</span>
+                    {% endif %}
+                    </h6>
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-sm-12 my-4">
+                    <h6 class="card-subtitle mb-3 text-muted">Categoría: <span class="card-text text-dark font-weight-bold">{{ product.category }}</span></h6>
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 my-4">
+                    <div class="d-flex align-items-center">
+                        <h6 class="card-subtitle text-muted">Cantidad:</h6>
+                        <button class="minus-btn btn btn-outline-secondary ml-3">-</button>
+                        <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity form-control w-25 mx-2 text-center">
+                        <button class="plus-btn btn btn-outline-secondary">+</button>
+                        <span class="card-subtitle h7 text-muted ml-3 ">({{ product.stock }} disponibles)</span>
+                    </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 my-5">
+                        <button onclick="addToCart()" class="add-to-cart-btn btn btn-primary w-100 mt-3" id="add-to-cart-btn" data-product-id="{{ product.id }}" {% if not product.is_in_stock %}disabled{% endif %}>
+                        Agregar al carrito
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+  <script>
+    var quantityInput = document.getElementById('quantity');
+    var addToCartButton = document.querySelector('#add-to-cart-btn');
+    
+    // Disable the "Agregar al carrito" button if the quantity is greater than the available stock
+    quantityInput.addEventListener('input', function() {
+
+        var quantity = parseInt(quantityInput.value);
+        quantity = isNaN(quantity) ||  quantity < 0 ? 0 : quantity;
+
+        if (quantity > {{ product.stock }}) {
+            addToCartButton.disabled = true;
+            addToCartButton.innerHTML = "Sin Stock";
+        } else if(quantity > 0) {
+            addToCartButton.disabled = false;
+            quantityInput.disabled = false;
+            addToCartButton.innerHTML = "Agregar al carrito";
+        } else{
+            addToCartButton.disabled = true;
+            addToCartButton.innerHTML = "Puedes comprar desde 1 unidad";
+        }
+    });
+    document.addEventListener('click', () =>{
+        if(quantityInput.value === "") quantityInput.value = 1;
+        if(quantityInput.value > {{ product.stock }}){
+            quantityInput.value = {{ product.stock }};
+            addToCartButton.disabled = false;
+            addToCartButton.innerHTML = "Agregar al carrito";
+        } 
+    })
+    // Add event listeners to the plus and minus buttons to increment and decrement the quantity
+    var minusButton = document.querySelector('.minus-btn');
+    var plusButton = document.querySelector('.plus-btn');
+    minusButton.addEventListener('click', function() {
+        var quantity = parseInt(quantityInput.value);
+        if (quantity > 1) {
+            if (quantity - 1 <= {{ product.stock }}) {
+                addToCartButton.disabled = false;
+                quantityInput.disabled = false;
+                addToCartButton.innerHTML = 'Agregar al carrito';
+                quantityInput.value = quantity - 1;
+            }
+        }
+    });
+    plusButton.addEventListener('click', function() {
+        var quantity = parseInt(quantityInput.value);
+        if(isNaN(quantity))
+            quantity = 0;
+        if (quantity <= {{ product.stock }}) {
+            quantityInput.value = quantity + 1;
+        }
+        if (quantity + 1 > {{ product.stock }}) {
+            addToCartButton.disabled = true;
+            addToCartButton.innerHTML = 'Sin Stock';
+            
+        } else {
+            addToCartButton.disabled = false;
+            addToCartButton.innerHTML = 'Agregar al carrito';
+        }
+    });
+    function addToCart() {
+    // get the quantity input value
+    var quantity = document.getElementById('quantity').value;
+
+    // check if the quantity is greater than the available stock
+    if (quantity > {{ product.stock }}) {
+        addToCartButton.innerHTML = 'Sin stock';
+        return;
+    }
+
+    // get the product ID from the data-product-id attribute
+    var productId = addToCartButton.getAttribute('data-product-id');
+
+    // construct the URL with the quantity and product ID
+    var url = '/carts/many_items_add/' + productId + '/' + quantity + '/';
+
+    // redirect to the URL
+    window.location.href = url;
+    }
+  
+</script>
+{% endblock %}
+
