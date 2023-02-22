@@ -1,3 +1,4 @@
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fixed-top">
     <a class="navbar-brand" href="../"><img src="../static/home/images/logo.png" alt=""></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -12,7 +13,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="btn btn-outline-primary btn-profile" href="/profile">Mi perfil</a>
+              <a class="nav-link" href="/products">Comprar productos</a>
             </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -24,6 +25,13 @@
                   <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
                 </div>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'carts:cart_detail' %}">
+                  <i class="bi bi-cart-fill"></i>
+                  <span class="badge bg-danger">{{ cart_total_quantity }}</span>
+                </a>
+              </li>
+              
           </ul>
         </div>
     {% else%}
@@ -34,6 +42,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Servicios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Productos</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Turnos</a>
@@ -47,9 +58,9 @@
             <a class="btn btn-primary" data-toggle="modal" data-target="#loginModal">Ingresar</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'carts:cart_detail' %}">
               <i class="fa fa-shopping-cart"></i>
-              <span class="badge badge-pill badge-secondary">0</span>
+              <span class="badge badge-pill badge-secondary">{{ cart_total_quantity }}</span>
             </a>
           </li>
         </ul>

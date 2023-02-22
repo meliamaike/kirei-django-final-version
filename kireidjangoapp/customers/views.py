@@ -13,53 +13,55 @@ from customers.models import Customer
 from django.db.models.query_utils import Q
 
 
-from customers.forms import RegisterForm,CustomerLoginForm
+from customers.forms import RegisterForm, CustomerLoginForm
 from django.contrib.auth import authenticate
 
 
-
 from django.shortcuts import render, redirect
+
 
 def signup_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
             customer = form.signup(request)
-            login(request, customer,backend="django.contrib.auth.backends.ModelBackend")
+            login(
+                request, customer, backend="django.contrib.auth.backends.ModelBackend"
+            )
             return redirect("home:index")
         else:
-                print(form.errors)
+            print(form.errors)
     # else:
     #     form = RegisterForm()
     # return render(request, 'home/index.html', {"form": form})
 
+
 def customer_login(request):
     form = CustomerLoginForm(request=request)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CustomerLoginForm(data=request.POST, request=request)
         print("FORMULARIO: ", form)
         if form.is_valid():
             # Authenticate the user
-            email = form.cleaned_data.get('login')
+            email = form.cleaned_data.get("login")
             print("Email: ", email)
-            password = form.cleaned_data.get('password')
+            password = form.cleaned_data.get("password")
             print("Pass: ", password)
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 # Log the user in
                 login(request, user)
                 # Redirect to a success page
-                return redirect('home:index')
+                return redirect("home:index")
             else:
                 # Return an 'invalid login' error message
-                form.add_error(None, 'Invalid login')
+                form.add_error(None, "Invalid login")
         else:
             print(form.errors)
     # else:
     #     form = CustomerLoginForm()
     # return render(request, 'home/index.html', {'form': form})
     # #return render(request, 'home/index.html', {'form': form})
-
 
 
 # Cerrar sesion

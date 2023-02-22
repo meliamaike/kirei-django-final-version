@@ -2,7 +2,6 @@ from django.db import models
 
 
 class CategoryService(models.Model):
-
     THREADING = "TH"
     MANICURE = "MN"
     PEDICURE = "PD"
