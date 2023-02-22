@@ -101,37 +101,6 @@
     
   </div>
 
-  {% comment %} <script>
-    {% for key, value in request.session.cart.items %}
-    const inputField = document.getElementById('quantity-input-'+{{ value.product_id }});
-    const incrementButton = inputField.nextElementSibling;
-    const decrementButton = inputField.previousElementSibling;
-    inputField.addEventListener('input', () => {
-      const currentValue = parseInt(inputField.value);
-      const maxQuantity = parseInt(inputField.max);
-      const availableQuantity = parseInt({{ value.stock }});
-      const productId = {{ value.product_id }};
-      if (currentValue <= maxQuantity && currentValue > 0) {
-        // Update the cart by making a GET request to the relevant URL.
-        console.log("AVQ",availableQuantity)
-        console.log("carts/many_items_add/"+ productId)
-        
-        
-       
-
-
-        
-        // Enable or disable the increment/decrement buttons based on the updated quantity.
-        incrementButton.disabled = currentValue >= maxQuantity;
-        decrementButton.disabled = currentValue <= 1;
-      } else {
-        // Reset the input field to the previous value.
-        inputField.value = "{{ value.quantity }}";
-      }
-    });
-    {% endfor %}
-  </script> {% endcomment %}
-  
   <script>
     const quantityInputs = document.querySelectorAll('.quantity-input');
     
@@ -154,7 +123,7 @@
             } else if (quantity < 1) {
               document.getElementById('text-quantity-message').innerHTML = 'Puedes comprar desde 1 unidad.';
 
-            }else{
+            } else {
 
                 // construct the URL with the quantity and product ID
                 var url = '/carts/replace_items_quantity/' + productId + '/' + quantity + '/';
