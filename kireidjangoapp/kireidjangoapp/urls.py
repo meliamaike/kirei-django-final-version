@@ -8,4 +8,5 @@ urlpatterns = [
     path("", include(("customers.urls", "customers"), namespace="customers")),
     path("", include(("carts.urls", "carts"), namespace="carts")),
     path("", include(("products.urls", "products"), namespace="products")),
+    path("", include(("agendas.urls", "agendas"), namespace="agendas")),
 ]
