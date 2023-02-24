@@ -40,7 +40,6 @@ def customer_login(request):
     form = CustomerLoginForm(request=request)
     if request.method == "POST":
         form = CustomerLoginForm(data=request.POST, request=request)
-        print("FORMULARIO: ", form)
         if form.is_valid():
             # Authenticate the user
             email = form.cleaned_data.get("login")
@@ -58,10 +57,7 @@ def customer_login(request):
                 form.add_error(None, "Invalid login")
         else:
             print(form.errors)
-    # else:
-    #     form = CustomerLoginForm()
-    # return render(request, 'home/index.html', {'form': form})
-    # #return render(request, 'home/index.html', {'form': form})
+
 
 
 # Cerrar sesion

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "professionals.apps.ProfessionalsConfig",
     "services.apps.ServicesConfig",
     "shoppingcarts.apps.ShoppingcartsConfig",
+    "staff.apps.StaffConfig",
     "statistic.apps.StatisticConfig",
     # Django
     "django.contrib.admin",
