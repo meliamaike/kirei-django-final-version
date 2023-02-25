@@ -6,3 +6,6 @@ class Professional(models.Model):
     professional = models.CharField(max_length=255)
     services = models.ManyToManyField(Service)
     start_date = models.DateField()
+
+    def __str__(self):
+            return self.professional

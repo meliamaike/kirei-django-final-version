@@ -8,7 +8,6 @@ class StaffLoginForm(LoginForm):
         self.helper = FormHelper(self)
         self.fields["login"].label = "Email"
         self.fields["password"].label = "Contraseña"
-        self.fields["remember"].label = "Recuérdame"
         self.helper.form_method = "post"
         self.fields["password"].widget.attrs["placeholder"] = ""
         self.fields["login"].widget.attrs["placeholder"] = ""

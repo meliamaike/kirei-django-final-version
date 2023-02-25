@@ -5,8 +5,9 @@ from agendas.views import create_agenda, edit_agenda
 app_name = 'staff'
 
 urlpatterns = [
-    path('', views.staff_dashboard, name='staff_dashboard'),
-    path('login/', views.StaffLoginView.as_view(), name='staff_login'),
-    #path('statistics/', views.statistics, name='statistics'),
+    path('staff/', views.staff_dashboard, name='staff_dashboard'),
+    path('staff/login/', views.staff_login, name='staff_login'),
+    path('staff/logout/', views.staff_logout, name='staff_logout'),
+
     
 ]

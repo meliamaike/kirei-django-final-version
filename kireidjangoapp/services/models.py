@@ -23,6 +23,11 @@ class CategoryService(models.Model):
         ],
     )
 
+    def __str__(self):
+        return " Categoria: {}".format(
+            self.category
+        )
+
 
 class Service(models.Model):
     service = models.CharField(max_length=200)
