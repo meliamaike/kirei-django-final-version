@@ -59,7 +59,6 @@ def customer_login(request):
             print(form.errors)
 
 
-
 # Cerrar sesion
 def logout_view(request):
     logout(request)

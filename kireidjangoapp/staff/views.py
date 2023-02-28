@@ -13,7 +13,7 @@ def staff_dashboard(request):
 
 def staff_login(request):
     form = StaffLoginForm(request=request)
-    
+
     if request.method == "POST":
         form = StaffLoginForm(data=request.POST, request=request)
         if form.is_valid():
@@ -27,7 +27,7 @@ def staff_login(request):
                 # Log the user in
                 login(request, user)
                 # Redirect to a success page
-                
+
                 return redirect("staff:staff_dashboard")
             else:
                 # Return an 'invalid login' error message
@@ -36,13 +36,11 @@ def staff_login(request):
             print(form.errors)
     else:
         form = StaffLoginForm()
-    
-    return render(request, 'staff/staff_login.html', {"form": form})
+
+    return render(request, "staff/staff_login.html", {"form": form})
 
 
 def staff_logout(request):
     logout(request)
     # messages.info(request, "Ha cerrado sesión correctamente.")
     return redirect("staff:staff_login")
-
- 

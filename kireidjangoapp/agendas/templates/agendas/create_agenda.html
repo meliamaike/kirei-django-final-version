@@ -8,14 +8,14 @@
   <div class="card-body">
     <div class="row justify-content-sm-center h-100">
       <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
-        <form method="POST" class="needs-validation" novalidate="" autocomplete="off">
+        <form method="POST" action="" class="needs-validation"  autocomplete="off" id= "create-agenda-form">
           <div class="mb-3">
                 {% csrf_token %}
                 {{ form|crispy }}
           </div>
           <div class="mb-3">
             <div class="d-flex align-items-center">
-                <button type="submit" class="btn btn-primary ms-auto">
+                <button id="submit_create" type="submit" class="btn btn-primary ms-auto">
                     Guardar
                 </button>
             </div>
@@ -25,7 +25,63 @@
   </div>
   </div>
 </div>
+
+<script>
+  $(function() {
+    $('#submit_create').on('click', function(event) {
+      event.preventDefault();
+      $.ajax({
+        url: '/agenda/create',
+        type: 'post',
+        data: $('#create-agenda-form').serialize(),
+        success: function(data) {
+          if (data.success) {
+            Swal.fire({
+              title: 'Se creó la agenda exitosamente.',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then((result) => {
+              window.location.href = '/agenda/all';
+            });
+          } else {
+            const modal_content = JSON.parse(data.modal_content);
+            Swal.fire({
+              title: modal_content.title,
+              text: modal_content.text,
+              icon: 'error',
+              showCloseButton: true,
+              showConfirmButton: false,
+            }).then((result) => {
+              if (result.dismiss === Swal.DismissReason.close) {
+                window.location.href = '/agenda/all';
+              }
+            });
+          }
+        },
+        error: function() {
+          // If there was a server error, show a generic error message
+          Swal.fire({
+            title: 'Error',
+            text: 'Intente más tarde o comuníquese con el Administrador.',
+            icon: 'error',
+            showCloseButton: true,
+            showConfirmButton: false,
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.close) {
+              window.location.href = '/agenda/all';
+            }
+          });
+        }
+      });
+    });
+  });
   
+</script>
+
+
+
+
+
 
 {% endblock %}
 

@@ -6,16 +6,14 @@ from django.core.paginator import Paginator
 from django.urls import resolve
 
 
-
 def product_catalog_view(request):
-
     print("Request: ", request.method)
     all_products = Product.objects.filter(is_available=True)
     categories = Product.objects.values("category").distinct()
     selected_category = request.GET.get("category")
-    min_price = Product.objects.aggregate(Min('price'))['price__min']
-    max_price = Product.objects.aggregate(Max('price'))['price__max']
-    
+    min_price = Product.objects.aggregate(Min("price"))["price__min"]
+    max_price = Product.objects.aggregate(Max("price"))["price__max"]
+
     # Get the selected price range from the request's GET parameters
     selected_min_price = request.GET.get("min_price")
     selected_max_price = request.GET.get("max_price")
@@ -27,15 +25,15 @@ def product_catalog_view(request):
 
     # Apply selected sorting method to products
     if selected_sorting == "popularity":
-        #products = Product.objects.filter(is_available=True).annotate(num_sold=Sum('sale__num_sold')).order_by('-num_sold')
-        products = all_products# Fater a sale is done, you can update the sale table
+        # products = Product.objects.filter(is_available=True).annotate(num_sold=Sum('sale__num_sold')).order_by('-num_sold')
+        products = all_products  # Fater a sale is done, you can update the sale table
     elif selected_sorting == "date":
-        products = all_products.order_by('-id')
+        products = all_products.order_by("-id")
     elif selected_sorting == "price":
-        products = all_products.order_by('price')
+        products = all_products.order_by("price")
         print("de mas barato a mas caro: ", products)
     elif selected_sorting == "price-desc":
-        products = all_products.order_by('-price')
+        products = all_products.order_by("-price")
         print("de mas caro a mas barato: ", products)
     else:
         products = all_products
@@ -44,23 +42,31 @@ def product_catalog_view(request):
     counts = {}
     for category in categories:
         if selected_category:
-            count = Product.objects.filter(category=category['category'], is_available=True, category__exact=selected_category).count()
+            count = Product.objects.filter(
+                category=category["category"],
+                is_available=True,
+                category__exact=selected_category,
+            ).count()
         else:
-            count = Product.objects.filter(category=category['category'], is_available=True).count()
-        counts[category['category']] = count
-        
+            count = Product.objects.filter(
+                category=category["category"], is_available=True
+            ).count()
+        counts[category["category"]] = count
+
     # Filter products by selected category
     if selected_category:
         products = products.filter(category=selected_category, is_available=True)
     else:
         products = products.filter(is_available=True)
-    
+
     # Apply selected price range filter
     if selected_min_price and selected_max_price:
-        products = products.filter(price__gte=selected_min_price, price__lte=selected_max_price)
-    
+        products = products.filter(
+            price__gte=selected_min_price, price__lte=selected_max_price
+        )
+
     paginator = Paginator(products, 15)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
 
     page_obj = paginator.get_page(page_number)
 

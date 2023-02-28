@@ -8,4 +8,4 @@ class Professional(models.Model):
     start_date = models.DateField()
 
     def __str__(self):
-            return self.professional
+        return self.professional

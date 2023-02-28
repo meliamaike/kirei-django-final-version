@@ -68,6 +68,7 @@ class Agenda(models.Model):
         ],
     )
 
+
 class AgendaModifications(models.Model):
     agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE)
     date = models.DateField()

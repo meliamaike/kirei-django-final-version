@@ -14,5 +14,3 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         self.total_amount = self.shopping_cart.total_amount
         super().save(*args, **kwargs)
-
-
