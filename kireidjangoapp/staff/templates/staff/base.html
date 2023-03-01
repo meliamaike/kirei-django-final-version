@@ -22,6 +22,7 @@
 
     <!-- Custom styles for this template-->
     <link href="{% static 'staff/css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'staff/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600&display=swap" rel="stylesheet">
@@ -33,7 +34,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     
-    <link href="{% static 'staff/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+    
   
 
 </head>
@@ -424,6 +425,13 @@
     <!-- Page level custom scripts -->
     <script src="{% static 'staff/js/demo/chart-area-demo.js' %}"></script>
     <script src="{% static 'staff/js/demo/chart-pie-demo.js' %}"></script>
+
+    <!-- Page level plugins -->
+    <script src="{% static 'staff/vendor/datatables/jquery.dataTables.min.js'%}"></script>
+    <script src="{% static 'staff/vendor/datatables/dataTables.bootstrap4.min.js'%}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{% static 'staff/js/demo/datatables-demo.js' %}"></script>
   
 
 </body>
