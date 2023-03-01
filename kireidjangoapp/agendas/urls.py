@@ -18,4 +18,5 @@ urlpatterns = [
         name="day_modification",
     ),
     path("agenda/<int:pk>/delete/", views.delete_agenda, name="delete_agenda"),
+    path("agenda/modifications/all", views.agenda_modifications_list, name="all_modifications_agenda"),
 ]

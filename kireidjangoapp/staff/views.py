@@ -5,6 +5,7 @@ from staff.forms import StaffLoginForm
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate
+from agendas.models import Agenda
 
 
 def staff_dashboard(request):

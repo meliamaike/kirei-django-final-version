@@ -1,23 +1,22 @@
-{% extends 'staff/dashboard.html'%}
+{% extends 'staff/base.html'%}
 {% block title %}Modificar agenda por día{% endblock %}
 {% block content %}
 {% load crispy_forms_tags %}
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
 <div class="card shadow mb-4">
   
   <div class="card-body">
     <div class="row justify-content-sm-center h-100">
       <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
-        <form method="POST" class="needs-validation" novalidate="" autocomplete="off">
+        <form method="POST" action="" class="needs-validation" autocomplete="off" id= "modification-agenda-form">
           <div class="mb-3">
                 {% csrf_token %}
                 {{ form|crispy }}
           </div>
           <div class="mb-3">
             <div class="d-flex align-items-center">
-                <button type="submit" class="btn btn-primary ms-auto">
+                <button id="submit_save_modification" type="submit" class="btn btn-primary ms-auto">
                     Guardar
                 </button>
             </div>
@@ -28,8 +27,79 @@
   </div>
 </div>
   
-<!-- activate the date picker on the input field with class "datepicker" -->
 <script>
+
+  $(function() {
+    $('#submit_save_modification').on('click', function(event) {
+      event.preventDefault();
+      $.ajax({
+        url: '{% url "agendas:day_modification" pk=agenda.pk %}',
+        type: 'post',
+        data: $('#modification-agenda-form').serialize(),
+        success: function(data) {
+          if (data.success) {
+            Swal.fire({
+              title: 'Se agregó la modificación exitosamente.',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then((result) => {
+              window.location.href = '/agenda/all';
+            });
+          } else {
+            Swal.fire({
+              title: 'Error. Ya existe una modificación para este día.',
+              text: 'Intente con otro día.',
+              icon: 'error',
+              showCloseButton: true,
+              showConfirmButton: false,
+            }).then((result) => {
+              if (result.dismiss === Swal.DismissReason.close) {
+                window.location.href = '/agenda/all';
+              }
+            });
+          }
+        },
+        error: function() {
+          // If there was a server error, show a generic error message
+          Swal.fire({
+            title: 'Error',
+            text: 'Intente más tarde o comuníquese con el Administrador.',
+            icon: 'error',
+            showCloseButton: true,
+            showConfirmButton: false,
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.close) {
+              window.location.href = '/agenda/all';
+            }
+          });
+        }
+      });
+    });
+  });
+
+  $(document).ready(function() {
+    // hide the start_time and end_time fields initially
+    $("#div_id_start_time").hide();
+    $("#div_id_end_time").hide();
+    $("#id_start_time option:selected").val("");
+    $("#id_end_time option:selected").val("");
+    
+    // show or hide the start_time and end_time fields based on the value of the available checkbox
+    $("#id_available").change(function() {
+      if ($(this).is(":checked")) {
+        $("#div_id_start_time").show();
+        $("#div_id_end_time").show();
+        
+      } else {
+        $("#div_id_start_time").hide();
+        $("#div_id_end_time").hide();
+        $("#id_start_time option:selected").val("");
+        $("#id_end_time option:selected").val("");
+        
+      }
+    });
+  });
+
   $(document).ready(function() {
       $('.datepicker').datepicker({
           format: 'yyyy-mm-dd',
@@ -39,5 +109,15 @@
           zIndexOffset: 1000,
       });
   });
-  </script>
+
+
+
+
+</script>
+
+
+ 
+
+ 
+
 {% endblock %}

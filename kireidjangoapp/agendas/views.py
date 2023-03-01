@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect, reverse
+from django.shortcuts import render, get_object_or_404, redirect,HttpResponse
 from agendas.models import Agenda
 from professionals.models import Professional
 from agendas.forms import AgendaForm, EditAgendaForm, AgendaDayModificationsForm
@@ -17,7 +17,6 @@ def create_agenda(request):
             end_time = form.cleaned_data["end_time"]
 
             if Agenda.objects.filter(professional=professional).exists():
-                print("entro")
                 modal_content = {
                     "title": "Ya existe una agenda con ese profesional!",
                     "text": "Si desea modificarla, por favor, editela.",
@@ -41,6 +40,10 @@ def create_agenda(request):
 def agenda_list(request):
     agendas = Agenda.objects.all()
     return render(request, "agendas/all_agendas.html", {"agendas": agendas})
+
+def agenda_modifications_list(request):
+    modifications = AgendaModifications.objects.all()
+    return render(request,"agendas/all_modifications.html", {"modifications": modifications})
 
 
 def agenda_detail(request, pk):
@@ -70,36 +73,22 @@ def edit_agenda(request, pk):
 def day_modification(request, pk):
     agenda = get_object_or_404(Agenda, pk=pk)
     if request.method == "POST":
-        form = AgendaDayModificationsForm(request.POST, instance=agenda)
-
-        print("Form antes de is_valid: ", form)
+        form = AgendaDayModificationsForm(request.POST, instance=AgendaModifications(agenda=agenda))
         if form.is_valid():
-            # agenda = agenda,
-            date_f = (form.cleaned_data["date"],)
-            available = (form.cleaned_data["available"],)
-            start_time = form.cleaned_data["start_time"]
-            end_time = form.cleaned_data["end_time"]
+            # check if there is already a modification for the selected date
+            date = form.cleaned_data['date']
+            existing_modification = AgendaModifications.objects.filter(agenda=agenda, date=date).exists()
+            if existing_modification:
+                return JsonResponse({"success": False})
+            else:
+                form.save()
+                return JsonResponse({"success": True})
 
-            print("date: ", date_f)
-            date_string = date_f.strftime("%m/%d/%Y")
-            print("TRANSFOMRADO: ", date_string)
-            form.save()
-            am = AgendaModifications.objects.create(
-                agenda=agenda,
-                date=date_f,
-                available=available,
-                start_time=start_time,
-                end_time=end_time,
-            )
-            print("Lo que se supone se debe haber creado: ", am)
-            return redirect("agendas:all_agendas")
     else:
-        print("Es el else y dsp el form: ")
         form = AgendaDayModificationsForm(instance=agenda)
 
     context = {"form": form, "agenda": agenda}
     return render(request, "agendas/day_modification.html", context)
-
 
 def delete_agenda(request, pk):
     agenda = get_object_or_404(Agenda, pk=pk)

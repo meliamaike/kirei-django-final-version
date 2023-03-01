@@ -1,0 +1,48 @@
+{% extends 'staff/base.html'%}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Modificaciones en las agendas</h1>
+    </div>
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    
+                    <thead>
+                        <tr>
+                            <th>Profesional</th>
+                            <th>Fecha</th>
+                            <th>Disponible</th>
+                            <th>Horario de entrada</th>
+                            <th>Horario de salida</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Profesional</th>
+                            <th>Fecha</th>
+                            <th>Disponible</th>
+                            <th>Horario de entrada</th>
+                            <th>Horario de salida</th>
+                        </tr>
+                    </tfoot>
+                    {% for modification in modifications %}
+                    <tbody>
+                        <tr>
+                            <td>{{modification.agenda.professional}}</td>
+                            <td>{{modification.date}}</td>
+                            <td>{{modification.available}}</td>
+                            <td>{{modification.start_time}}</td>
+                            <td>{{modification.end_time}}</td>
+                        </tr>
+
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
