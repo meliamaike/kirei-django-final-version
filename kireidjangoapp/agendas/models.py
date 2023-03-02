@@ -73,7 +73,7 @@ class AgendaModifications(models.Model):
     agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.CharField(
-        blank=True, 
+        blank=True,
         null=True,
         max_length=5,
         choices=[
@@ -104,7 +104,7 @@ class AgendaModifications(models.Model):
         ],
     )
     end_time = models.CharField(
-        blank=True, 
+        blank=True,
         null=True,
         max_length=5,
         choices=[

@@ -36,7 +36,7 @@ class AgendaDayModificationsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['available'].initial = False
+        self.fields["available"].initial = False
         self.fields["date"].label = "Fecha"
         self.fields["available"].label = "Disponible ese día "
         self.fields["start_time"].label = "Horario de inicio"
@@ -45,6 +45,3 @@ class AgendaDayModificationsForm(forms.ModelForm):
     class Meta:
         model = AgendaModifications
         fields = ["date", "available", "start_time", "end_time"]
-
-
-

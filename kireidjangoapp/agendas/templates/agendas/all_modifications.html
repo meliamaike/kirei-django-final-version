@@ -6,7 +6,7 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
                     
                     <thead>
                         <tr>
@@ -15,6 +15,9 @@
                             <th>Disponible</th>
                             <th>Horario de entrada</th>
                             <th>Horario de salida</th>
+                            <th>Acciones</th>
+
+
                         </tr>
                     </thead>
                     <tfoot>
@@ -24,25 +27,78 @@
                             <th>Disponible</th>
                             <th>Horario de entrada</th>
                             <th>Horario de salida</th>
+                            <th>Acciones</th>
                         </tr>
                     </tfoot>
-                    {% for modification in modifications %}
+                    
                     <tbody>
+                        {% for modification in modifications %}
                         <tr>
                             <td>{{modification.agenda.professional}}</td>
-                            <td>{{modification.date}}</td>
-                            <td>{{modification.available}}</td>
-                            <td>{{modification.start_time}}</td>
-                            <td>{{modification.end_time}}</td>
+                            <td>{{ modification.date}}</td>
+                            <td>{% if modification.available %}Si{% else %}No{% endif %}</td>
+                            <td>{% if modification.start_time == None %}---{% else %}{{ modification.start_time }}{% endif %}</td>
+                            <td>{% if modification.end_time == None %}---{% else %}{{ modification.end_time }}{% endif %}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger delete-modification-agenda" data-id="{{ modification.pk }}">
+                                    Eliminar
+                                </button>
+                            </td>
                         </tr>
-
+                        {% endfor %}
                     </tbody>
-                    {% endfor %}
                 </table>
             </div>
         </div>
     </div>
 
-
+<script>
+    // Handle the delete of an agenda
+$('.delete-modification-agenda').on('click', function() {
+    var agendaId = $(this).data('id');
+    var csrftoken = getCookie('csrftoken'); // get the CSRF token value from the cookie
+  
+    Swal.fire({
+      title: '¿Estás seguro que desea eliminar esta modificación?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: '/agenda/modification/' + agendaId + '/delete/',
+          type: 'post',
+          headers: {'X-CSRFToken': csrftoken}, // include the CSRF token in the header
+          success: function(data) {
+            location.href = location.href;
+            window.location.href = 'agenda/modifications/all';
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+          }
+        });
+      }
+    });
+  });
+  
+  // Function to get the value of the CSRF token from the cookie
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+  
+</script>
 
 {% endblock %}

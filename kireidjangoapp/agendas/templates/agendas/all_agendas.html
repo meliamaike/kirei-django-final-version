@@ -51,7 +51,7 @@
       $(this).hide();
     });
 
-// Handle deletion of agenda
+// Handle the delete of an agenda
 $('.delete-agenda').on('click', function() {
     var agendaId = $(this).data('id');
     var csrftoken = getCookie('csrftoken'); // get the CSRF token value from the cookie
@@ -103,47 +103,3 @@ $('.delete-agenda').on('click', function() {
  </script>
 
 {% endblock %}
-{% comment %} {% extends 'staff/base.html'%}
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Todas las agendas</h1>
-    <a href="{% url 'agendas:create_agenda' %}" class="btn btn-primary">Crear agenda</a>
-</div>
-
-<div class="row">
-    {% for agenda in agendas %}
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            {{ agenda.professional }}</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">LU-VI de {{ agenda.start_time }} - {{ agenda.end_time }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-                <hr>
-                <div class="row no-gutters align-items-center">
-                    <div class="col-md-6">
-                        <a href="{% url 'agendas:agenda_detail' agenda.pk %}" class="btn btn-sm btn-info">Ver más</a>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <a href="{% url 'agendas:edit_agenda' agenda.pk %}" class="btn btn-sm btn-primary">Editar</a>
-                        <form action="{% url 'agendas:delete_agenda' agenda.pk %}" method="POST" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
-
-{% endblock %} {% endcomment %}
-
-

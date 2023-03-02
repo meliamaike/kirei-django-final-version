@@ -48,7 +48,7 @@
           } else {
             Swal.fire({
               title: 'Error. Ya existe una modificación para este día.',
-              text: 'Intente con otro día.',
+              text: 'Si desea modificarla, eliminela y vuelva a crear una nueva.',
               icon: 'error',
               showCloseButton: true,
               showConfirmButton: false,
@@ -81,8 +81,6 @@
     // hide the start_time and end_time fields initially
     $("#div_id_start_time").hide();
     $("#div_id_end_time").hide();
-    $("#id_start_time option:selected").val("");
-    $("#id_end_time option:selected").val("");
     
     // show or hide the start_time and end_time fields based on the value of the available checkbox
     $("#id_available").change(function() {
@@ -102,7 +100,7 @@
 
   $(document).ready(function() {
       $('.datepicker').datepicker({
-          format: 'yyyy-mm-dd',
+          format: 'dd/mm/yyyy',
           autoclose: true,
           todayHighlight: true,
           orientation: 'bottom',

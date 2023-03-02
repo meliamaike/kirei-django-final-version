@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect,HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from agendas.models import Agenda
 from professionals.models import Professional
 from agendas.forms import AgendaForm, EditAgendaForm, AgendaDayModificationsForm
@@ -41,14 +41,21 @@ def agenda_list(request):
     agendas = Agenda.objects.all()
     return render(request, "agendas/all_agendas.html", {"agendas": agendas})
 
+
 def agenda_modifications_list(request):
     modifications = AgendaModifications.objects.all()
-    return render(request,"agendas/all_modifications.html", {"modifications": modifications})
+    return render(
+        request, "agendas/all_modifications.html", {"modifications": modifications}
+    )
 
 
-def agenda_detail(request, pk):
-    agenda = get_object_or_404(Agenda, pk=pk)
-    return render(request, "agendas/agenda_detail.html", {"agenda": agenda})
+def agenda_modification_delete(request,pk):
+    modification = get_object_or_404(AgendaModifications, pk=pk)
+    if request.method == "POST":
+        modification.delete()
+        return redirect("agendas/all_modifications.html")
+    return render(request, "agendas/all_modifications.html", {"modifications": modification})
+
 
 
 def edit_agenda(request, pk):
@@ -73,11 +80,15 @@ def edit_agenda(request, pk):
 def day_modification(request, pk):
     agenda = get_object_or_404(Agenda, pk=pk)
     if request.method == "POST":
-        form = AgendaDayModificationsForm(request.POST, instance=AgendaModifications(agenda=agenda))
+        form = AgendaDayModificationsForm(
+            request.POST, instance=AgendaModifications(agenda=agenda)
+        )
         if form.is_valid():
             # check if there is already a modification for the selected date
-            date = form.cleaned_data['date']
-            existing_modification = AgendaModifications.objects.filter(agenda=agenda, date=date).exists()
+            date = form.cleaned_data["date"]
+            existing_modification = AgendaModifications.objects.filter(
+                agenda=agenda, date=date
+            ).exists()
             if existing_modification:
                 return JsonResponse({"success": False})
             else:
@@ -89,6 +100,7 @@ def day_modification(request, pk):
 
     context = {"form": form, "agenda": agenda}
     return render(request, "agendas/day_modification.html", context)
+
 
 def delete_agenda(request, pk):
     agenda = get_object_or_404(Agenda, pk=pk)
