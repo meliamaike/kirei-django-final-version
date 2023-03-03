@@ -30,8 +30,11 @@
                         <a href="{% url 'agendas:edit_agenda' agenda.pk %}" class="btn btn-success mr-2">Editar Horario</a>
                         <button type="button" class="btn btn-danger delete-agenda" data-id="{{ agenda.pk }}">Eliminar Agenda</button>
                     </div>
+                      <div class="col-md-12 text-right">
+                          <button type="button" class="btn btn-info see-less">-</button>
+                      </div>
                 </div>
-                <div class="row no-gutters align-items-center mt-3">
+                <div class="row no-gutters align-items-end mt-3">
                     <div class="col-md-12 text-right">
                         <button type="button" class="btn btn-info see-more">+</button>
                     </div>
@@ -49,6 +52,12 @@
       var cardBody = $(this).closest('.card-body');
       cardBody.find('.more-details').show();
       $(this).hide();
+    });
+
+    $('.see-less').on('click', function() {
+      var cardBody = $(this).closest('.card-body');
+      cardBody.find('.more-details').hide();
+      $('.see-more').show();
     });
 
 // Handle the delete of an agenda

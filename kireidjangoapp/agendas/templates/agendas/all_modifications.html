@@ -71,8 +71,7 @@ $('.delete-modification-agenda').on('click', function() {
           type: 'post',
           headers: {'X-CSRFToken': csrftoken}, // include the CSRF token in the header
           success: function(data) {
-            location.href = location.href;
-            window.location.href = 'agenda/modifications/all';
+            location.reload();
           },
           error: function(xhr, textStatus, errorThrown) {
             console.log(xhr.responseText);

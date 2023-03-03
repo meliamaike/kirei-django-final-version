@@ -10,7 +10,7 @@ app_name = "agendas"
 urlpatterns = [
     path("agenda/all", views.agenda_list, name="all_agendas"),
     path("agenda/create", views.create_agenda, name="create_agenda"),
-    #path("agenda/<int:pk>/", views.agenda_detail, name="agenda_detail"),
+    # path("agenda/<int:pk>/", views.agenda_detail, name="agenda_detail"),
     path("agenda/<int:pk>/edit", views.edit_agenda, name="edit_agenda"),
     path(
         "agenda/<int:pk>/day_modification",
@@ -23,6 +23,9 @@ urlpatterns = [
         views.agenda_modifications_list,
         name="all_modifications_agenda",
     ),
-    path("agenda/modification/<int:pk>/delete/", views.agenda_modification_delete, name="agenda_modification_delete"),
-
+    path(
+        "agenda/modification/<int:pk>/delete/",
+        views.agenda_modification_delete,
+        name="agenda_modification_delete",
+    ),
 ]

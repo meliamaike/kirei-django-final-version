@@ -15,9 +15,13 @@
           </div>
           <div class="mb-3">
             <div class="d-flex align-items-center">
-                <button type="submit" class="btn btn-primary ms-auto">
+                <button type="submit" class="btn btn-primary m-1">
                     Guardar
                 </button>
+                <a href="{% url 'agendas:all_agendas' %}" class="btn btn-secondary m-1">
+                  Cancelar
+                </a>
+                
             </div>
           </div>    
       </form>

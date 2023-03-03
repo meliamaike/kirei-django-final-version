@@ -10834,6 +10834,14 @@ a:focus {
   .chart-area {
     height: 20rem;
   }
+  .card-body {
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  /* Apply the transition when the .card-body is disabled */
+  .card-body:disabled {
+    opacity: 0.5;
+  }
 }
 
 .chart-bar {
@@ -11278,4 +11286,6 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
+
+
 
