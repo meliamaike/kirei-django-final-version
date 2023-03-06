@@ -1,0 +1,22 @@
+<!-- choose_professional.html -->
+{% extends 'home/base.html' %}
+
+{% block content %}
+<h1>Choose a Professional</h1>
+<h2>{{ service.service }}</h2>
+<p>{{ service.category }}</p>
+<p>{{ service.description }}</p>
+<p>{{ service.duration }}</p>
+<p>{{ service.price }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  <label for="professional">Select a Professional:</label>
+  <select name="professional" id="professional">
+    {% for professional in professionals %}
+      <option value="{{ professional.id }}">{{ professional.professional }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Choose Professional</button>
+</form>
+{% endblock %}

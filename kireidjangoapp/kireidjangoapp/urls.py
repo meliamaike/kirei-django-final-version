@@ -10,4 +10,5 @@ urlpatterns = [
     path("", include(("products.urls", "products"), namespace="products")),
     path("", include(("agendas.urls", "agendas"), namespace="agendas")),
     path("", include(("staff.urls", "staff"), namespace="staff")),
+    path("", include(("appointments.urls", "appointments"), namespace="appointments")),
 ]

@@ -1,0 +1,24 @@
+<!-- choose_service.html -->
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+<ul>
+    {% for service in services %}
+      <li>
+        <h2>{{ service.service }}</h2>
+        <p>{{ service.category }}</p>
+        <p>{{ service.description }}</p>
+        <p>{{ service.duration }}</p>
+        <p>{{ service.price }}</p>
+        <form method="POST" action="{% url 'appointments:choose_service' %}">
+          {% csrf_token %}
+          <input type="hidden" name="service" value="{{ service.id }}">
+          <button type="submit">Choose Service</button>
+        </form>
+      </li>
+    {% endfor %}
+    </ul>
+  
+{% endblock %}
+

@@ -1,0 +1,18 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+  <h1>Elegí el horario</h1>
+
+<select>
+    {% for week_dict in weeks %}
+      <optgroup label="Semana {{ week_dict.week }}">
+        <option>{{ week_dict.dates|first|date:'F j'|title }} - {{ week_dict.dates|last|date:'F j'|title }}</option>
+      </optgroup>
+    {% endfor %}
+  </select>
+  
+
+{% endblock %}
+
+
+

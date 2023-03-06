@@ -1,6 +1,10 @@
 import datetime
 from django.db import models
 from professionals.models import Professional
+from appointments.models import AppointmentSlot
+from datetime import datetime, timedelta
+from django.utils import timezone
+from dateutil import rrule
 
 """
 Un profesional tiene una Agenda por dia, es decir, tiene MUCHAS AGENDAS.
@@ -68,6 +72,36 @@ class Agenda(models.Model):
         ],
     )
 
+    
+    def get_time_slots(self):
+        start_time = datetime.strptime(self.start_time, '%H:%M').time()
+        end_time = datetime.strptime(self.end_time, '%H:%M').time()
+        start_datetime = timezone.make_aware(datetime.combine(datetime.today(), start_time))
+        end_datetime = timezone.make_aware(datetime.combine(datetime.today(), end_time))
+
+        print("start_datetime", start_datetime)
+        print("end_datetime", end_datetime)
+        slot_duration = timedelta(minutes=30)
+        appointment_slots = []
+
+        for dt in rrule.rrule(rrule.DAILY, dtstart=start_datetime, until=end_datetime):
+            while start_datetime < dt:
+                start_datetime += slot_duration
+            while start_datetime + slot_duration <= end_datetime:
+                slot_end_datetime = start_datetime + slot_duration
+                slot = AppointmentSlot(
+                    agenda=self,
+                    start_time=start_datetime.time(),
+                    end_time=slot_end_datetime.time(),
+                    booked=False
+                )
+                slot.save()
+
+                print("SLOR CREADO SE SUPONEE: ", slot)
+                appointment_slots.append(slot)
+                start_datetime = slot_end_datetime
+
+        return appointment_slots
 
 class AgendaModifications(models.Model):
     agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE)
