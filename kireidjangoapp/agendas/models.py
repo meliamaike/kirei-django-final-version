@@ -72,15 +72,13 @@ class Agenda(models.Model):
         ],
     )
 
-    
     def get_time_slots(self):
-        start_time = datetime.strptime(self.start_time, '%H:%M').time()
-        end_time = datetime.strptime(self.end_time, '%H:%M').time()
-        start_datetime = timezone.make_aware(datetime.combine(datetime.today(), start_time))
+        start_time = datetime.strptime(self.start_time, "%H:%M").time()
+        end_time = datetime.strptime(self.end_time, "%H:%M").time()
+        start_datetime = timezone.make_aware(
+            datetime.combine(datetime.today(), start_time)
+        )
         end_datetime = timezone.make_aware(datetime.combine(datetime.today(), end_time))
-
-        print("start_datetime", start_datetime)
-        print("end_datetime", end_datetime)
         slot_duration = timedelta(minutes=30)
         appointment_slots = []
 
@@ -93,15 +91,15 @@ class Agenda(models.Model):
                     agenda=self,
                     start_time=start_datetime.time(),
                     end_time=slot_end_datetime.time(),
-                    booked=False
+                    booked=False,
                 )
                 slot.save()
 
-                print("SLOR CREADO SE SUPONEE: ", slot)
                 appointment_slots.append(slot)
                 start_datetime = slot_end_datetime
 
         return appointment_slots
+
 
 class AgendaModifications(models.Model):
     agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE)

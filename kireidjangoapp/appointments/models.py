@@ -4,7 +4,8 @@ from django.forms import ValidationError
 from services.models import Service
 from professionals.models import Professional
 from shoppingcarts.models import ShoppingCart
-#from agendas.models import Agenda
+
+# from agendas.models import Agenda
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -15,7 +16,7 @@ Los horarios disponibles de la Agenda del día y si estan disponibles o no.
 
 
 class AppointmentSlot(models.Model):
-    agenda = models.ForeignKey('agendas.Agenda', on_delete=models.CASCADE)
+    agenda = models.ForeignKey("agendas.Agenda", on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
     booked = models.BooleanField(default=False)
@@ -24,7 +25,7 @@ class AppointmentSlot(models.Model):
 class Appointment(models.Model):
     shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    profesional = models.ForeignKey(Professional, on_delete=models.CASCADE)
+    professional = models.ForeignKey(Professional, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)
     appointment_slot = models.OneToOneField(
         AppointmentSlot, on_delete=models.CASCADE, related_name="appointment"

@@ -53,9 +53,7 @@ def agenda_modification_delete(request, pk):
     modification = get_object_or_404(AgendaModifications, pk=pk)
     if request.method == "POST":
         modification.delete()
-        return JsonResponse({
-            "status": 200
-        })
+        return JsonResponse({"status": 200})
     return render(
         request, "agendas/all_modifications.html", {"modifications": modification}
     )

@@ -1,18 +1,30 @@
 {% extends "home/base.html" %}
+{% load appointment_tags %}
 
 {% block content %}
-  <h1>Elegí el horario</h1>
 
-<select>
-    {% for week_dict in weeks %}
-      <optgroup label="Semana {{ week_dict.week }}">
-        <option>{{ week_dict.dates|first|date:'F j'|title }} - {{ week_dict.dates|last|date:'F j'|title }}</option>
-      </optgroup>
-    {% endfor %}
-  </select>
-  
+{% if possible_appointments %}
+    <h2>Horarios disponibles:</h2>
+    {% for date, appts in possible_appointments.items %}
+    <h3>{{ date }}</h3>
+    {% if appts %}
+        <ul>
+            {% for appt in appts %}
+                <li>{{ appt.start_time }} - {{ appt.end_time }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay horarios disponibles para esta fecha.</p>
+    {% endif %}
+{% endfor %}
+{% else %}
+    <p>No hay horarios disponibles.</p>
+{% endif %}
+
+
 
 {% endblock %}
+
 
 
 
