@@ -1,0 +1,43 @@
+.appo-custom-btn {
+    background-color: #fff!important; /* default background color */
+    color: black!important; /* default text color */
+    border-color: #C92E4F!important; /* default border color */
+}
+
+.appo-custom-btn:hover{
+    color: #fff!important; /* text color on hover */
+    border-color: #C92E4F!important; /* border color on hover */
+    background-color: #C92E4F!important; /* background color on hover */
+}
+
+.appo-custom-btn.hour-active{
+    background-color: #e15271!important; /* background color on hover */
+    color: #fff!important; /* text color on hover */
+}
+
+
+.glide-wrapper {
+    position: relative;
+  }
+
+  .glide__track {
+    margin: 0 40px; /* adjust the margin as needed */
+  }
+
+  .glide__arrow--left {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .glide__arrow--right {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  
+
+

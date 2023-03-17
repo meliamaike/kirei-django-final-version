@@ -10,21 +10,21 @@ class CategoryService(models.Model):
     EYELASHES = "EL"
     LIPS = "LP"
 
-    category = models.CharField(
-        max_length=2,
-        choices=[
-            (THREADING, "Threading"),
-            (MANICURE, "Manos"),
-            (PEDICURE, "Pies"),
-            (FACIALS, "Cuidado de la piel"),
-            (BROWS, "Cejas"),
-            (EYELASHES, "Pestañas"),
-            (LIPS, "Labios"),
-        ],
-    )
+    CATEGORY_CHOICES = [
+        (THREADING, "Threading"),
+        (MANICURE, "Manos"),
+        (PEDICURE, "Pies"),
+        (FACIALS, "Cuidado de la piel"),
+        (BROWS, "Cejas"),
+        (EYELASHES, "Pestañas"),
+        (LIPS, "Labios"),
+    ]
+
+    category = models.CharField(max_length=2, choices=CATEGORY_CHOICES)
 
     def __str__(self):
-        return " Categoria: {}".format(self.category)
+        return dict(self.CATEGORY_CHOICES)[self.category]
+
 
 
 class Service(models.Model):

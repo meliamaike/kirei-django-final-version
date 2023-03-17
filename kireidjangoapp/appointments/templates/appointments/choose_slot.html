@@ -1,30 +1,115 @@
 {% extends "home/base.html" %}
-{% load appointment_tags %}
 
 {% block content %}
 
-{% if possible_appointments %}
-    <h2>Horarios disponibles:</h2>
-    {% for date, appts in possible_appointments.items %}
-    <h3>{{ date }}</h3>
-    {% if appts %}
-        <ul>
-            {% for appt in appts %}
-                <li>{{ appt.start_time }} - {{ appt.end_time }}</li>
-            {% endfor %}
-        </ul>
+<div class="container my-5 py-4">
+    {% if possible_appointments %}
+    <form method="POST" action="{% url 'appointments:choose_slot' %}">
+        {% csrf_token %}
+        <h3>Selecciona la hora</h3>
+        <div class="row">
+            <div class="col-12">
+                {% for date, appts in possible_appointments.items %}
+                    <div class="card mb-3">
+                        <div class="card-header" role="button" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                            <h5 class="mb-0">{{ date }}</h5>
+                        </div>
+                        <div id="collapse{{ forloop.counter }}" class="collapse">
+                            <div class="card-body">
+                                {% if appts %}
+                                    <div class="btn-group-toggle" data-toggle="buttons">
+                                        {% for appt in appts %}
+                                            <label class="btn btn-primary available my-2 mx-3 appo-custom-btn" data-start-time="{{ appt.start_time }}" data-end-time="{{ appt.end_time }}">
+                                                {% with time_format="H:i" %}
+                                                    {{ appt.start_time|date:time_format }} - {{ appt.end_time|date:time_format }}
+                                                {% endwith %}
+                                            </label>
+
+                                        {% endfor %}
+
+                                    </div>
+                                {% else %}
+                                    <div class="empty-hours">*No hay horas disponibles para esta fecha.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+        
+        <input type="hidden" name="start_time" id="idInput1" class="start-time-input"/>
+        <input type="hidden" name="end_time" id="idInput2" class="end-time-input"/>
+        <a href="{ % url 'appointments:choose_week' %}" class="btn btn-danger mt-3" id="go-back-btn">Volver atrás</a>
+        <button type="submit" class="btn btn-primary mt-3" id="next-btn" disabled>Reservar cita</button>
+
+    </form>
     {% else %}
-        <p>No hay horarios disponibles para esta fecha.</p>
+        <div class="empty-hours">*No hay horas disponibles</div>
+        <a href="{ % url 'appointments:choose_week' %}" class="btn btn-danger mt-3" id="go-back-btn">Volver atrás</a>
     {% endif %}
-{% endfor %}
-{% else %}
-    <p>No hay horarios disponibles.</p>
-{% endif %}
+    
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const availableButtons = document.querySelectorAll('.appo-custom-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const cardHeaders = document.querySelectorAll('.card-header');
+        const collapseDivs = document.querySelectorAll('.collapse');
+        const inputStartTimeElement = document.getElementById('idInput1');
+        const inputEndTimeElement = document.getElementById('idInput2');
+        let inputStartTime, inputEndTime, activeButtons;
+                
+      
+       availableButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                
+                this.classList.toggle('hour-active')
 
 
+                //count active buttons
+                activeButtons = document.querySelectorAll('.appo-custom-btn.hour-active');
+                for(actBtn of activeButtons){
+                    if(actBtn !== this)actBtn.classList.remove('hour-active')
+                }
 
+                if (activeButtons.length > 0) {
+                    nextBtn.disabled = false;
+
+                    inputStartTime=this.getAttribute('data-start-time');
+                    inputEndTime=this.getAttribute('data-end-time');
+                    inputStartTimeElement.value = inputStartTime;
+                    inputEndTimeElement.value = inputEndTime;
+                } else {
+                    nextBtn.disabled = true;
+                    inputStartTimeElement.value = '';
+                    inputEndTimeElement.value = '';
+                }
+            });
+        });
+        /*collapseDivs.forEach(function(div) {
+            div.classList.add('collapsed');
+        });*/
+    
+        /*cardHeaders.forEach(function(header) {
+            header.addEventListener('click', function() {
+                for(const ch of cardHeaders) {
+                    if(ch !== this) {
+                        console.log('hola');
+                        ch.classList.toggle('collapsed');
+                        var collapseDiv = ch.nextElementSibling;
+                        collapseDiv.classList.toggle('collapsed');
+                    }
+                }
+                var collapseDiv = this.nextElementSibling;
+                collapseDiv.classList.toggle('collapsed');
+            });
+        });*/
+    });
+    
+    
+</script>
 {% endblock %}
-
-
-
-

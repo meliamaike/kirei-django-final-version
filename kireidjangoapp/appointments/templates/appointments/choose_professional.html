@@ -1,22 +1,42 @@
-<!-- choose_professional.html -->
 {% extends 'home/base.html' %}
 
 {% block content %}
-<h1>Choose a Professional</h1>
-<h2>{{ service.service }}</h2>
-<p>{{ service.category }}</p>
-<p>{{ service.description }}</p>
-<p>{{ service.duration }}</p>
-<p>{{ service.price }}</p>
-
-<form method="post">
-  {% csrf_token %}
-  <label for="professional">Select a Professional:</label>
-  <select name="professional" id="professional">
-    {% for professional in professionals %}
-      <option value="{{ professional.id }}">{{ professional.professional }}</option>
-    {% endfor %}
-  </select>
-  <button type="submit">Choose Professional</button>
-</form>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 pt-5 my-5">
+      <div class="card">
+        <div class="card-body">
+          <p class="card-title">Servicio elegido:</p>
+          <h5 class="card-subtitle mb-2 text-muted">{{ service.service }}</h5>
+          <p class="card-text"><strong>Categoría:</strong> {{ service.category }}</p>
+          <p class="card-text"><strong>Descripción:</strong> {{ service.description }}</p>
+          <div class="d-flex justify-content-between align-items-center my-3">
+            <p class="m-0"><strong>Duración:</strong> {{ service.duration }} mins</p>
+            <p class="m-0"><strong>Precio:</strong> ${{ service.price }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 pt-5 my-5">
+      <div class="card">
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <h5 class="card-title">Elige al profesional:</h5>
+              <select name="professional" id="professional" class="form-control form-control-sm">
+                {% for professional in professionals %}
+                <option value="{{ professional.id }}">{{ professional.professional }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary">Continuar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

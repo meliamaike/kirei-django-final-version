@@ -1,24 +1,96 @@
-<!-- choose_service.html -->
 {% extends 'home/base.html' %}
 
 {% block content %}
 
-<ul>
-    {% for service in services %}
-      <li>
-        <h2>{{ service.service }}</h2>
-        <p>{{ service.category }}</p>
-        <p>{{ service.description }}</p>
-        <p>{{ service.duration }}</p>
-        <p>{{ service.price }}</p>
-        <form method="POST" action="{% url 'appointments:choose_service' %}">
-          {% csrf_token %}
-          <input type="hidden" name="service" value="{{ service.id }}">
-          <button type="submit">Choose Service</button>
-        </form>
-      </li>
-    {% endfor %}
-    </ul>
-  
-{% endblock %}
+<div class="glide container mt-5 pt-5">
+  <div class="row">
+    <div class="glide-wrapper">
+      <div class="glide__track" data-glide-el="track">
+        <ul class="glide__slides">
+          {% for category in categories %}
+          <li class="glide__slide">
+            <button class="btn btn-primary btn-block mb-2" id="{{ category.id }}" data-concept="{{ category}}">{{ category }}</button>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="glide__arrows" data-glide-el="controls">
+        <button class="glide__arrow glide__arrow--left btn btn-light" data-glide-dir="<"><i class="fa fa-arrow-left"></i></button>
+        <button class="glide__arrow glide__arrow--right btn btn-light" data-glide-dir=">"><i class="fa fa-arrow-right"></i></button>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div id="services">
+        {% for service in services %}
+        <div class="service mb-3" style="display: none" data-concept="{{ service.category }}">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">{{ service.service }}</h3>
+              <p class="card-text">{{ service.description }}</p>
+              <p class="card-text"><strong>Duration:</strong> {{ service.duration }}</p>
+              <p class="card-text"><strong>Price:</strong> {{ service.price }}</p>
+              <form method="POST" action="{% url 'appointments:choose_service' %}">
+                {% csrf_token %}
+                <input type="hidden" name="service" value="{{ service.id }}">
+                <button type="submit" class="btn btn-primary">Agregar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
 
+<script>
+  
+  const services = document.querySelectorAll('.service');
+    // function to show services based on selected category
+  function showServices(categoryId) {
+    const category = document.getElementById(categoryId);
+    const concept = category.getAttribute("data-concept");
+    services.forEach(function(service) {
+      if (service.getAttribute('data-concept') === concept) {
+        service.style.display = 'block';
+      } else {
+        service.style.display = 'none';
+      }
+    });
+  }
+  let button;
+  // generate event listeners for each category button
+  {% for category in categories %}
+    button = document.getElementById("{{ category.id }}");
+    button.addEventListener("click", function() {
+      showServices(this.id);
+    });
+  {% endfor %}
+
+  const glide = new Glide('.glide', {
+    type: 'carousel',
+    focusAt:'center',
+    perView: 3,
+    gap: 60,
+    peek: 60,
+    breakpoints: {
+      768: {
+        perView: 3,
+        gap: 40,
+        peek: 40
+      },
+      480: {
+        perView: 1,
+        gap: 40,
+        peek: 40
+      }
+    }
+  });
+  
+  glide.mount();
+  
+
+  
+</script>
+
+{% endblock %}
