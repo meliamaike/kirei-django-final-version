@@ -3,21 +3,27 @@
 {% block content %}
 
 <div class="glide container mt-5 pt-5">
-  <div class="row">
-    <div class="glide-wrapper">
-      <div class="glide__track" data-glide-el="track">
-        <ul class="glide__slides">
-          {% for category in categories %}
-          <li class="glide__slide">
-            <button class="btn btn-primary btn-block mb-2" id="{{ category.id }}" data-concept="{{ category}}">{{ category }}</button>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="glide__arrows" data-glide-el="controls">
-        <button class="glide__arrow glide__arrow--left btn btn-light" data-glide-dir="<"><i class="fa fa-arrow-left"></i></button>
-        <button class="glide__arrow glide__arrow--right btn btn-light" data-glide-dir=">"><i class="fa fa-arrow-right"></i></button>
-      </div>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title m-4">Elegí un servicio:</h5>
+        <div class="row">
+          <div class="glide-wrapper">
+            <div class="glide__track" data-glide-el="track">
+              <ul class="glide__slides">
+                {% for category in categories %}
+                <li class="glide__slide">
+                  <button class="btn btn-primary btn-block mb-2" id="{{ category.id }}" data-concept="{{ category}}">{{ category }}</button>
+
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="glide__arrows" data-glide-el="controls">
+              <button class="glide__arrow glide__arrow--left btn btn-light" data-glide-dir="<"><i class="fa fa-arrow-left"></i></button>
+              <button class="glide__arrow glide__arrow--right btn btn-light" data-glide-dir=">"><i class="fa fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
     </div>
     <div class="col-md-12">
       <div id="services">
@@ -41,9 +47,11 @@
       </div>
     </div>
   </div>
+  </div>
 </div>
 
 <script>
+
   
   const services = document.querySelectorAll('.service');
     // function to show services based on selected category
@@ -88,9 +96,14 @@
   });
   
   glide.mount();
-  
 
-  
+
+  /*window.onload = function() {
+    showServices(2); //2 is the Id for Manos
+  }*/
+   
+       
+
 </script>
 
 {% endblock %}

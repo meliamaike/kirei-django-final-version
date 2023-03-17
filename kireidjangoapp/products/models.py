@@ -23,3 +23,6 @@ class Product(models.Model):
 
     def is_in_stock(self):
         return self.stock > 0
+    
+    def get_type(self):
+        return 'Product'

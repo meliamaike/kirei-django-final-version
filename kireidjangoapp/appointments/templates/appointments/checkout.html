@@ -2,25 +2,36 @@
 {% load static %}
 
 {% block content %}
+    
   <div class="container">
     <h1>Checkout</h1>
-
     <div class="row">
-      <div class="col-md-6">
-        <h2>Detalles de la cita</h2>
-        <p>Profesional: {{ professional }}</p>
-        <p>Servicio: {{ service }}</p>
-        <p>Fecha y hora: {{ start_time }} horas</p>
+      <div class="col-md-6 pt-5 my-5">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Detalles de la cita:</h5>
+            <p class="card-text"><strong>Profesional:</strong> {{ professional }}</p>
+            <p class="card-text"><strong>Servicio:</strong> {{ service }}</p>
+            <p class="card-text"><strong>Fecha y hora:</strong> {{ start_time }} horas</p>
+          </div>
+        </div>
       </div>
-
-      <div class="col-md-6">
-        <h2>Detalles de pago</h2>
-        <form method="post">
-          {% csrf_token %}
-          {{ form.as_p }}
-
-          <button type="submit" class="btn btn-primary">Pagar</button>
-        </form>
+      <div class="col-md-6 pt-5 my-5">
+        <div class="card">
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <h5 class="card-title">Detalles de pago</h5>
+                  {% csrf_token %}
+                  {{ form.as_p }}
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">Pagar</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>

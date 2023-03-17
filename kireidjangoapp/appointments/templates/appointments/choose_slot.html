@@ -41,19 +41,77 @@
         
         <input type="hidden" name="start_time" id="idInput1" class="start-time-input"/>
         <input type="hidden" name="end_time" id="idInput2" class="end-time-input"/>
-        <a href="{ % url 'appointments:choose_week' %}" class="btn btn-danger mt-3" id="go-back-btn">Volver atrás</a>
+        <a href="{% url 'appointments:calendar' %}" class="btn btn-danger mt-3" id="go-back-btn">Volver atrás</a>
         <button type="submit" class="btn btn-primary mt-3" id="next-btn" disabled>Reservar cita</button>
 
     </form>
     {% else %}
-        <div class="empty-hours">*No hay horas disponibles</div>
-        <a href="{ % url 'appointments:choose_week' %}" class="btn btn-danger mt-3" id="go-back-btn">Volver atrás</a>
-    {% endif %}
+        <div class="empty-hours">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="empty-hours">
+                        <h5 class="mb-0">*No hay horas disponibles para esta fecha.</h5></div>
+                </div>
+            </div>
+        </div>
+        <a href="{% url 'appointments:calendar' %}" class="btn btn-danger mt-3" id="go-back-btn">Volver atrás</a>
+        {% endif %}
     
 
 </div>
-
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const availableButtons = document.querySelectorAll('.appo-custom-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const cardHeaders = document.querySelectorAll('.card-header');
+        const collapseDivs = document.querySelectorAll('.collapse');
+        const inputStartTimeElement = document.getElementById('idInput1');
+        const inputEndTimeElement = document.getElementById('idInput2');
+        let inputStartTime, inputEndTime, activeButtons;
+                
+        availableButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                
+                this.classList.toggle('hour-active')
+
+
+                //count active buttons
+                activeButtons = document.querySelectorAll('.appo-custom-btn.hour-active');
+                for(actBtn of activeButtons){
+                    if(actBtn !== this)actBtn.classList.remove('hour-active')
+                }
+
+                if (activeButtons.length > 0) {
+                    nextBtn.disabled = false;
+
+                    inputStartTime=this.getAttribute('data-start-time');
+                    inputEndTime=this.getAttribute('data-end-time');
+                    inputStartTimeElement.value = inputStartTime;
+                    inputEndTimeElement.value = inputEndTime;
+                } else {
+                    nextBtn.disabled = true;
+                    inputStartTimeElement.value = '';
+                    inputEndTimeElement.value = '';
+
+                    // add "show" class to the corresponding collapse div
+                    const parentCollapse = this.closest('.collapse');
+                    if (parentCollapse) {
+                        parentCollapse.classList.add('show');
+                    }
+                }
+            });
+        });
+
+        // show the collapse div if no buttons are active
+        if (document.querySelectorAll('.appo-custom-btn.hour-active').length === 0) {
+            collapseDivs.forEach(function(collapse) {
+                collapse.classList.add('show');
+            });
+        }
+    });
+</script>
+
+{% comment %} <script>
     document.addEventListener('DOMContentLoaded', function() {
         const availableButtons = document.querySelectorAll('.appo-custom-btn');
         const nextBtn = document.getElementById('next-btn');
@@ -90,26 +148,8 @@
                 }
             });
         });
-        /*collapseDivs.forEach(function(div) {
-            div.classList.add('collapsed');
-        });*/
-    
-        /*cardHeaders.forEach(function(header) {
-            header.addEventListener('click', function() {
-                for(const ch of cardHeaders) {
-                    if(ch !== this) {
-                        console.log('hola');
-                        ch.classList.toggle('collapsed');
-                        var collapseDiv = ch.nextElementSibling;
-                        collapseDiv.classList.toggle('collapsed');
-                    }
-                }
-                var collapseDiv = this.nextElementSibling;
-                collapseDiv.classList.toggle('collapsed');
-            });
-        });*/
     });
     
     
-</script>
+</script> {% endcomment %}
 {% endblock %}

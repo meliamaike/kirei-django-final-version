@@ -26,7 +26,6 @@ class CategoryService(models.Model):
         return dict(self.CATEGORY_CHOICES)[self.category]
 
 
-
 class Service(models.Model):
     service = models.CharField(max_length=200)
     category = models.ForeignKey(CategoryService, on_delete=models.SET_NULL, null=True)
@@ -49,6 +48,8 @@ class Service(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
-        return "Servicio: {}, Categoria{} - {} ".format(
-            self.service, self.category, self.duration
+        return "{} - {} - {} mins ".format(
+             self.category, self.service, self.duration
         )
+    def get_type(self):
+        return 'Service'        

@@ -2,61 +2,56 @@
 {% load appointment_tags %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-12 pt-5 my-5">
-      <div id="calendar"></div>
+<div class="container pt-5 my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <h4 class="card-title m-4">Elegí el día</h4>
+        <div class="card-body">
+          <div id="calendar"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/es.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    var today = new Date();
     var calendarEl = document.getElementById('calendar');
-
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        headerToolbar: {
-            start: 'prev,next today',
-            center: 'title',
-            end: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        initialView: 'dayGridMonth',
-        editable: false,
-        events: 'booking/calendar/',
-        dateClick: function(info) {
-            window.location.href = '/booking/slot/?date=' + info.dateStr;
-        }
+      headerToolbar: {
+        start: '',
+        center: 'title',
+        end: 'prev,next today'
+      },
+      buttonText: {
+        prev: '<',
+        next: '>',
+        today: 'Hoy',
+        month: 'Mes',
+        week: 'Semana',
+        day: 'Día',
+        list: 'Agenda'
+      },
+      hiddenDays: [0], // Exclude only 0 = Sunday
+      initialView: 'dayGridMonth',
+      editable: false,
+      events: 'booking/calendar/',
+      dateClick: function(info) {
+        window.location.href = '/booking/slot/?date=' + info.dateStr;
+      },
+      // Set locale to Spanish
+      locale: 'es',
+      // Disable dates before today
+      validRange: {
+        start: today
+      }
     });
 
     calendar.render();
-});
-
-  </script>
-
-
-  {% endblock %}
-
-{% comment %} <h1>Elegí el horario</h1>
-    {% for week in weeks %}
-    <div>
-        <button class="week-link" data-week-start-date="{{ week.dates.0 }}">{{ week.dates.0|format_date }} - {{ week.dates|last|format_date }}</button>
-    </div>
-    {% endfor %}
-
-
-    <script>
-    
-    document.addEventListener('DOMContentLoaded', function() {
-      const weekLinks = document.querySelectorAll('.week-link');
-      weekLinks.forEach(function(link) {
-        link.addEventListener('click', function(e) {
-          e.preventDefault();
-          const weekStartDate = this.dataset.weekStartDate;
-          const url = "/booking/slot/?week_start_day="+weekStartDate;
-          window.location.href = url;
-        });
-      });
-    });
-  </script>  {% endcomment %}
+  });
+</script>
+{% endblock %}
