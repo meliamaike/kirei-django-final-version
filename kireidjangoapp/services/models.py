@@ -48,8 +48,7 @@ class Service(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
-        return "{} - {} - {} mins ".format(
-             self.category, self.service, self.duration
-        )
+        return "{} - {} - {} mins ".format(self.category, self.service, self.duration)
+
     def get_type(self):
-        return 'Service'        
+        return "Service"

@@ -7,7 +7,6 @@ from django.urls import resolve
 
 
 def product_catalog_view(request):
-    print("Request: ", request.method)
     all_products = Product.objects.filter(is_available=True)
     categories = Product.objects.values("category").distinct()
     selected_category = request.GET.get("category")

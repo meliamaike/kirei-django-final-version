@@ -21,6 +21,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Other apps
+    "payments",
     "cart",
     "crispy_forms",
     "crispy_bootstrap4",
@@ -32,7 +33,7 @@ INSTALLED_APPS = [
     "home.apps.HomeConfig",
     "invoices.apps.InvoicesConfig",
     "orders.apps.OrdersConfig",
-    "payments.apps.PaymentsConfig",
+    "my_payments.apps.MypaymentsConfig",
     "products.apps.ProductsConfig",
     "professionals.apps.ProfessionalsConfig",
     "services.apps.ServicesConfig",
@@ -182,3 +183,40 @@ ACCOUNT_FORMS = {
 # DJANGO-SHOPPING-CART
 
 CART_SESSION_ID = "cart"
+
+# DJANGO-PAYMENTS
+
+# This can be a string or callable, and should return a base host that
+# will be used when receiving callbacks and notifications from payment
+# providers.
+#
+# Keep in mind that if you use `localhost`, external servers won't be
+# able to reach you for webhook notifications.
+PAYMENT_HOST = 'localhost:8000'
+
+PAYMENT_VARIANTS = {
+    'mercadopago': ('payments.mercadopago.MercadoPagoProvider', {
+        'access_token': 'YOUR_ACCESS_TOKEN',
+        'sandbox': DEBUG,
+    }),
+    'dummy': ('payments.dummy.DummyProvider', {}),
+    'cash': ('payments.offline.OfflineProvider', {}),
+}
+
+
+
+# Whether to use TLS (HTTPS). If false, will use plain-text HTTP.
+# Defaults to ``not settings.DEBUG``.
+PAYMENT_USES_SSL = False
+
+#This tells django-payments to use your Payment model instead of its default model.
+PAYMENT_MODEL = 'payment_processing.Payment'
+
+#using the Stripe payment processor and providing our public and secret API keys, 
+# as well as the currency we want to use for payments.
+PAYMENT_PROCESSOR = 'payments.stripe.StripeProvider'
+PAYMENT_PROCESSOR_SETTINGS = {
+    'public_key': 'YOUR_STRIPE_PUBLIC_KEY',
+    'secret_key': 'YOUR_STRIPE_SECRET_KEY',
+    'currency': 'USD',
+}

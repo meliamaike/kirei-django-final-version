@@ -22,14 +22,24 @@
             <form method="post">
               {% csrf_token %}
               <div class="form-group">
-                <h5 class="card-title">Detalles de pago</h5>
-                  {% csrf_token %}
-                  {{ form.as_p }}
+                  <h5 class="card-title">Medios de pago</h5>
+                  <div class="form-check">
+                      <input class="form-check-input" type="radio" name="payment_method" value="mercadopago" id="paymentMethod1" required>
+                      <label class="form-check-label" for="paymentMethod1">
+                          MercadoPago
+                      </label>
+                  </div>
+                  <div class="form-check">
+                      <input class="form-check-input" type="radio" name="payment_method" value="cash" id="paymentMethod2" required>
+                      <label class="form-check-label" for="paymentMethod2">
+                          Efectivo
+                      </label>
+                  </div>
               </div>
               <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Pagar</button>
+                  <button type="submit" class="btn btn-primary">Pagar</button>
               </div>
-            </form>
+          </form>          
           </div>
         </div>
       </div>
