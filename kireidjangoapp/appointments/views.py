@@ -115,62 +115,6 @@ class ChooseSlotView(View):
 
 
 
-# def choose_slot(request):
-#     if request.method == "GET":
-#         date_str = request.GET.get("date")
-#         from datetime import datetime
-
-#         date_slot = datetime.strptime(date_str, "%Y-%m-%d").date()
-
-#         professional_id = request.session.get("professional_id")
-
-#         agenda = Agenda.objects.get(professional_id=professional_id)
-
-#         possible_appointments = defaultdict(list)
-        
-#         # Brings the time slots
-#         slots = agenda.get_time_slots(date_slot,agenda)        
-
-#         for slot in slots:
-
-#             start_time = slot.start_time
-#             end_time = slot.end_time
-#             # mod_start_time = str(start_time)[:-3]
-#             # mod_end_time = str(end_time)[:-3]
-
-#             # Combine the current day with the start_time of the time slot
-#             start_datetime = datetime.combine(date_slot, start_time)
-#             end_datetime = datetime.combine(date_slot, end_time)
-
-#             if not Appointment.objects.filter(
-#                 professional=agenda.professional,
-#                 appointment_slot__start_time__lte=end_datetime,
-#                 appointment_slot__end_time__gte=start_datetime,
-#             ).exists():
-#                 possible_appointments[date_slot].append(
-#                     {
-#                         "start_time": start_datetime,
-#                         "end_time": end_datetime,
-#                     }
-#                 )
-        
-#     if request.method == "POST":
-#         start_time = request.POST.get("start_time")
-#         end_time = request.POST.get("end_time")
-#         request.session["start_time"] = start_time
-#         request.session["end_time"] = end_time
-#         return redirect("appointments:checkout")
-
-#     return render(
-#         request,
-#         "appointments/choose_slot.html",
-#         {
-#             "possible_appointments": dict(possible_appointments),
-#             "date": date_slot,
-#         },
-#     )
-
-
 # def checkout(request):
 #     professional_id = request.session.get("professional_id")
 #     service_id = request.session.get("service_id")
