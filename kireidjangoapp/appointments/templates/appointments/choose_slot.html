@@ -23,6 +23,7 @@
                                                 {% with time_format="H:i" %}
                                                     {{ appt.start_time|date:time_format }} - {{ appt.end_time|date:time_format }}
                                                 {% endwith %}
+
                                             </label>
 
                                         {% endfor %}
@@ -111,45 +112,5 @@
     });
 </script>
 
-{% comment %} <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const availableButtons = document.querySelectorAll('.appo-custom-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const cardHeaders = document.querySelectorAll('.card-header');
-        const collapseDivs = document.querySelectorAll('.collapse');
-        const inputStartTimeElement = document.getElementById('idInput1');
-        const inputEndTimeElement = document.getElementById('idInput2');
-        let inputStartTime, inputEndTime, activeButtons;
-                
-      
-       availableButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                
-                this.classList.toggle('hour-active')
 
-
-                //count active buttons
-                activeButtons = document.querySelectorAll('.appo-custom-btn.hour-active');
-                for(actBtn of activeButtons){
-                    if(actBtn !== this)actBtn.classList.remove('hour-active')
-                }
-
-                if (activeButtons.length > 0) {
-                    nextBtn.disabled = false;
-
-                    inputStartTime=this.getAttribute('data-start-time');
-                    inputEndTime=this.getAttribute('data-end-time');
-                    inputStartTimeElement.value = inputStartTime;
-                    inputEndTimeElement.value = inputEndTime;
-                } else {
-                    nextBtn.disabled = true;
-                    inputStartTimeElement.value = '';
-                    inputEndTimeElement.value = '';
-                }
-            });
-        });
-    });
-    
-    
-</script> {% endcomment %}
 {% endblock %}

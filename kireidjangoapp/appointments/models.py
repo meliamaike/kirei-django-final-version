@@ -23,7 +23,7 @@ class AppointmentSlot(models.Model):
 
 
 class Appointment(models.Model):
-    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
+    # shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     professional = models.ForeignKey(Professional, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)

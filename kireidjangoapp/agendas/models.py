@@ -118,48 +118,6 @@ class Agenda(models.Model):
 
         return start_time, end_time
 
-    # def get_time_slots(self, date_slot, agenda):
-    #     start_time = datetime.strptime(self.start_time, "%H:%M").time()
-    #     end_time = datetime.strptime(self.end_time, "%H:%M").time()
-    #     start_datetime = timezone.make_aware(datetime.combine(date_slot, start_time))
-    #     end_datetime = timezone.make_aware(datetime.combine(date_slot, end_time))
-    #     slot_duration = timedelta(minutes=30)
-    #     appointment_slots = []
-        
-    #     # Check if there are modifications for this day
-    #     modifications = AgendaModifications.objects.filter(
-    #         date=date_slot, 
-    #         agenda=agenda,
-    #     )
-
-    #     if modifications.filter(available = True).exists():
-    #         # Use the modified start and end times for this day
-    #         modification = modifications.first()
-    #         start_time = datetime.strptime(modification.start_time, "%H:%M").time()
-    #         end_time = datetime.strptime(modification.end_time, "%H:%M").time()
-    #         start_datetime = timezone.make_aware(datetime.combine(date_slot, start_time))
-    #         end_datetime = timezone.make_aware(datetime.combine(date_slot, end_time))
-    #     elif modifications.filter(available=False).exists():
-    #         return appointment_slots
-
-    #     # Loop through each time slot on this day
-    #     while start_datetime < end_datetime:
-    #         slot_end_datetime = start_datetime + slot_duration
-    #         slot = AppointmentSlot(
-    #             agenda=self,
-    #             start_time=start_datetime.time(),
-    #             end_time=slot_end_datetime.time(),
-    #             booked=False,
-    #         )
-    #         slot.save()
-
-    #         appointment_slots.append(slot)
-
-    #         start_datetime += slot_duration
-
-    #     return appointment_slots
-
-
 
 class AgendaModifications(models.Model):
     agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE)
