@@ -75,6 +75,7 @@ class Agenda(models.Model):
     def get_time_slots(self, date_slot, agenda):
         start_time, end_time = self.get_start_and_end_time(date_slot, agenda)
 
+        # If is not available that day, return [] time slots
         if start_time is None or end_time is None:
             return []
 

@@ -21,7 +21,7 @@
                                         {% for appt in appts %}
                                             <label class="btn btn-primary available my-2 mx-3 appo-custom-btn" data-start-time="{{ appt.start_time }}" data-end-time="{{ appt.end_time }}">
                                                 {% with time_format="H:i" %}
-                                                    {{ appt.start_time|date:time_format }} - {{ appt.end_time|date:time_format }}
+                                                    {{ appt.start_time|date:time_format }}
                                                 {% endwith %}
 
                                             </label>

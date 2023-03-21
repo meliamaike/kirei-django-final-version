@@ -3,10 +3,15 @@ from django.urls import reverse
 from orders.models import Order
 
 from payments.models import BasePayment, PurchasedItem
+from appointments.models import Appointment
 
 
 class MyPayment(BasePayment):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, null=True)
+    payment_method = models.CharField(max_length=30)
+    document_number = models.CharField(max_length=30)
+    area_code = models.CharField(max_length=5)
 
     def get_failure_url(self):
         """
@@ -30,7 +35,7 @@ class MyPayment(BasePayment):
                 name=item.product.name,
                 quantity=item.quantity,
                 price=item.product.price,
-                currency="USD",
+                currency="ARS",
             )
             items.append(purchased_item)
         return items

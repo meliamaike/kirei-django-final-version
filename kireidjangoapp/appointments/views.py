@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from math import ceil
+from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.views import View
 from appointments.models import Appointment, AppointmentSlot
-from django.shortcuts import render, get_object_or_404, redirect
 from services.models import Service, CategoryService
 from professionals.models import Professional
+from customers.models import Customer
 from cart.cart import Cart
 from agendas.models import Agenda
 from my_payments.models import MyPayment
@@ -12,6 +13,10 @@ from collections import defaultdict
 from django.contrib import messages
 from django.views.decorators.http import require_GET
 from datetime import datetime
+from payments.models import PaymentStatus
+from urllib.parse import urlencode
+from django.contrib import messages
+from django.http import HttpResponseBadRequest
 
 
 def choose_service(request):
@@ -63,14 +68,13 @@ def calendar(request):
 
 
 class ChooseSlotView(View):
-    
     def get(self, request):
         date_str = request.GET.get("date")
         date_slot = self.parsing_date(date_str)
         professional_id = request.session.get("professional_id")
         agenda = Agenda.objects.get(professional_id=professional_id)
         possible_appointments = self.get_possible_appointments(agenda, date_slot)
-        
+
         return render(
             request,
             "appointments/choose_slot.html",
@@ -80,77 +84,70 @@ class ChooseSlotView(View):
             },
         )
 
-    
+    def parsing_date(self, date_str):
+        return datetime.strptime(date_str, "%Y-%m-%d").date()
 
-    def parsing_time(self,time_str):
+    def parsing_time(self, time_str):
         time_str_parts = time_str.split()
-        
+
         if len(time_str_parts) == 8:
-            
             day, _, month, _, year, _, _, time = time_str_parts
-            hour, minute = time.split(':')
-        
+            hour, minute = time.split(":")
+
             months = {
-                'enero': '01',
-                'febrero': '02',
-                'marzo': '03',
-                'abril': '04',
-                'mayo': '05',
-                'junio': '06',
-                'julio': '07',
-                'agosto': '08',
-                'septiembre': '09',
-                'octubre': '10',
-                'noviembre': '11',
-                'diciembre': '12'
+                "enero": "01",
+                "febrero": "02",
+                "marzo": "03",
+                "abril": "04",
+                "mayo": "05",
+                "junio": "06",
+                "julio": "07",
+                "agosto": "08",
+                "septiembre": "09",
+                "octubre": "10",
+                "noviembre": "11",
+                "diciembre": "12",
             }
 
             # Convert the month name to a number
             month_number = months[month.lower()]
 
             # Construct datetime object
-            date_str = f'{day} {month_number} {year} {time}'
-            date_obj = datetime.strptime(date_str, '%d %m %Y %H:%M')
+            date_str = f"{day} {month_number} {year} {time}"
+            date_obj = datetime.strptime(date_str, "%d %m %Y %H:%M")
 
         return date_obj
 
     def post(self, request):
-
         professional_id = request.session.get("professional_id")
         agenda = Agenda.objects.get(professional_id=professional_id)
 
         start_time_str = request.POST.get("start_time")
-        request.session['start_date_time'] = start_time_str
+        request.session["start_date_time"] = start_time_str
         end_time_str = request.POST.get("end_time")
 
         start_time_obj = self.parsing_time(start_time_str)
         end_time_obj = self.parsing_time(end_time_str)
 
-        print("TIPO",type(start_time_obj))
-
-        request.session['appointment_date'] = str(start_time_obj)
-
+        request.session["appointment_date"] = str(start_time_obj)
 
         # get the appointment slot object based on start and end times
         slot = AppointmentSlot.objects.filter(
             agenda=agenda.id,
             start_time=start_time_obj.time(),
             end_time=end_time_obj.time(),
-            booked=False
+            booked=False,
         ).first()
-
 
         request.session["slot_id"] = slot.id
 
         return redirect("appointments:checkout")
 
-    def parsing_date(self, date_str):
-        return datetime.strptime(date_str, "%Y-%m-%d").date()
-
     def get_possible_appointments(self, agenda, date_slot):
-        
         possible_appointments = defaultdict(list)
+
         slots = agenda.get_time_slots(date_slot, agenda)
+
         for slot in slots:
             start_time = slot.start_time
             end_time = slot.end_time
@@ -159,7 +156,7 @@ class ChooseSlotView(View):
             end_datetime = datetime.combine(date_slot, end_time)
 
             if not self.has_conflicting_appointments(
-                agenda, start_datetime, end_datetime
+                date_slot, agenda, start_datetime, end_datetime
             ):
                 possible_appointments[date_slot].append(
                     {
@@ -169,103 +166,15 @@ class ChooseSlotView(View):
                 )
         return possible_appointments
 
-    def has_conflicting_appointments(self, agenda, start_datetime, end_datetime):
+    def has_conflicting_appointments(
+        self, date_slot, agenda, start_datetime, end_datetime
+    ):
         return Appointment.objects.filter(
             professional=agenda.professional,
-            appointment_slot__start_time__lte=end_datetime,
-            appointment_slot__end_time__gte=start_datetime,
+            date=date_slot,
+            appointment_slot__start_time__lt=end_datetime,
+            appointment_slot__end_time__gt=start_datetime,
         ).exists()
-
-
-# def checkout(request):
-#     professional_id = request.session.get("professional_id")
-#     service_id = request.session.get("service_id")
-#     start_time = request.session.get("start_time")
-#     end_time = request.session.get("end_time")
-#     professional = Professional.objects.get(id=professional_id)
-#     service = Service.objects.get(id=service_id)
-
-#     if request.method == "POST":
-#         form = PaymentForm(request.POST)
-#         if form.is_valid():
-#             # Create the payment object
-#             payment = MyPayment.objects.create(
-#                 variant=form.cleaned_data['payment_method'],
-#                 description=f"Payment for appointment with {professional.name}",
-#                 currency='USD',
-#                 total=service.price,
-#                 billing_first_name=form.cleaned_data['first_name'],
-#                 billing_last_name=form.cleaned_data['last_name'],
-#                 billing_address_1=form.cleaned_data['address_1'],
-#                 billing_city=form.cleaned_data['city'],
-#                 billing_postcode=form.cleaned_data['zipcode'],
-#                 billing_country_code=form.cleaned_data['country_code'],
-#                 billing_country_area=form.cleaned_data['country_area'],
-#                 billing_email=form.cleaned_data['email'],
-#                 billing_phone=form.cleaned_data['phone'],
-#                 order=appointment
-#             )
-
-#             # Use the payment ID as the transaction ID
-#             payment.transaction_id = payment.id
-#             payment.save()
-
-#             # Charge the payment
-#             payment.change_status('pending')
-#             payment.capture()
-
-#             if payment.status == 'confirmed':
-#                 # Update the appointment status to booked
-#                 appointment = Appointment.objects.get(id=request.session.get('appointment_id'))
-#                 appointment.status = 'booked'
-#                 appointment.save()
-
-#                 # Clear the cart
-#                 cart = Cart(request)
-#                 cart.clear()
-
-#                 messages.success(request, "Su cita ha sido agendada!")
-#                 return redirect("appointments:appointment_detail", appointment_id=appointment.id)
-#             else:
-#                 # Delete the appointment if payment fails
-#                 appointment = Appointment.objects.get(id=request.session.get('appointment_id'))
-#                 appointment.delete()
-
-#                 messages.error(request, "No se pudo procesar su pago.")
-#                 return redirect("appointments:checkout")
-#     else:
-#         form = PaymentForm()
-
-#     # Create the appointment object with a "pending" status
-#     appointment = Appointment.objects.create(
-#         professional_id=request.session.get("professional_id"),
-#         service_id=request.session.get("service_id"),
-#         start_time=appointment_details["start_time"],
-#         end_time=appointment_details["end_time"],
-#         user=request.user,
-#         status='pending'
-#     )
-
-#     # Save the appointment ID in the session
-#     request.session['appointment_id'] = appointment.id
-
-#     return render(
-#         request,
-#         "appointments/checkout.html",
-#         {
-#             "form": form,
-#             "professional": professional,
-#             "service": service,
-#             "start_time": start_time,
-#             "end_time": end_time,
-#             "appointment_id": appointment.id
-#         },
-#     )
-
-from django.shortcuts import render, redirect
-from urllib.parse import urlencode
-from django.contrib import messages
-from django.http import HttpResponseBadRequest
 
 
 def checkout(request):
@@ -285,7 +194,6 @@ def checkout(request):
     service = Service.objects.get(id=service_id)
 
     slot_id = request.session.get("slot_id")
-
 
     if request.method == "POST":
         payment_method = request.POST.get("payment_method")
@@ -338,30 +246,51 @@ def checkout(request):
             )
 
         elif payment_method == "cash":
-            # Create the appointment object as before
-            appointment = Appointment.objects.create(
-                professional_id=professional_id,
-                service_id=service_id,
-                appointment_slot_id = slot_id,
-                date = parsed_appointment_date_solo,
+            # Calculate the number of slots required based on the appointment duration
+            num_slots = ceil(service.duration / 30)
 
+            current_slot_id = slot_id
+
+            customer = Customer.objects.get(id=request.user.id)
+
+            for i in range(num_slots):
+                # Create the appointment object as before
+                appointment = Appointment.objects.create(
+                    professional_id=professional_id,
+                    service_id=service_id,
+                    date=parsed_appointment_date_solo,
+                    customer=customer,
+                )
+
+                # Mark the selected appointment slot as booked
+                slot = AppointmentSlot.objects.get(id=current_slot_id)
+                appointment.appointment_slot.add(slot)
+                slot.booked = True
+                slot.save()
+
+                current_slot_id += 1
+
+            # Create the payment object with status 'waiting'
+
+            payment = MyPayment.objects.create(
+                appointment=appointment,
+                payment_method=payment_method,
+                status=PaymentStatus.WAITING,
+                currency="ARS",
+                total=service.price,
+                description=service.service,
+                billing_first_name=customer.first_name,
+                billing_last_name=customer.last_name,
+                billing_email=customer.email,
+                billing_phone=customer.phone_number,
+                document_number=customer.document_number,
+                area_code=customer.area_code,
             )
 
-            print("appo created: ", appointment)
+            print("PAGO:", payment)
+            request.session["payment_id"] = payment.id
 
-            # Create the payment object with status 'pending'
-            # payment = MyPayment.objects.create(
-            #     appointment=appointment,
-            #     amount=service.price,
-            #     payment_method=payment_method,
-            #     status=MyPayment.PENDING,
-            # )
-
-
-            messages.success(request, "Su cita ha sido agendada!")
-            return redirect(
-                "appointments:appointment_detail", appointment_id=appointment.id
-            )
+            return redirect("appointments:appointment_detail")
 
         else:
             return HttpResponseBadRequest("Error en el método de pago.")
@@ -373,19 +302,20 @@ def checkout(request):
             "professional": professional,
             "service": service,
             "start_date_time": start_date_time,
-            "end_time": end_time,
         },
     )
 
 
+def appointment_detail(request):
+    return render(request, "appointments/appointment_detail.html")
+
+
+# For my profile
 def all_appointments(request):
     appointments = Appointment.objects.all()
     return render(
         request, "appointments/all_appointment.html", {"appointments": appointments}
     )
-
-
-# def appointment_details():
 
 
 def cancel_appointment(request, pk):

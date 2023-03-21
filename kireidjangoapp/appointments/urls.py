@@ -25,4 +25,5 @@ urlpatterns = [
     path("booking/calendar/", views.calendar, name="calendar"),
     path("booking/slot/", views.ChooseSlotView.as_view(), name="choose_slot"),
     path("booking/checkout/", views.checkout, name="checkout"),
+    path("booking/detail/", views.appointment_detail, name="appointment_detail"),
 ]

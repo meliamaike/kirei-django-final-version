@@ -4,8 +4,7 @@ from django.forms import ValidationError
 from services.models import Service
 from professionals.models import Professional
 from shoppingcarts.models import ShoppingCart
-
-# from agendas.models import Agenda
+from customers.models import Customer
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -24,11 +23,12 @@ class AppointmentSlot(models.Model):
 
 class Appointment(models.Model):
     # shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     professional = models.ForeignKey(Professional, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)
-    appointment_slot = models.OneToOneField(
-        AppointmentSlot, on_delete=models.CASCADE, related_name="appointment"
+    appointment_slot = models.ManyToManyField(
+        AppointmentSlot, related_name="appointment"
     )
 
     @property
