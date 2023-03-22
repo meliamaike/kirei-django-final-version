@@ -46,7 +46,7 @@ def choose_professional(request):
     if not service_id:
         messages.error(request, "Elegí un servicio primero!")
         return redirect("appointments:choose_service")
-
+    
     service = get_object_or_404(Service, pk=service_id)
     cart = Cart(request)
 
@@ -73,7 +73,7 @@ class ChooseSlotView(View):
         date_slot = self.parsing_date(date_str)
         professional_id = request.session.get("professional_id")
         agenda = Agenda.objects.get(professional_id=professional_id)
-        possible_appointments = self.get_possible_appointments(agenda, date_slot)
+        possible_appointments = self.get_possible_appointments(request, agenda, date_slot)
 
         return render(
             request,
@@ -143,10 +143,15 @@ class ChooseSlotView(View):
 
         return redirect("appointments:checkout")
 
-    def get_possible_appointments(self, agenda, date_slot):
+    def get_possible_appointments(self, request,agenda, date_slot):
+        
         possible_appointments = defaultdict(list)
 
-        slots = agenda.get_time_slots(date_slot, agenda)
+        service_id = request.session.get("service_id")
+        service = get_object_or_404(Service, pk=service_id)
+        service_duration = service.duration
+
+        slots = agenda.get_time_slots(date_slot, agenda, service_duration)
 
         for slot in slots:
             start_time = slot.start_time
@@ -165,6 +170,7 @@ class ChooseSlotView(View):
                     }
                 )
         return possible_appointments
+    
 
     def has_conflicting_appointments(
         self, date_slot, agenda, start_datetime, end_datetime

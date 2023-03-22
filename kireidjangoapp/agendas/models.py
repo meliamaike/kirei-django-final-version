@@ -72,25 +72,28 @@ class Agenda(models.Model):
         ],
     )
 
-    def get_time_slots(self, date_slot, agenda):
+    def get_time_slots(self, date_slot, agenda, service_duration):
         start_time, end_time = self.get_start_and_end_time(date_slot, agenda)
 
         # If is not available that day, return [] time slots
         if start_time is None or end_time is None:
             return []
-
+        
         start_datetime = timezone.make_aware(datetime.combine(date_slot, start_time))
         end_datetime = timezone.make_aware(datetime.combine(date_slot, end_time))
         slot_duration = timedelta(minutes=30)
         appointment_slots = []
 
+        # Adjust end time based on service duration
+        duration_in_slots = service_duration // 30
+        end_datetime -= (duration_in_slots * slot_duration)
+
         # Loop through each time slot on this day
         while start_datetime < end_datetime:
-            slot_end_datetime = start_datetime + slot_duration
             slot = AppointmentSlot(
                 agenda=self,
                 start_time=start_datetime.time(),
-                end_time=slot_end_datetime.time(),
+                end_time=(start_datetime + slot_duration).time(),
                 booked=False,
             )
             slot.save()
@@ -100,7 +103,39 @@ class Agenda(models.Model):
             start_datetime += slot_duration
 
         return appointment_slots
+    
+    def get_time_slots(self, date_slot, agenda, service_duration):
+        start_time, end_time = self.get_start_and_end_time(date_slot, agenda)
 
+        # If is not available that day, return [] time slots
+        if start_time is None or end_time is None:
+            return []
+        
+        start_datetime = datetime.combine(date_slot, start_time)
+        end_datetime = datetime.combine(date_slot, end_time)
+        slot_duration = timedelta(minutes=30)
+        appointment_slots = []
+
+        # Adjust end time based on service duration
+        duration_in_slots = service_duration // 30
+        end_datetime -= (duration_in_slots * slot_duration)
+
+        # Loop through each time slot on this day
+        while start_datetime <= end_datetime:
+            slot = AppointmentSlot(
+                agenda=self,
+                start_time=start_datetime.time(),
+                end_time=(start_datetime + slot_duration).time(),
+                booked=False,
+            )
+            slot.save()
+
+            appointment_slots.append(slot)
+
+            start_datetime += slot_duration
+
+        return appointment_slots
+    
     def get_start_and_end_time(self, date_slot, agenda):
         start_time = datetime.strptime(self.start_time, "%H:%M").time()
         end_time = datetime.strptime(self.end_time, "%H:%M").time()
