@@ -1,4 +1,5 @@
 {% extends "home/base.html" %}
+{% load appointment_tags %}
 
 {% block content %}
 
@@ -18,25 +19,37 @@
                             <div class="card-body">
                                 {% if appts %}
                                     <div class="btn-group-toggle" data-toggle="buttons">
-                                        {% for appt in appts %}
-                                            <label class="btn btn-primary available my-2 mx-3 appo-custom-btn" data-start-time="{{ appt.start_time }}" data-end-time="{{ appt.end_time }}">
-                                                {% with time_format="H:i" %}
-                                                    {{ appt.start_time|date:time_format }}
-                                                {% endwith %}
-
-                                            </label>
-
-                                        {% endfor %}
-
+                                        {% with today=date.today ultimo=appts|last%}
+                                            {% if date == today %}
+                                            {% if ultimo.start_time|is_after_now  == 1%}
+                                                {% for appt in appts %}                                                      
+                                                    <label class="btn btn-primary available my-2 mx-3 appo-custom-btn" data-start-time="{{ appt.start_time }}" data-end-time="{{ appt.end_time }}">
+                                                        {% with time_format="H:i" %}
+                                                            {{ appt.start_time|date:time_format }}
+                                                        {% endwith %}
+                                                    </label>
+                                                {% endfor %}
+                                            {% else %}
+                                            <div class="empty-hours">*No hay más horarios disponibles para esta fecha.</div>
+                                            {% endif %}
+                                            {% elif date != today %} 
+                                                {% for appt in appts %}
+                                                    <label class="btn btn-primary available my-2 mx-3 appo-custom-btn" data-start-time="{{ appt.start_time }}" data-end-time="{{ appt.end_time }}">
+                                                        {% with time_format="H:i" %}
+                                                            {{ appt.start_time|date:time_format }}
+                                                        {% endwith %}
+                                                    </label>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
                                 {% else %}
-                                    <div class="empty-hours">*No hay horas disponibles para esta fecha.</div>
+                                    <div class="empty-hours">*No hay horarios disponibles para esta fecha.</div>
                                 {% endif %}
-                            </div>
+                            </div>                            
                         </div>
                     </div>
                 {% endfor %}
-                
             </div>
         </div>
         

@@ -1,5 +1,7 @@
 from django import template
 from datetime import datetime
+import pytz
+from django.utils import timezone
 
 register = template.Library()
 
@@ -28,3 +30,18 @@ def format_date(value):
 
 
 register.filter("format_date", format_date)
+
+
+@register.filter
+def is_after_now(value):
+    argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
+    current_time_argentina = timezone.now().astimezone(argentina_tz)
+
+    if value.time() > current_time_argentina.time():
+        return 1
+    else:
+        return 0
+
+    
+
+

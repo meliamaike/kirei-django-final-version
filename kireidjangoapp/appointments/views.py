@@ -46,7 +46,7 @@ def choose_professional(request):
     if not service_id:
         messages.error(request, "Elegí un servicio primero!")
         return redirect("appointments:choose_service")
-    
+
     service = get_object_or_404(Service, pk=service_id)
     cart = Cart(request)
 
@@ -73,7 +73,9 @@ class ChooseSlotView(View):
         date_slot = self.parsing_date(date_str)
         professional_id = request.session.get("professional_id")
         agenda = Agenda.objects.get(professional_id=professional_id)
-        possible_appointments = self.get_possible_appointments(request, agenda, date_slot)
+        possible_appointments = self.get_possible_appointments(
+            request, agenda, date_slot
+        )
 
         return render(
             request,
@@ -143,8 +145,7 @@ class ChooseSlotView(View):
 
         return redirect("appointments:checkout")
 
-    def get_possible_appointments(self, request,agenda, date_slot):
-        
+    def get_possible_appointments(self, request, agenda, date_slot):
         possible_appointments = defaultdict(list)
 
         service_id = request.session.get("service_id")
@@ -170,7 +171,6 @@ class ChooseSlotView(View):
                     }
                 )
         return possible_appointments
-    
 
     def has_conflicting_appointments(
         self, date_slot, agenda, start_datetime, end_datetime
@@ -293,10 +293,18 @@ def checkout(request):
                 area_code=customer.area_code,
             )
 
-            print("PAGO:", payment)
             request.session["payment_id"] = payment.id
 
-            return redirect("appointments:appointment_detail")
+            return render(
+                request,
+                "appointments/appointment_detail.html",
+                {
+                    "professional": professional,
+                    "service": service,
+                    "start_date_time": start_date_time,
+                    "appointment":appointment,
+                },
+            )
 
         else:
             return HttpResponseBadRequest("Error en el método de pago.")
