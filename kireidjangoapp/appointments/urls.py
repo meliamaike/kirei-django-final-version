@@ -13,11 +13,6 @@ urlpatterns = [
     # path("booking/cancel/<pk>", views.cancel_appointment, name="cancel_appointment"),
     path("booking/service/", views.choose_service, name="choose_service"),
     path(
-        "booking/service/add-to-cart/<int:service_id>/",
-        views.add_to_cart,
-        name="add_to_cart",
-    ),
-    path(
         "booking/professional/",
         views.choose_professional,
         name="choose_professional",
@@ -26,4 +21,6 @@ urlpatterns = [
     path("booking/slot/", views.ChooseSlotView.as_view(), name="choose_slot"),
     path("booking/checkout/", views.checkout, name="checkout"),
     path("booking/detail/", views.appointment_detail, name="appointment_detail"),
+    path("booking/success/", views.mercado_pago_success, name="mercado_pago_success"),
+    path("booking/failure/", views.mercado_pago_failure, name="mercado_pago_failure"),
 ]

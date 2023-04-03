@@ -17,6 +17,7 @@ from payments.models import PaymentStatus
 from urllib.parse import urlencode
 from django.contrib import messages
 from django.http import HttpResponseBadRequest
+import mercadopago
 
 
 def choose_service(request):
@@ -25,20 +26,12 @@ def choose_service(request):
     if request.method == "POST":
         service_id = request.POST["service"]
         request.session["service_id"] = service_id
-        # add_to_cart(request, service_id)
         return redirect("appointments:choose_professional")
     context = {
         "services": services,
         "categories": categories,
     }
     return render(request, "appointments/choose_service.html", context)
-
-
-def add_to_cart(request, service_id):
-    service = Service.objects.get(id=service_id)
-    cart = Cart(request)
-    cart.add_service(service=service)
-    return redirect("appointments:choose_professional")
 
 
 def choose_professional(request):
@@ -203,52 +196,39 @@ def checkout(request):
 
     if request.method == "POST":
         payment_method = request.POST.get("payment_method")
+        request.session["payment_method"] = payment_method
 
         if payment_method == "mercadopago":
-            # Prepare the data needed to redirect the user to the MercadoPago payment page
-            # (e.g., the order ID, the amount to be paid, the return URL, etc.)
-            # Example data for MercadoPago payment redirect
-            data = {
-                "preference_id": "<YOUR_PREFERENCE_ID>",
-                "site_id": "MCO",
-                "external_reference": "<YOUR_EXTERNAL_REFERENCE>",
-                "customer_email": "<CUSTOMER_EMAIL>",
-                "back_url": "<YOUR_BACK_URL>",
-                "notification_url": "<YOUR_NOTIFICATION_URL>",
-                "auto_return": "approved",
-                "binary_mode": "true",
+            # PROD_ACCESS_TOKEN needed
+            sdk = mercadopago.SDK(
+                ""
+            )
+
+            # Create an item in the preference
+            customer = Customer.objects.get(id=request.user.id)
+
+            preference_data = {
                 "items": [
                     {
-                        "id": "<ITEM_ID>",
-                        "title": "<ITEM_TITLE>",
-                        "description": "<ITEM_DESCRIPTION>",
-                        "quantity": "<ITEM_QUANTITY>",
-                        "unit_price": "<ITEM_UNIT_PRICE>",
-                        "currency_id": "<ITEM_CURRENCY>",
+                        "title": service.service,
+                        "quantity": 1,
+                        "unit_price": float(service.price),
+                        "currency_id": "ARS",
                     }
                 ],
-                "payer": {
-                    "name": "<CUSTOMER_NAME>",
-                    "surname": "<CUSTOMER_SURNAME>",
-                    "email": "<CUSTOMER_EMAIL>",
-                    "phone": {
-                        "area_code": "<CUSTOMER_PHONE_AREA_CODE>",
-                        "number": "<CUSTOMER_PHONE_NUMBER>",
-                    },
-                    "identification": {
-                        "type": "<CUSTOMER_IDENTIFICATION_TYPE>",
-                        "number": "<CUSTOMER_IDENTIFICATION_NUMBER>",
-                    },
-                    "address": {
-                        "zip_code": "<CUSTOMER_ZIP_CODE>",
-                        "street_name": "<CUSTOMER_STREET_NAME>",
-                        "street_number": "<CUSTOMER_STREET_NUMBER>",
-                    },
+                "back_urls": {
+                    "success": "http://127.0.0.1:8000/booking/success/",
+                    "failure": "http://127.0.0.1:8000/booking/failure",
                 },
+                "auto_return": "approved",
+                "binary_mode": True,
             }
-            # Redirect the user to the MercadoPago payment page
-            return redirect(
-                "https://www.mercadopago.com/checkout/v1/redirect?" + urlencode(data)
+
+            preference_response = sdk.preference().create(preference_data)
+            preference = preference_response["response"]
+
+            return render(
+                request, "appointments/mercado_pago.html", {"item_id": preference["id"]}
             )
 
         elif payment_method == "cash":
@@ -302,7 +282,7 @@ def checkout(request):
                     "professional": professional,
                     "service": service,
                     "start_date_time": start_date_time,
-                    "appointment":appointment,
+                    "appointment": appointment,
                 },
             )
 
@@ -319,6 +299,86 @@ def checkout(request):
         },
     )
 
+
+def mercado_pago_success(request):
+    professional_id = request.session.get("professional_id")
+    service_id = request.session.get("service_id")
+    start_date_time = request.session.get("start_date_time")
+
+    appointment_date = request.session.get("appointment_date")
+
+    # parse the input string into a datetime object
+    parsed_appointment_date = datetime.strptime(appointment_date, "%Y-%m-%d %H:%M:%S")
+
+    # extract the date part of the datetime object
+    parsed_appointment_date_solo = parsed_appointment_date.date()
+
+    professional = Professional.objects.get(id=professional_id)
+    service = Service.objects.get(id=service_id)
+
+    mercado_pago_payment_id = request.GET.get("payment_id")
+    merchant_order_id = request.GET.get("merchant_order_id")
+    slot_id = request.session.get("slot_id")
+    payment_method = request.session.get("payment_method")
+
+    # Calculate the number of slots required based on the appointment duration
+    num_slots = ceil(service.duration / 30)
+
+    current_slot_id = slot_id
+
+    customer = Customer.objects.get(id=request.user.id)
+
+    for i in range(num_slots):
+        # Create the appointment object as before
+        appointment = Appointment.objects.create(
+            professional_id=professional_id,
+            service_id=service_id,
+            date=parsed_appointment_date_solo,
+            customer=customer,
+        )
+
+        # Mark the selected appointment slot as booked
+        slot = AppointmentSlot.objects.get(id=current_slot_id)
+        appointment.appointment_slot.add(slot)
+        slot.booked = True
+        slot.save()
+
+        current_slot_id += 1
+
+    # Create the payment object with status 'waiting'
+
+    mypayment = MyPayment.objects.create(
+        id_mercado_pago=mercado_pago_payment_id,
+        appointment=appointment,
+        payment_method=payment_method,
+        status=PaymentStatus.CONFIRMED,
+        currency="ARS",
+        total=service.price,
+        description=service.service,
+        billing_first_name=customer.first_name,
+        billing_last_name=customer.last_name,
+        billing_email=customer.email,
+        billing_phone=customer.phone_number,
+        document_number=customer.document_number,
+        area_code=customer.area_code,
+    )
+
+    return render(
+        request,
+        "appointments/mercado_pago_success.html",
+        {
+            "payment_id": mercado_pago_payment_id,
+            "merchant_order_id": merchant_order_id,
+            "professional": professional,
+            "service": service,
+            "start_date_time": start_date_time,
+            "appointment": appointment,
+        },
+    )
+
+
+def mercado_pago_failure(request):
+    return render(request, "appointments/mercado_pago_failure.html")
 
 def appointment_detail(request):
     return render(request, "appointments/appointment_detail.html")

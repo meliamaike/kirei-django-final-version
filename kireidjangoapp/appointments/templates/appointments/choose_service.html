@@ -2,17 +2,21 @@
 
 {% block content %}
 
-<div class="glide container mt-5 pt-5">
+<div class="glide container mt-5 pt-5" style = "height:100vh !important;">
   <div class="card">
+    <div class="card-header pt-3">
+      <h4>
+        <strong>Elegí el servicio</strong>
+      </h4>
+    </div>
     <div class="card-body">
-      <h5 class="card-title m-4">Elegí un servicio:</h5>
         <div class="row">
           <div class="glide-wrapper">
             <div class="glide__track" data-glide-el="track">
               <ul class="glide__slides">
                 {% for category in categories %}
                 <li class="glide__slide">
-                  <button class="btn btn-primary btn-block mb-2" id="{{ category.id }}" data-concept="{{ category}}">{{ category }}</button>
+                  <div class="m-2 text-center" id="{{ category.id }}" data-concept="{{ category }}" style = "text-transform: uppercase; font-size: 20px;">{{ category }}</div>
                 </li>
                 {% endfor %}
               </ul>
@@ -46,15 +50,13 @@
       </div>
     </div>
   </div>
-  </div>
 </div>
 
 <script>
 
-  
   const services = document.querySelectorAll('.service');
     // function to show services based on selected category
-  function showServices(categoryId) {
+  const ss = function ss(categoryId) {
     const category = document.getElementById(categoryId);
     const concept = category.getAttribute("data-concept");
     services.forEach(function(service) {
@@ -65,14 +67,33 @@
       }
     });
   }
-  let button;
-  // generate event listeners for each category button
-  {% for category in categories %}
-    button = document.getElementById("{{ category.id }}");
-    button.addEventListener("click", function() {
-      showServices(this.id);
-    });
-  {% endfor %}
+   
+function changeBackground(concept){
+  const slides = document.querySelectorAll('.glide__slide')
+
+
+  slides.forEach(function (div) {
+
+    if (div.firstElementChild.getAttribute('data-concept') === concept) {
+      //console.log("Changing background color for element:", div.firstElementChild);
+      div.firstElementChild.style.background = "#C92E4F";
+      div.firstElementChild.style.color = "white";
+      div.firstElementChild.style.fontWeight = "bold";
+    } else {
+      //console.log("Resetting background color for element:", div.firstElementChild);
+      div.firstElementChild.style.background ="transparent";
+      div.firstElementChild.style.color = "black";
+      div.firstElementChild.style.fontWeight = "normal";
+    }
+  });
+}
+  // set the background color of the default selected category to #C92E4F when the page loads
+  const defaultCategory = document.getElementById("{{ categories.0.id }}");
+  defaultCategory.style.background = "#C92E4F";
+  defaultCategory.style.color = "white";
+  defaultCategory.style.fontWeight = "bold";
+
+
 
   const glide = new Glide('.glide', {
     type: 'carousel',
@@ -95,13 +116,44 @@
   });
   
   glide.mount();
+  const myGlides = Array.from(document.querySelectorAll('.glide__slide'))
+  myGlides.concat(Array.from(document.querySelectorAll('.glide__slide.glide__slide--clone')))
+  console.log(myGlides)
+  myGlides.forEach( g =>{
 
+    g.addEventListener("click", e =>{
+      console.log(g)
+      const concept = g.firstElementChild.getAttribute('data-concept')
+      changeBackground(concept)
+      ss(g.firstElementChild.getAttribute('id'));
+    })
+  })
 
-  /*window.onload = function() {
-    showServices(2); //2 is the Id for Manos
-  }*/
-   
-       
+// update the background color when the slide changes
+
+glide.on('run.after', function () {
+  const changeActiveSlide = document.querySelectorAll('.glide__slide.glide__slide--active');
+    ss(changeActiveSlide[0].firstElementChild.getAttribute("id"));
+  const selectedSlide = document.querySelectorAll('.glide__slide--active');
+  const concept = selectedSlide[0].firstElementChild.getAttribute('data-concept');
+  changeBackground(concept)
+});
+
+  /*let div_category;
+  // generate event listeners for each category div_category
+  {% for category in categories %}
+    
+    div_category = document.getElementById("{{ category.id }}");
+    div_category.addEventListener("click", function(e) {
+      ss(this.id);
+      //console.log("CATEGORY: ", "{{ category.id }}")
+      const concept = e.target.getAttribute('data-concept')
+      //console.log("concept: ",concept);
+      changeBackground(concept)
+    });
+  {% endfor %}*/
+
+  ss("{{ categories.0.id }}");
 
 </script>
 

@@ -12,6 +12,7 @@ class MyPayment(BasePayment):
     payment_method = models.CharField(max_length=30)
     document_number = models.CharField(max_length=30)
     area_code = models.CharField(max_length=5)
+    id_mercado_pago = models.CharField(max_length=30, null=True)
 
     def get_failure_url(self):
         """

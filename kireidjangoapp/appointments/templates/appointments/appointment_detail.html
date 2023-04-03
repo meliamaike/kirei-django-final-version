@@ -1,10 +1,10 @@
 {% extends "home/base.html" %}
 {% block content %}
-<div class="container mt-5 pt-5">
+<div class="container mt-5 pt-5" style="height:74vh !important;">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card p-4">
-        <h5 class="card-title mb-4 text-center"> <strong>Su cita ha sido agendada exitosamente.</strong> </h5>
+       <h5 class="card-title mb-4 text-center"> <strong>Su cita ha sido agendada exitosamente y se encuentra pendiente de pago.</strong> </h5>
             <p class="card-text"><strong>Profesional:</strong> {{ professional }}</p>
             <p class="card-text"><strong>Servicio:</strong> {{ service }}</p>
             <p class="card-text"><strong>Fecha y hora:</strong> {{ start_date_time }} horas</p>

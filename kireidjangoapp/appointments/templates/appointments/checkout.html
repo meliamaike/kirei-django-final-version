@@ -3,36 +3,37 @@
 
 {% block content %}
     
-  <div class="container">
-    <h1>Checkout</h1>
+  <div class="container" style="height:78vh !important;">
     <div class="row">
-      <div class="col-md-6 pt-5 my-5">
+      <div class="col-md-8 pt-5 my-5">
         <div class="card">
+          <h4 class="card-header pt-3">Detalles de la cita:</h4>
           <div class="card-body">
-            <h5 class="card-title">Detalles de la cita:</h5>
             <p class="card-text"><strong>Profesional:</strong> {{ professional }}</p>
             <p class="card-text"><strong>Servicio:</strong> {{ service }}</p>
             <p class="card-text"><strong>Fecha y hora:</strong> {{ start_date_time }} horas</p>
           </div>
         </div>
       </div>
-      <div class="col-md-6 pt-5 my-5">
+      <div class="col-md-4 pt-5 my-5">
         <div class="card">
+          <h4 class="card-header pt-3">
+            <strong>Elegí el medio de pago</strong>
+          </h4>
           <div class="card-body">
             <form method="post">
               {% csrf_token %}
               <div class="form-group">
-                  <h5 class="card-title">Medios de pago</h5>
                   <div class="form-check">
                       <input class="form-check-input" type="radio" name="payment_method" value="mercadopago" id="paymentMethod1" required>
                       <label class="form-check-label" for="paymentMethod1">
-                          MercadoPago
+                          MercadoPago/Tarjeta de Débito/Tarjeta de Crédito
                       </label>
                   </div>
                   <div class="form-check">
                       <input class="form-check-input" type="radio" name="payment_method" value="cash" id="paymentMethod2" required>
                       <label class="form-check-label" for="paymentMethod2">
-                          Efectivo
+                          Efectivo en el establecimiento
                       </label>
                   </div>
               </div>
@@ -45,4 +46,5 @@
       </div>
     </div>
   </div>
+
 {% endblock %}
