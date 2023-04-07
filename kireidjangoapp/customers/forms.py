@@ -60,7 +60,6 @@ class RegisterForm(SignupForm):
 
 # Form de Login
 
-
 class CustomerLoginForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -73,3 +72,38 @@ class CustomerLoginForm(LoginForm):
         self.fields["login"].widget.attrs["placeholder"] = ""
         self.fields["login"].widget.attrs.update({"class": "form-control my-2"})
         self.fields["password"].widget.attrs.update({"class": "form-control my-2"})
+
+
+#Update customer persona information
+
+class ProfileCustomerForm(forms.ModelForm):
+
+
+    class Meta:
+        model = get_user_model()
+        fields = [
+            
+            "first_name",
+            "last_name",
+            "email",
+            "document_number",
+            "area_code",
+            "phone_number",
+
+        ]
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.fields["first_name"].label = "Nombre"
+        self.fields["last_name"].label = "Apellido"
+        self.fields["email"].label = "Email"
+        self.fields["document_number"].label = "Nro. Documento"
+        self.fields["area_code"].label = "Código Área"
+        self.fields["phone_number"].label = "Nro. Teléfono"
+        self.fields["first_name"].widget.attrs.update({"class": "form-control"})
+        self.fields["last_name"].widget.attrs.update({"class": "form-control"})
+        self.fields["email"].widget.attrs.update({"class": "form-control"})
+        self.fields["document_number"].widget.attrs.update({"class": "form-control"})
+        self.fields["area_code"].widget.attrs.update({"class": "form-control"})
+        self.fields["phone_number"].widget.attrs.update({"class": "form-control"})

@@ -299,7 +299,6 @@ def checkout(request):
         },
     )
 
-
 def mercado_pago_success(request):
     professional_id = request.session.get("professional_id")
     service_id = request.session.get("service_id")
@@ -376,21 +375,19 @@ def mercado_pago_success(request):
         },
     )
 
-
 def mercado_pago_failure(request):
     return render(request, "appointments/mercado_pago_failure.html")
 
 def appointment_detail(request):
     return render(request, "appointments/appointment_detail.html")
 
-
-# For my profile
+# For profile
 def all_appointments(request):
     appointments = Appointment.objects.all()
+    
     return render(
         request, "appointments/all_appointment.html", {"appointments": appointments}
     )
-
 
 def cancel_appointment(request, pk):
     appointment = get_object_or_404(Appointment, pk=pk)

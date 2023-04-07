@@ -1,0 +1,222 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="container py-5 my-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img src="{% static 'customers/img/default_image_profile.jpeg'%}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                    <h2 class="mb-1">{{user.first_name}} {{user.last_name}} </h2>
+                    <p class="text-muted mb-2">{{user.email}}</p>
+                    <p class="text-muted mb-2">Último Ingreso: {{user.last_login}}</p>
+
+                    <button type="button" class="btn btn-primary mx-3" onclick="window.location.href='/booking/all/';">Mis Reservas</button>
+                    <button type="button" class="btn btn-primary mx-3" onclick="window.location.href='/booking/service/';">Reservar turno</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div id = "accordion">
+
+                <div class="card">
+                    <div class="card-header" id="headingOne"  data-target="#collapseOne" onclick="toggleAccordion('#collapseOne')">
+                        <h5 class="mb-0">
+                            <i class="fa fa-user"></i> Datos personales
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body" id="datos-personales">
+
+                            <form method="POST" class="needs-validation"  autocomplete="off" id="personal-info-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="form_type" value="personal_info">
+                                    <div class="mb-4">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label class="form-label"> {{ profile_form.first_name.label_tag }} </label>
+                                                {{ profile_form.first_name }}
+                                                {% if register_form.first_name.help_text %}
+                                                <small class="form-text text-muted">{{ profile_form.first_name.help_text }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label class="form-label"> {{ profile_form.last_name.label_tag }} </label>
+                                                {{ profile_form.last_name }}
+                                                {% if profile_form.last_name.help_text %}
+                                                <small class="form-text text-muted">{{ profile_form.last_name.help_text }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label class="form-label"> {{ profile_form.email.label_tag }} </label>
+                                                {{ profile_form.email }}
+                                                {% if profile_form.email.help_text %}
+                                                <small class="form-text text-muted">{{ profile_form.email.help_text }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label class="form-label"> {{ profile_form.document_number.label_tag }} </label>
+                                                {{ profile_form.document_number }}
+                                                {% if profile_form.document_number.help_text %}
+                                                <small class="form-text text-muted">{{ profile_form.document_number.help_text }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label class="form-label"> {{ profile_form.area_code.label_tag }} </label>
+                                                {{ profile_form.area_code }}
+                                                {% if profile_form.area_code.help_text %}
+                                                <small class="form-text text-muted">{{ profile_form.area_code.help_text }}</small>
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label class="form-label"> {{ profile_form.phone_number.label_tag }} </label>
+                                                {{ profile_form.phone_number }}
+                                                {% if profile_form.phone_number.help_text %}
+                                                <small class="form-text text-muted">{{ profile_form.phone_number.help_text }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Actualizar Datos</button>
+                                </form>
+                            </div>
+                </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo"  data-target="#collapseTwo" onclick="toggleAccordion('#collapseTwo')">
+                        <h5 class="mb-0">
+                            <i class="fa fa-lock"></i> Cambiar contraseña
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                        <div class="card-body" id="modificar-contrasena">
+
+                            <form method="POST" action="{% url 'customers:profile' %}" id="change-password-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="form_type" value="change_password">
+                                {{ change_pass_form|crispy }}
+                                <button type="submit" class="btn btn-primary">Actualizar Contraseña</button>
+                            </form>
+                        </div> 
+                    </div> 
+                </div>
+                
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=XMLHttpRequest,FormData"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    function toggleAccordion(target) {
+        // Get the element with the given target
+        const element = document.querySelector(target);
+        if (!element) return;
+      
+        // Check if the element is currently collapsed or expanded
+        const isCollapsed = element.classList.contains("show");
+      
+        // Collapse all the other accordion cards
+        const accordions = document.querySelectorAll(".collapse");
+        accordions.forEach((accordion) => {
+          if (accordion.id !== element.id && accordion.classList.contains("show")) {
+            accordion.classList.remove("show");
+          }
+        });
+      
+        // Toggle the clicked accordion card
+        if (isCollapsed) {
+          element.classList.remove("show");
+        } else {
+          element.classList.add("show");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle form submit event
+        function handleFormSubmit(formId, formType) {
+          var form = document.querySelector(formId);
+          form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submit behavior
+            var form_data = new FormData(this); // Get form data
+            form_data.append('form_type', formType); // Add form type
+            var xhr = new XMLHttpRequest();
+            xhr.open(this.method, this.action);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.onload = function() {
+              if (xhr.status === 200) {
+                var response = JSON.parse(xhr.response);
+                if (response.success) { // Check if form submission was successful
+                  // Display success message
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Se actualizaron los datos exitosamente!',
+                  }).then((result) => {
+                    window.location.href = '/profile';
+                  });
+
+                } else { // Handle form validation errors
+                  // Parse error messages from JSON response
+                  var error_dict = JSON.parse(response.error);
+                  var error_messages = '';
+                  for (var key in error_dict) {
+                    error_messages += ' - ' + error_dict[key][0].message + '<br>';
+                  }
+                  // Display error message
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error :(',
+                    html: error_messages,
+                  }).then((result) => {
+                    window.location.href = '/profile';
+                  });
+                }
+              } else { // Handle error response
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error :(',
+                    text: 'Ocurrió un error al intentar guardar los cambios. Por favor, vuelva a intentar más tarde.',
+                  }).then((result) => {
+                    window.location.href = '/profile';
+                  });
+
+              }
+            };
+            xhr.onerror = function() { // Handle network error
+              // Display error message
+              Swal.fire({
+                icon: 'error',
+                title: 'Error :(',
+                text: 'Ocurrió un error al intentar guardar los cambios. Por favor, vuelva a intentar más tarde.',
+              }).then((result) => {
+                window.location.href = '/profile';
+              });
+            };
+            xhr.send(form_data); // Send form data
+          });
+        }
+        
+        handleFormSubmit('#personal-info-form', 'personal_info');
+        handleFormSubmit('#change-password-form', 'change_password');
+      });
+      
+      
+</script>
+
+
+ 
+
+{% endblock%}

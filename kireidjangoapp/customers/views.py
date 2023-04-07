@@ -11,13 +11,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field
 from customers.models import Customer
 from django.db.models.query_utils import Q
-
-
 from customers.forms import RegisterForm, CustomerLoginForm
 from django.contrib.auth import authenticate
-
-
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from customers.forms import ProfileCustomerForm
 
 
 def signup_view(request):
@@ -59,14 +56,14 @@ def customer_login(request):
             print(form.errors)
 
 
-# Cerrar sesion
+# Logout
 def logout_view(request):
     logout(request)
     messages.info(request, "Ha cerrado sesión correctamente.")
     return redirect("home:index")
 
 
-# Olvido de contraseña
+# Forgot password
 def password_reset(request):
     if request.method == "POST":
         password_reset_form = PasswordResetForm(request.POST)
@@ -109,3 +106,76 @@ def password_reset(request):
         template_name="customers/password/password_reset.html",
         context={"password_reset_form": password_reset_form},
     )
+
+
+# from django.contrib.auth.forms import PasswordChangeForm
+# from django.contrib import messages
+# from django.contrib.auth import update_session_auth_hash
+# from django.http import JsonResponse
+# import json
+# # User profile
+# @login_required
+# def profile(request):
+#     if request.method == 'POST':
+#         if request.POST.get('form_type') == 'personal_info':
+#             profile_form = ProfileCustomerForm(request.POST, instance=request.user)
+#             if profile_form.is_valid():
+#                 profile_form.save()
+#                 return redirect("customers:profile")
+#             else:
+#                 print("Error form profile customer")
+
+#         elif request.POST.get('form_type') == 'change_password':
+#             change_pass_form = PasswordChangeForm(request.user, request.POST)
+#             if change_pass_form.is_valid():
+#                 user = change_pass_form.save()
+#                 update_session_auth_hash(request, user)
+#                 print('Your password was successfully updated!')
+                
+#             else:
+#                 print('ERROR PASS CHANGE')
+ 
+#     profile_form = ProfileCustomerForm(instance=request.user)
+#     change_pass_form = PasswordChangeForm(request.user)
+#     return render(
+#     request, "customers/profile.html", context={"profile_form": profile_form, "change_pass_form":change_pass_form})
+
+
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        if request.POST.get('form_type') == 'personal_info':
+            profile_form = ProfileCustomerForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                return JsonResponse({'success': True})
+            else:
+                error_dict = profile_form.errors.as_json()
+                return JsonResponse({'success': False, 'error': error_dict})
+
+        elif request.POST.get('form_type') == 'change_password':
+            change_pass_form = PasswordChangeForm(request.user, request.POST)
+            if change_pass_form.is_valid():
+                user = change_pass_form.save()
+                update_session_auth_hash(request, user)
+                return JsonResponse({'success': True})
+            else:
+                error_dict = change_pass_form.errors.as_json()
+                return JsonResponse({'success': False, 'error': error_dict})
+
+    profile_form = ProfileCustomerForm(instance=request.user)
+    change_pass_form = PasswordChangeForm(request.user)
+    return render(
+        request, "customers/profile.html", 
+        context={"profile_form": profile_form, "change_pass_form":change_pass_form}
+    )
+
+    
+        
+

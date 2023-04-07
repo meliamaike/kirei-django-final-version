@@ -33,6 +33,6 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
-    # path("profile/", profile, name="users-profile"),
-    # path("password-change/", ChangePasswordView.as_view(), name="password_change"),
+    path("profile/", views.profile, name="profile"),
+    # path("profile/password_change/", views.change_password, name="password_change"),
 ]
