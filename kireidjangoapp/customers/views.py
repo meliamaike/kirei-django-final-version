@@ -131,10 +131,10 @@ def password_reset(request):
 #                 user = change_pass_form.save()
 #                 update_session_auth_hash(request, user)
 #                 print('Your password was successfully updated!')
-                
+
 #             else:
 #                 print('ERROR PASS CHANGE')
- 
+
 #     profile_form = ProfileCustomerForm(instance=request.user)
 #     change_pass_form = PasswordChangeForm(request.user)
 #     return render(
@@ -147,35 +147,33 @@ from django.contrib.auth import update_session_auth_hash
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 
+
 @login_required
 def profile(request):
-    if request.method == 'POST':
-        if request.POST.get('form_type') == 'personal_info':
+    if request.method == "POST":
+        if request.POST.get("form_type") == "personal_info":
             profile_form = ProfileCustomerForm(request.POST, instance=request.user)
             if profile_form.is_valid():
                 profile_form.save()
-                return JsonResponse({'success': True})
+                return JsonResponse({"success": True})
             else:
                 error_dict = profile_form.errors.as_json()
-                return JsonResponse({'success': False, 'error': error_dict})
+                return JsonResponse({"success": False, "error": error_dict})
 
-        elif request.POST.get('form_type') == 'change_password':
+        elif request.POST.get("form_type") == "change_password":
             change_pass_form = PasswordChangeForm(request.user, request.POST)
             if change_pass_form.is_valid():
                 user = change_pass_form.save()
                 update_session_auth_hash(request, user)
-                return JsonResponse({'success': True})
+                return JsonResponse({"success": True})
             else:
                 error_dict = change_pass_form.errors.as_json()
-                return JsonResponse({'success': False, 'error': error_dict})
+                return JsonResponse({"success": False, "error": error_dict})
 
     profile_form = ProfileCustomerForm(instance=request.user)
     change_pass_form = PasswordChangeForm(request.user)
     return render(
-        request, "customers/profile.html", 
-        context={"profile_form": profile_form, "change_pass_form":change_pass_form}
+        request,
+        "customers/profile.html",
+        context={"profile_form": profile_form, "change_pass_form": change_pass_form},
     )
-
-    
-        
-

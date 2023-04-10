@@ -33,8 +33,10 @@ class Appointment(models.Model):
 
     @property
     def start_time(self):
-        return self.appointment_slot.start_time
+        start_times = [slot.start_time for slot in self.appointment_slot.all()]
+        return min(start_times) if start_times else None
 
     @property
     def end_time(self):
-        return self.appointment_slot.end_time
+        end_times = [slot.end_time for slot in self.appointment_slot.all()]
+        return max(end_times) if end_times else None

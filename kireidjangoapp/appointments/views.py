@@ -1,5 +1,6 @@
 from math import ceil
 from django.shortcuts import render, redirect, get_object_or_404, redirect
+from django.urls import reverse
 from django.views import View
 from appointments.models import Appointment, AppointmentSlot
 from services.models import Service, CategoryService
@@ -14,9 +15,8 @@ from django.contrib import messages
 from django.views.decorators.http import require_GET
 from datetime import datetime
 from payments.models import PaymentStatus
-from urllib.parse import urlencode
-from django.contrib import messages
 from django.http import HttpResponseBadRequest
+from itertools import groupby
 import mercadopago
 
 
@@ -200,9 +200,7 @@ def checkout(request):
 
         if payment_method == "mercadopago":
             # PROD_ACCESS_TOKEN needed
-            sdk = mercadopago.SDK(
-                ""
-            )
+            sdk = mercadopago.SDK("")
 
             # Create an item in the preference
             customer = Customer.objects.get(id=request.user.id)
@@ -299,6 +297,7 @@ def checkout(request):
         },
     )
 
+
 def mercado_pago_success(request):
     professional_id = request.session.get("professional_id")
     service_id = request.session.get("service_id")
@@ -375,25 +374,55 @@ def mercado_pago_success(request):
         },
     )
 
+
 def mercado_pago_failure(request):
     return render(request, "appointments/mercado_pago_failure.html")
+
 
 def appointment_detail(request):
     return render(request, "appointments/appointment_detail.html")
 
+
 # For profile
+
+
 def all_appointments(request):
-    appointments = Appointment.objects.all()
-    
-    return render(
-        request, "appointments/all_appointment.html", {"appointments": appointments}
+    appointments = Appointment.objects.filter(customer=request.user).order_by(
+        "date", "professional", "service"
     )
 
-def cancel_appointment(request, pk):
-    appointment = get_object_or_404(Appointment, pk=pk)
-    if request.method == "POST":
-        appointment.delete()
-        return redirect("appointments/all_appointments.html")
+    grouped_appointments = []
+    for key, group in groupby(
+        appointments, lambda appt: (appt.date, appt.professional, appt.service)
+    ):
+        appointments_list = list(group)
+        grouped_appointments.append(
+            {
+                "date": key[0],
+                "professional": key[1],
+                "service": key[2],
+                "appointments": appointments_list,
+            }
+        )
+
     return render(
-        request, "appointments/all_appointments.html", {"appointment": appointment}
+        request,
+        "appointments/all_appointment.html",
+        {"grouped_appointments": grouped_appointments},
     )
+
+
+@require_GET
+def cancel_appointment(request):
+    appointment_ids = request.GET.getlist("ids")
+    appointment_ids = [int(id) for id in request.GET.get("ids").split(",")]
+    appointments = Appointment.objects.filter(id__in=appointment_ids)
+
+    for appointment in appointments:
+        for slot in appointment.appointment_slot.all():
+            slot.booked = False
+            slot.save()
+
+        appointment.delete()
+
+    return redirect(reverse("appointments:all_appointments"))

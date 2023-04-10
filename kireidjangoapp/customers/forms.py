@@ -60,6 +60,7 @@ class RegisterForm(SignupForm):
 
 # Form de Login
 
+
 class CustomerLoginForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -74,24 +75,21 @@ class CustomerLoginForm(LoginForm):
         self.fields["password"].widget.attrs.update({"class": "form-control my-2"})
 
 
-#Update customer persona information
+# Update customer persona information
+
 
 class ProfileCustomerForm(forms.ModelForm):
-
-
     class Meta:
         model = get_user_model()
         fields = [
-            
             "first_name",
             "last_name",
             "email",
             "document_number",
             "area_code",
             "phone_number",
-
         ]
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)

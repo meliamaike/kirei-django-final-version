@@ -25,33 +25,41 @@
                         <div class="row">
                           <div class="col-xs-12">
                             <div class="table-responsive">
+                              {% if grouped_appointments %}
                               <table summary="" class="table table-bordered table-hover">
                                 <thead>
                                   <tr style="text-align: center; ">
-                                    <th>Ref</th>
-                                    <th>Servicio</th>
-                                    <th>Fecha</th>
-                                    <th>Horario</th>
-                                    <th>Duracion</th>
+                                    <th>Date</th>
+                                    <th>Professional</th>
+                                    <th>Service</th>
+                                    <th>Start Time</th>
                                     <th>Detalles</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {% for appointment in appointments %}
-                                  <tr style="text-align: center; ">
-                                    <td>{{appointment.id}}</td>
-                                    <td>{{appointment.service}}</td>
-                                    <td>{{appointment.date}}</td>
-                                    <td>{{appointment.professional}}</td>
-                                    <td>{{appointment.customer}}</td>
-                                    <td><span class="btn btn-primary"  >
-                                      <a style="color:white; font-style: normal !important;" href="{{appointments.get_cancel_appointment_url}}"><i
-                                        class="bi bi-x"> Cancelar</i></a></span>
-                                      </td>
-                                  </tr>
-                                  {% endfor %}
-                                </tbody>
+                                    {% for group in grouped_appointments %}
+                                        {% with appointment=group.appointments.0 %}
+                                            <tr style="text-align: center;">
+                                                <td>{{ group.date }}</td>
+                                                <td>{{ group.professional }}</td>
+                                                <td>{{ group.service }}</td>
+                                                <td>{{ appointment.start_time }}</td>
+                                                <td>
+                                                    <span class="btn btn-primary">
+                                                        <a style="color:white; font-style: normal !important;" href="{% url 'appointments:cancel_appointment' %}?ids={% for appointment in group.appointments %}{{ appointment.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                                                            <i class="bi bi-x">Cancelar</i>
+                                                        </a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endwith %}
+                                    {% endfor %}
+                                    </tbody>  
                               </table>
+                              {% else %}
+                                <h3>Todavía no hay turnos agendados.</h3>
+                                <button type="button" class="btn btn-primary mx-3" onclick="window.location.href='/booking/service/';">Reservar turno</button>
+                            {% endif %}
                             </div>
                           </div>
                         </div>
