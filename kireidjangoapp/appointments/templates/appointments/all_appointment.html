@@ -13,8 +13,22 @@
                     <p class="text-muted mb-2">{{user.email}}</p>
                     <p class="text-muted mb-2">Último Ingreso: {{user.last_login}}</p>
 
-                    <button type="button" class="btn btn-primary mx-3" onclick="window.location.href='/profile';">Mi Perfil</button>
-                    <button type="button" class="btn btn-primary mx-3" onclick="window.location.href='/booking/service/';">Reservar turno</button>
+                    
+                </div>
+                <div class="card-header" id="headingOne"  data-target="#collapseOne" onclick="window.location.href='/profile/';">
+                  <h5 class="mb-0">
+                    <i class="fa fa-id-card"></i> Mi Perfil 
+                  </h5>
+                </div>
+                <div class="card-header" id="headingOne"  data-target="#collapseOne" onclick="window.location.href='/booking/all/';">
+                  <h5 class="mb-0">
+                      <i class="fa fa-calendar-check-o"></i> Mis Reservas
+                  </h5>
+                </div>
+                <div class="card-header" id="headingOne"  data-target="#collapseOne" onclick="window.location.href='/order/all/';">
+                  <h5 class="mb-0">
+                    <i class="fa fa-shopping-bag "></i> Mis Compras 
+                  </h5>
                 </div>
             </div>
         </div>
@@ -29,11 +43,11 @@
                               <table summary="" class="table table-bordered table-hover">
                                 <thead>
                                   <tr style="text-align: center; ">
-                                    <th>Date</th>
-                                    <th>Professional</th>
-                                    <th>Service</th>
-                                    <th>Start Time</th>
-                                    <th>Detalles</th>
+                                    <th>Fecha</th>
+                                    <th>Profesional</th>
+                                    <th>Servicio</th>
+                                    <th>Horario</th>
+                                    <th>Cancelar reserva</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -47,7 +61,7 @@
                                                 <td>
                                                     <span class="btn btn-primary">
                                                         <a style="color:white; font-style: normal !important;" href="{% url 'appointments:cancel_appointment' %}?ids={% for appointment in group.appointments %}{{ appointment.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
-                                                            <i class="bi bi-x">Cancelar</i>
+                                                            <i class="bi bi-trash"></i>
                                                         </a>
                                                     </span>
                                                 </td>

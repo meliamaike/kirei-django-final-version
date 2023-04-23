@@ -12,9 +12,24 @@
                     <h2 class="mb-1">{{user.first_name}} {{user.last_name}} </h2>
                     <p class="text-muted mb-2">{{user.email}}</p>
                     <p class="text-muted mb-2">Último Ingreso: {{user.last_login}}</p>
-
-                    <button type="button" class="btn btn-primary mx-3" onclick="window.location.href='/booking/all/';">Mis Reservas</button>
-                    <button type="button" class="btn btn-primary mx-3" onclick="window.location.href='/booking/service/';">Reservar turno</button>
+                    {% comment %} <button type="button" class="btn btn-primary mx-3" >Mis Reservas</button>
+                    <button type="button" class="btn btn-primary mx-3" onclick="window.location.href='/booking/service/';">Reservar turno</button> {% endcomment %}
+                
+                </div>
+                <div class="card-header" id="headingOne"  data-target="#collapseOne" onclick="toggleAccordion('#collapseOne')">
+                  <h5 class="mb-0">
+                    <i class="fa fa-id-card"></i> Mi Perfil 
+                  </h5>
+                </div>
+                <div class="card-header" id="headingOne"  data-target="#collapseOne" onclick="window.location.href='/booking/all/';">
+                  <h5 class="mb-0">
+                      <i class="fa fa-calendar-check-o"></i> Mis Reservas
+                  </h5>
+                </div>
+                <div class="card-header" id="headingOne"  data-target="#collapseOne" onclick="window.location.href='/order/all/';">
+                  <h5 class="mb-0">
+                    <i class="fa fa-shopping-bag "></i> Mis Compras 
+                  </h5>
                 </div>
             </div>
         </div>

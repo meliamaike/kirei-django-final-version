@@ -1,105 +1,120 @@
 {% extends 'home/base.html'%}
 {% load cart_tag %}
 {% block content %}
-  <div class="container mt-5">
-    
+
+<div class="container mt-5 pt-5">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="cart-tab" data-bs-toggle="tab" data-bs-target="#cart" type="button" role="tab" aria-controls="cart" aria-selected="true">Carrito ({{ cart_total_quantity }})</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button" role="tab" aria-controls="saved" aria-selected="false">Guardados (6)</button>
+        <button class="nav-link" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button" role="tab" aria-controls="saved" aria-selected="false">Guardados (0)</button>
       </li>
     </ul>
-    
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade show active" id="cart" role="tabpanel" aria-labelledby="cart-tab">
-        {% for key, value in request.session.cart.items %}
-          <div class="card row align-items-center cart my-3">
-            <div class="card ">
-              <div class="row g-0">
-                <div class="col-md-6 col-sm-12 mb-3 mb-md-0">
-                  <div class="d-flex">
-                    <div class="col-md-3 col-sm-12">
-                      <img src="{{ value.image.url }}" class="card-img" alt="{{ value.name }}">
-                    </div>
-                    <div class="col-md-9 col-sm-12 my-4 mb-md-0 pb-5">
-                      <div class="card-body">
-                        <h5 class="card-title mb-4">
-                          <a href= "{% url 'products:product_detail' value.name|slugify value.product_id %}">
-                          {{ value.name }}
+        {% if request.session.cart.items %}
+          <div class="card-header row align-items-center cart mb-3">
+              {% for key, value in request.session.cart.items %}
+                <div class="card">
+                  <div class="row g-0">
+                    <div class="col-md-6 col-sm-12 mb-3 mb-md-0">
+                      <div class="d-flex">
+                        <div class="col-md-3 col-sm-12">
+                          <a href="{% url 'products:product_detail' product_name=value.name|slugify product_id=value.product_id %}">
+                          <img src="{{ value.image }}" class="card-img m-3" alt="{{ value.name }}">
                           </a>
-                        </h5>
-                        <a href="{% url 'carts:item_clear' value.product_id %}" class="btn btn-danger btn-sm mx-1 bg-danger">Eliminar</a>
-                        <button type="button" class="btn btn-secondary btn-sm mx-1 bg-secondary">Guardar para después</button>
+                        </div>
+                        <div class="col-md-9 col-sm-12 my-4 mb-md-0 pb-5">
+                          <div class="card-body" >
+                            <h5 class="card-title mb-4 font-weight-bold" >
+                              <a href= "{% url 'products:product_detail' value.name|slugify value.product_id %}" style="color: black; text-decoration: none !important;">
+                              {{ value.name }}
+                              </a>
+                            </h5>
+                            <a href="{% url 'carts:item_clear' value.product_id 'carts:cart_detail'%}" class="btn btn-danger btn-sm mx-1 bg-danger"><i class="bi bi-x-circle-fill"></i> Eliminar</a>
+                            <button type="button" class="btn btn-secondary btn-sm mx-1 bg-secondary">Guardar para después</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-12 my-4 mb-md-0 d-flex align-items-center justify-content-center flex-column">
+                      {% if value.quantity < value.stock %}
+                      <div class="btn-group" role="group">
+                        {% if value.quantity > 1 %}
+                            <a class="btn btn-outline-secondary" href="{% url 'carts:item_decrement' value.product_id 'carts:cart_detail'%}"><i class="bi bi-dash-circle-fill"></i></a>
+                            {% else %}
+                            <a class="btn btn-outline-secondary" href="{% url 'carts:item_clear' value.product_id 'carts:cart_detail'%}"><i class="bi bi-trash"></i></a>
+                        {% endif %}
+                            <input type="text" id="quantity-input-{{ value.product_id }}" class="form-control text-center quantity-input" name="quantity" min="1" max="{{ value.stock }}" value="{{ value.quantity }}" required />
+                            <a class="btn btn-outline-secondary" href="{% url 'carts:item_increment' value.product_id 'carts:cart_detail'%}"><i class="bi bi-plus-circle-fill"></i></a>
+                      </div> 
+                      <div id="text-quantity-message" class="text-center text-muted mt-2">
+                        {{ value.stock|sub:value.quantity }} disponibles
+                        </div>
+                      {% else %}
+                      <div class="btn-group" role="group">
+                      <a class="btn btn-outline-secondary" href="{% url 'carts:item_decrement' value.product_id 'carts:cart_detail' %}"><i class="bi bi-dash-circle-fill"></i></a>
+                        <input type="text" id="quantity-input-{{ value.product_id }}" class="form-control text-center quantity-input" name="quantity" min="1" max="{{ value.stock }}" value="{{ value.quantity }}"/>
+                        <a class="btn btn-outline-secondary" href="" disabled><i class="bi bi-plus-circle-fill"></i></a>
+                      </div>             
+                        <div class="text-center text-danger mt-2" id="text-quantity-message"><strong>{{ value.stock|sub:value.quantity }} disponibles</strong></div>
+                      {% endif %}
+                    </div>
+                    <div class="col-md-3 col-sm-12 my-4 mb-md-0 pb-5 d-flex align-items-center justify-content-center">
+                      <div class="card-price d-flex align-items-center">
+                        <h4 class="card-text">${{ value.price|multiply:value.quantity }}</h4>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-md-3 col-sm-12 my-4 mb-md-0 d-flex align-items-center justify-content-center flex-column">
-                  {% if value.quantity < value.stock %}
-                  <div class="btn-group" role="group">
-                    <a class="btn btn-outline-secondary" href="{% url 'carts:item_decrement' value.product_id %}">-</a>
-                    <input type="text" id="quantity-input-{{ value.product_id }}" class="form-control text-center quantity-input" name="quantity" min="1" max="{{ value.stock }}" value="{{ value.quantity }}" required />
-                    <a class="btn btn-outline-secondary" href="{% url 'carts:item_increment' value.product_id %}">+</a>
-                  </div> 
-                  <div id="text-quantity-message" class="text-center text-muted mt-2">
-                    {{ value.stock|sub:value.quantity }} disponibles
-                    </div>
-                  {% else %}
-                  <div class="btn-group" role="group">
-                  <a class="btn btn-outline-secondary" href="{% url 'carts:item_decrement' value.product_id %}">-</a>
-                    <input type="text" id="quantity-input-{{ value.product_id }}" class="form-control text-center quantity-input" name="quantity" min="1" max="{{ value.stock }}" value="{{ value.quantity }}"/>
-                    <a class="btn btn-outline-secondary" href="" disabled>+</a>
-                  </div>             
-                    <div class="text-center text-danger mt-2" id="text-quantity-message">{{ value.stock|sub:value.quantity }} disponibles</div>
-                  {% endif %}
+                {% endfor %}
+          </div>
+          <div class="card row mb-5">
+            <div class="col-md-12 my-5">
+              {% comment %} <div class="row align-items-center justify-content-end ">
+                <div class="col-md-10 text-right">
+                  <h6 class="text-uppercase font-weight-bold">Envío</h6>
                 </div>
-                <div class="col-md-3 col-sm-12 my-4 mb-md-0 pb-5 d-flex align-items-center justify-content-center">
-                  <div class="card-price d-flex align-items-center">
-                    <h4 class="card-text">${{ value.price|multiply:value.quantity }}</h4>
-                  </div>
+                <div class="col-md-2 text-right">
+                  <h7 class="font-weight-bold">Retiro en el establecimiento</h7>
                 </div>
               </div>
+              <hr class="my-5"> 
+              {% endcomment %}
+              <div class="row align-items-center justify-content-end mb-4">
+                <div class="col-md-10 text-right">
+                  <h3 class="text-uppercase font-weight-bold">Total</h3>
+                </div>
+                <div class="col-md-2 text-right">
+                  <h4 class="font-weight-bold">${{ cart_total_amount }}</h4>
+                </div>
+              </div>
+              <hr class="my-5">
+              <a class="btn btn-primary float-md-right bg-primary" href="{% url 'carts:cart_checkout'%}">Continuar al pago</a>
             </div>
           </div>
-        {% endfor %}
-        <div class="card row mb-5">
-          <div class="col-md-12 my-5">
-            <div class="row align-items-center justify-content-end ">
-              <div class="col-md-10 text-right">
-                <h6 class="text-uppercase font-weight-bold">Envío</h6>
-              </div>
-              <div class="col-md-2 text-right">
-                <h6 class="font-weight-bold">$448.24</h6>
-              </div>
-            </div>
-            <hr class="my-5">
-            <div class="row align-items-center justify-content-end mb-4">
-              <div class="col-md-10 text-right">
-                <h3 class="text-uppercase font-weight-bold">Total</h3>
-              </div>
-              <div class="col-md-2 text-right">
-                <h4 class="font-weight-bold">${{ cart_total_amount }}</h4>
-              </div>
-            </div>
-            <hr class="my-5">
-            <a class="btn btn-primary btn-lg float-md-right bg-primary" href="">Continuar al pago</a>
-          </div>
-        </div>
+        {% else %}
+          <div class="card mb-3 py-5">
+              <div class="empty-tab-content text-center">
+                  <h2 class="card-title fw-bold pt-5 mb-3">Tu carrito está vacío</h2>
+                  <p class="card-text mb-4">¿No sabés qué comprar? ¡Muchos de productos te esperan!</p>
+                  <a class="btn btn-primary" href="{% url 'products:product_catalog'%}">Comprar productos</a>
+              </div>   
+          </div> 
+        {% endif %}
       </div>
-      <div class="tab-pane fade " id="saved" role="tabpanel" aria-labelledby="saved-tab">
-        <div class="card my-3 py-5">
+      <div class="tab-pane fade" id="saved" role="tabpanel" aria-labelledby="saved-tab">
+        <div class="card mb-3 py-5">
           <div class="card-body text-center">
-            <h2 class="card-title pt-5 pb-3">No tenés productos guardados.</h2>
-            <p class="card-text pb-5 text-muted">Si aún no te decidiste a comprar algún producto de tu carrito, podés dejarlo acá para no perderlo.</p>
+            <h2 class="card-title fw-bold pt-5 pb-3">No tenés productos guardados.</h2>
+            <p class="card-text mb-4">Si aún no te decidiste a comprar algún producto de tu carrito, podés dejarlo acá para no perderlo.</p>
+            <a class="btn btn-primary" href="{% url 'products:product_catalog'%}">Comprar productos</a>
           </div>
         </div>
-        
-        
       </div>
-    
-  </div>
+    </div>
+</div>
 
   <script>
     const quantityInputs = document.querySelectorAll('.quantity-input');
@@ -107,7 +122,6 @@
     quantityInputs.forEach(input => {
         input.addEventListener('change', () => {
             const productId = input.id.split('-')[2];
-            console.log("PD: ",productId);
             const maxQuantity = input.max;
             const quantity = parseInt(input.value);
     
@@ -136,5 +150,5 @@
     </script>
     
 
-  {% endblock %}
+{% endblock %}
 

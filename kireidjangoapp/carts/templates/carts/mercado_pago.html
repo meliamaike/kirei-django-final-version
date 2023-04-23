@@ -1,0 +1,44 @@
+{% extends "home/base.html" %}
+{% block content %}
+<div class="container my-5 py-5" style="height:69vh !important;">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow-lg p-4">
+          <div class="card-header py-4 text-center">
+            <h4 class="card-title mb-4 ">
+              <strong>Está por realizar un pago con Mercado Pago</strong>
+            </h4>
+            <div class="cho-container"></div>
+          </div>
+          <div class="card-body">
+            <div class="mt-5 text-left">
+              <a href="{% url 'carts:cart_checkout' %}" class="btn btn-primary mr-3">Volver atrás</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<script>
+  //PUBLIC_KEY needed
+  const mp = new MercadoPago('', {
+    locale: 'es-AR'
+  });
+
+  mp.checkout({
+    preference: {
+      id: '{{ item_id }}'
+    },
+    render: {
+      container: '.cho-container',
+      label: 'Pagar',
+    },
+    theme: {
+      elementsColor: '#C92E4F',
+  },
+  });
+
+</script>
+
+{% endblock %}

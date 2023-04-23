@@ -1,0 +1,122 @@
+{% extends "home/base.html" %}
+{% block content %}
+<div class="container my-5 py-5">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-3">
+          <div class="card-body d-flex align-items-center justify-content-between" style="border-radius: 8px;">
+            <div class="feedback-container feedback-container--default">
+              <span class="feedback-container-intro">
+                <span class="bf-ui-rich-text font-weight-bold">{{ specific_product.product.name }}</span>
+              </span>
+              <h6 class="feedback-container-title">
+                <span class="bf-ui-rich-text">{{ specific_product.quantity }} unidad(es) x ${{ specific_product.product.price }}</span>
+              </h6>
+            </div>
+            <div class="images">
+              <div class="image">
+                <img src="{{ specific_product.product.image.url }}" class="bf-ui-image" style = "border-radius: 60%;max-width: 80px; height: 55px;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card mb-3">
+          <div class="card-header mb-2 pt-3">
+            <h5 class="font-weight-bold">
+              <span>Detalle de la compra</span>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="bf-ui-ticket">
+              <h5 class="bf-ui-ticket__subtitle">
+                <span class="bf-ui-rich-text">{{ order.created_at|date }} | #{{ order.id }}</span>
+              </h5>
+              <hr class="my-4">
+              <div class="row">
+                <div class="col-md-6">
+                  <h5 class="font-weight-bold">Total ({{total_quantity}})</h5>
+                </div>
+                <div class="col-md-6 text-right">
+                  <span class="font-weight-bold">${{ payment_total }}</span>
+                </div>
+              </div>
+              
+              <hr class="my-4">
+            </div>
+            <div class="bf-ui-expandable-content">
+              <div class="bf-ui-expandable bf-ui-expandable--top">
+                <div class="bf-ui-expandable__button" role="button" tabindex="0">
+                  <span class="bf-ui-rich-text">Detalles de pago</span>
+                  <span class="bf-ui-icon-container bf-ui-icon-container--regular">
+                    <i class="fa fa-angle-down"></i>
+                </div>
+                <div class="bf-ui-expandable__content" style="display:none;>
+                  <div class="bf-ui-list-with-title">
+                    <h4 class="font-weight-bold mt-5 mb-4"><span class="bf-ui-rich-text">Pago</span></h4>
+                    <div class="bf-ui-card bf-ui-card--bordered" style="border: 1px solid rgba(0,0,0,.1); background-color: #f5f5f5;">
+                      <div class="row bf-ui-detail-row bf-ui-detail-row--transparent align-items-center">
+                        <div class="col-md-3 bf-ui-detail-row__asset-wrapper text-center my-5" >
+                            <div class="bf-ui-detail-row__asset">
+                                <div class="bf-ui-logo-container">
+                                    {% if payment_method == 'mercadopago' %}
+                                    <img class="bf-ui-logo bf-ui-logo--buflo_payment_method_dinero-en-cuenta" src="https://http2.mlstatic.com/frontend-assets/bf-ui-library/2.24.2/assets/logos/buflo_payment_method_dinero-en-cuenta.svg" style="border-radius: 50%; max-width: 80px; height: auto;">
+                                    {% else %}
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAACXBIWXMAAAsTAAALEwEAmpwYAAADe0lEQVR4nO2UfWxTZRSHr0zaEUMUYsBEQlgMwcQYwpa13Xr75UeMIIYsY1txo8AAUeIiIIOBE4aDyEx7O6IbLUOyraXLCCEkMGR+bF1dV8tgOlznmANN/MeYTGIkoAiPubeWUu8WQ/lT3+SX3Pfkze8557znvYLwn110aZ8jqG0nqL1Et+YHgpozdGWW0S5k3L95u5BBt6aJ3lkwuBRGN8JoBQwVQSQLujVBwsLM+4N0a+uIPAGXd8D3e1J1ZTec18mgT0F4ID1AUJtFaPpNxrbFTYdLoW9eXIMvJEF9c6BHsyzNKjRb6M9NZj5ggwtm+G4zjFUl4xdfhk80wXQhjQwuTpqdWwjhx+KZy/eTiI+shc5MOCicxClMu0eI1sXXzyfNLlfBWCWMrIfQjGR82AGhLGidA42C594gPVNLiMxPmn31bHyiok9C9Om72miGsAW+qABPxi08wtw7Jjpnvs3ktjabXOZWo2T+SJQsTQnJe11tbuxSx8PXGC7727AGvl0FMTtcqY7HRjdB6BGIVkD/bvDNgwah7A7E4DS+mSeZMbhECo4sZ8vpyhSt9K9m6wkHN3oehdgK9QiPbIDe2RBZHAfIalsgt+zVFIhRstyWIa+feAN/LJCqoQA1oVpe8xUyeOZx6JsLAyYYsMCXCyA4A/oKkoBz1XB4OngEMQVScKTwj60d22m+2KqCvHV6G/kuMzn79Cx8JxvbvmxigZnQOR8ixdBflQTIOmnml4YHf2SXMCUFsrqt/LqqglgAZ1giTzIprTS4RPROIzl79RhqFjHueQiO50J4c9w8vAmO5/BTw7Tb5XVPHU6ZnrshngtNvHRoGXJV8l5uXwJgSMgpkl2rY/nBJfSeWsJN71TwTOF3byahU0t50fXMn4tqdd5JIe7IASXzVW3lCmTtsQ1qiCuuNcfW8160jiJvMbb9NnZ+Xs3+6PvYfWXX9U5x3aSQRDUt3/iU712f7ZkU8m7XXuWMfI+N/V5ah/zKfoXf8duEkFK/48YH0QbVnfhiRylueUUFKPU71FMYC3Ag+qF8/tqEELHeqozwzs5qNWjoKJUf76CwuYSiFjtVZ99WYv88V9mxXUnAVG+9NSEkXzIrELtvpZJNOipqsSsQ+c2pIHmScY3RbblqlCy/im7ruFhv+zktua3jske+ZL6qd4ol//JL/H8JE66/AFODtQxScbTeAAAAAElFTkSuQmCC" style="border-radius: 50%; max-width: 80px; height: auto;">
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9 bf-ui-detail-row__container">
+                            <div class="bf-ui-detail-row__content">
+                                <div class="bf-ui-detail-row__text my-4">
+                                    <span class="bf-ui-rich-price font-weight-bold my-2">${{ payment_total }}</span>
+                                    {% if payment_method == 'mercadopago' %}
+                                    <p class="bf-ui-detail-row__secondary-title my-2"><span class="bf-ui-rich-text">Pagado a través de Mercado Pago</span></p>
+                                    {% else %}
+                                    <p class="bf-ui-detail-row__secondary-title my-2"><span class="bf-ui-rich-text">Efectivo</span></p>
+                                    {% endif %}
+                                    <p class="bf-ui-detail-row__secondary-title my-2"><span class="bf-ui-rich-text">{{ order.created_at|date }} | #{{ order.id }}</span></p>
+                                    {% if payment_status == 'confirmed' %}
+                                    <p class="bf-ui-detail-row__description my-2"><span class="bf-ui-rich-text bf-ui-rich-text--success">CONFIRMADO</span></p>
+                                    {% elif payment_status == 'pending' or payment_status == 'waiting' %}
+                                        <p class="bf-ui-detail-row__description my-2"><span class="bf-ui-rich-text bf-ui-rich-text--success">PENDIENTE</span></p>
+                                    {% elif payment_status == 'rejected' %}
+                                    <p class="bf-ui-detail-row__description my-2"><span class="bf-ui-rich-text bf-ui-rich-text--success">RECHAZADO</span></p>
+                                    {% else %}
+                                        <span>{{ payment_status }}</span>
+                                    {% endif %}
+
+                                    <p class="bf-ui-detail-row__description my-2"><span class="bf-ui-rich-text bf-ui-rich-text--success"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const button = document.querySelector('.bf-ui-expandable__button');
+    const content = document.querySelector('.bf-ui-expandable__content');
+  
+    button.addEventListener('click', () => {
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        button.querySelector('.bf-ui-icon').classList.replace('bf-ui-icon--arrow-bottom', 'bf-ui-icon--arrow-top');
+      } else {
+        content.style.display = 'none';
+        button.querySelector('.bf-ui-icon').classList.replace('bf-ui-icon--arrow-top', 'bf-ui-icon--arrow-bottom');
+      }
+    });
+  </script>
+
+  {% endblock %}

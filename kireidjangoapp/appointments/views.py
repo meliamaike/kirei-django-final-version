@@ -8,7 +8,7 @@ from professionals.models import Professional
 from customers.models import Customer
 from cart.cart import Cart
 from agendas.models import Agenda
-from my_payments.models import MyPayment
+from my_payments.models import AppointmentPayment
 from django.db.models import Q
 from collections import defaultdict
 from django.contrib import messages
@@ -256,7 +256,7 @@ def checkout(request):
 
             # Create the payment object with status 'waiting'
 
-            payment = MyPayment.objects.create(
+            payment = AppointmentPayment.objects.create(
                 appointment=appointment,
                 payment_method=payment_method,
                 status=PaymentStatus.WAITING,
@@ -345,7 +345,7 @@ def mercado_pago_success(request):
 
     # Create the payment object with status 'waiting'
 
-    mypayment = MyPayment.objects.create(
+    mypayment = AppointmentPayment.objects.create(
         id_mercado_pago=mercado_pago_payment_id,
         appointment=appointment,
         payment_method=payment_method,

@@ -1,0 +1,50 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg p-4">
+                <div class="card-header pt-4 text-center">
+                    <h4 class="card-title">
+                        <strong>¡Gracias por tu compra!</strong>
+                    </h4>
+                    <h6 class="card-title my-4 text-center">Pase a retirar su productos por el establecimiento con su ID de Pago.</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mt-3 text-center">
+                        <p class="card-text"><strong>ID de Pago:</strong> {{ payment_id }}</p>
+                        <div class="ordered-products">
+                          <p class="card-text"><strong>Detalle de la compra:</strong></p>
+                          <h5 class="mt-4"></h5>
+                          <ul class="list-group">
+                              {% for product in ordered_products %}
+                              <li class="list-group-item">
+                                  <div class="row align-items-center">
+                                      <div class="col-md-3">
+                                          <img src="{{ product.product.image.url }}" alt="{{ product.product.name }}" class="img-fluid rounded" style="height:15vh !important;">
+                                      </div>
+                                      <div class="col-md-6 my-3">
+                                          <h5>{{ product.product.name }}</h5>
+                                          <p>{{ product.quantity }} unidad(es)</p>
+                                      </div>
+                                      <div class="col-md-3 my-4 text-center">
+                                          <span class="d-block">${{ product.total_price }}</span>
+                                      </div>
+                                  </div>
+                              </li>
+                              {% endfor %}
+                              <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <h5 class="my-3"><strong>Total</strong></h5>
+                                <h5 class="my-3"><strong>${{ cart_total }}</strong></h5>
+                              </li>
+                          </ul>
+                      </div>
+                        <a href="{% url 'home:index' %}" class="btn appo-custom-btn mt-4">Volver al inicio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

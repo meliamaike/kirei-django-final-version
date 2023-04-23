@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     "products.apps.ProductsConfig",
     "professionals.apps.ProfessionalsConfig",
     "services.apps.ServicesConfig",
-    "shoppingcarts.apps.ShoppingcartsConfig",
     "staff.apps.StaffConfig",
     "statistic.apps.StatisticConfig",
     # Django
@@ -222,3 +221,11 @@ CART_SESSION_ID = "cart"
 #     "secret_key": "YOUR_STRIPE_SECRET_KEY",
 #     "currency": "USD",
 # }
+
+# MEDIA for upload images, etc.
+# Set the base directory for uploaded media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Set the URL prefix for media files
+MEDIA_URL = '/media/'
+

@@ -1,16 +1,17 @@
 {% extends 'home/base.html' %}
 {% load static %}
 {% block content %}
-<div class="container m-5 px-0 py-5">
+<div class="m-5 px-5 py-5">
     <div class="row">
-      <div class="col-md-7">
+      <div class="col-md-6">
         <div class="card">
-        {% comment %} <img src="{% static product.image.url %}" alt="{{ product.name }}" class="img-fluid"> {% endcomment %}
-        <img src="https://http2.mlstatic.com/intragen-sebum-balance-shampoo-purificante-pelo-graso-250ml-S_756594-MLA31643193166_072019-R.jpg" class="card-img-top" alt="...">
+            <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}">
+                <img class="card-img-top" style="max-height: 700px" src="{{ product.image.url }}" alt="{{ product.name }}">
+              </a>
         </div>
       </div>
-      <div class="col-md-5">
-        <div class="card h-100">
+      <div class="col-md-6">
+        <div class="card">
           <div class="card-body mt-4">
                 <h1 class="card-title font-weight-bold mt-4" >{{ product.name }}</h1>
                 <div class="row">
@@ -45,17 +46,31 @@
                     <div class="d-flex align-items-center">
                         <h6 class="card-subtitle text-muted">Cantidad:</h6>
                         <button class="minus-btn btn btn-outline-secondary ml-3">-</button>
+                        {% if product.stock == 0 %}
+                        <input type="text" id="quantity" name="quantity" value="0" min="1" class="quantity form-control w-25 mx-2 text-center disabled">
+                        {% else %}
                         <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity form-control w-25 mx-2 text-center">
+                        {% endif %}
                         <button class="plus-btn btn btn-outline-secondary">+</button>
-                        <span class="card-subtitle h7 text-muted ml-3 ">({{ product.stock }} disponibles)</span>
+                        {% if product.stock == 1 %}
+                            <span class="card-subtitle h7 text-muted ml-3">(Último disponible!)</span>
+                        {% else %}
+                            <span class="card-subtitle h7 text-muted ml-3 ">({{ product.stock }} disponibles)</span>
+                        {% endif %}
                     </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12 my-5">
-                        <button onclick="addToCart()" class="add-to-cart-btn btn btn-primary w-100 mt-3" id="add-to-cart-btn" data-product-id="{{ product.id }}" {% if not product.is_in_stock %}disabled{% endif %}>
+                        {% if product.stock == 0 %}
+                        <button class="add-to-cart-btn btn btn-primary w-100 mt-3 disabled" {% if not product.is_in_stock %}disabled="disabled"{% endif %}>
+                            SIN STOCK
+                        </button>
+                        {% else %}
+                        <button onclick="addToCart()" class="add-to-cart-btn btn btn-primary w-100 mt-3" id="add-to-cart-btn" data-product-id="{{ product.id }}" {% if not product.is_in_stock %}disabled="disabled"{% endif %}>
                         Agregar al carrito
                         </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -74,7 +89,7 @@
         var quantity = parseInt(quantityInput.value);
         quantity = isNaN(quantity) ||  quantity < 0 ? 0 : quantity;
 
-        if (quantity > {{ product.stock }}) {
+        if (quantity > {{ product.stock }} || {{ product.stock }} == 0) {
             addToCartButton.disabled = true;
             addToCartButton.innerHTML = "Sin Stock";
         } else if(quantity > 0) {
@@ -128,6 +143,12 @@
     // get the quantity input value
     var quantity = document.getElementById('quantity').value;
 
+    // check if the product is in stock
+    if ({{ product.stock }} == 0) {
+        addToCartButton.innerHTML = 'Sin stock';
+        return;
+      }
+
     // check if the quantity is greater than the available stock
     if (quantity > {{ product.stock }}) {
         addToCartButton.innerHTML = 'Sin stock';
@@ -138,11 +159,13 @@
     var productId = addToCartButton.getAttribute('data-product-id');
 
     // construct the URL with the quantity and product ID
-    var url = '/carts/many_items_add/' + productId + '/' + quantity + '/';
+    var url = '/cart/many_items_add/' + productId + '/' + quantity + '/';
 
     // redirect to the URL
     window.location.href = url;
     }
+
+
   
 </script>
 {% endblock %}
