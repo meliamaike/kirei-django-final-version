@@ -9,7 +9,7 @@ from decimal import Decimal, InvalidOperation
 def product_catalog(request):
     all_products = Product.objects.filter(is_available=True)
     products_total = all_products.count()
-    
+
     categories = Product.objects.values("category").distinct()
     selected_category = request.GET.get("category")
 
@@ -24,11 +24,11 @@ def product_catalog(request):
     selected_sorting = request.GET.get("orderby")
 
     # Apply selected sorting method to products
-    orderby = request.GET.get('orderby')
-    if orderby == 'price':
-        products = all_products.order_by('price')
-    elif orderby == 'price-desc':
-        products = all_products.order_by('-price')
+    orderby = request.GET.get("orderby")
+    if orderby == "price":
+        products = all_products.order_by("price")
+    elif orderby == "price-desc":
+        products = all_products.order_by("-price")
     else:
         products = all_products
 
@@ -43,20 +43,17 @@ def product_catalog(request):
             ).count()
         else:
             count = Product.objects.filter(
-                category=category["category"], 
-                is_available=True
+                category=category["category"], is_available=True
             ).count()
         counts[category["category"]] = count
-    
+
     # Get counts of products for each category
     category_counts = {}
     for category in categories:
         count = Product.objects.filter(
-            category=category["category"], 
-            is_available=True
+            category=category["category"], is_available=True
         ).count()
         category_counts[category["category"]] = count
-        
 
     # Filter products by selected category
     if selected_category:
@@ -64,12 +61,10 @@ def product_catalog(request):
     else:
         products = products.filter(is_available=True)
 
-
     # Apply selected price range filter
     if selected_min_price and selected_max_price:
         products = products.filter(
-            price__gte=selected_min_price, 
-            price__lte=selected_max_price
+            price__gte=selected_min_price, price__lte=selected_max_price
         )
 
     paginator = Paginator(products, 15)
@@ -79,7 +74,7 @@ def product_catalog(request):
 
     context = {
         "products": products,
-        "products_total":products_total,
+        "products_total": products_total,
         "categories": categories,
         "selected_category": selected_category,
         "min_price": min_price,
@@ -87,7 +82,7 @@ def product_catalog(request):
         "page_obj": page_obj,
         "is_paginated": paginator.num_pages > 1,
         "counts": counts,
-        "category_counts":category_counts,
+        "category_counts": category_counts,
         "selected_min_price": selected_min_price,
         "selected_max_price": selected_max_price,
         "selected_sorting": selected_sorting,
@@ -101,5 +96,3 @@ def product_detail(request, product_name, product_id):
     return render(
         request, "products/product_detail.html", {"product": product, "id": product_id}
     )
-
-    

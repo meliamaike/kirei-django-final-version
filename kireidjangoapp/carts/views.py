@@ -18,12 +18,14 @@ def cart_add(request, id):
     cart.add(product=product)
     return redirect("home:index")
 
+
 @login_required(login_url="/login")
 def item_clear(request, id, redirect_url):
     cart = Cart(request)
     product = Product.objects.get(id=id)
     cart.remove(product)
     return redirect(redirect_url)
+
 
 @login_required(login_url="/login")
 def item_increment(request, id, redirect_url):
@@ -32,6 +34,7 @@ def item_increment(request, id, redirect_url):
     cart.add(product=product)
     return redirect(redirect_url)
 
+
 @login_required(login_url="/login")
 def item_decrement(request, id, redirect_url):
     cart = Cart(request)
@@ -39,15 +42,18 @@ def item_decrement(request, id, redirect_url):
     cart.decrement(product=product)
     return redirect(redirect_url)
 
+
 @login_required(login_url="/login")
 def cart_clear(request):
     cart = Cart(request)
     cart.clear()
     return redirect("carts:cart_detail")
 
+
 @login_required(login_url="/login")
 def cart_detail(request):
-    return render(request,"carts/cart_detail.html")
+    return render(request, "carts/cart_detail.html")
+
 
 @login_required(login_url="/login")
 def many_items_add(request, id, quantity):
@@ -57,6 +63,7 @@ def many_items_add(request, id, quantity):
     cart.adding_many(product=product, quantity=quantity)
     return redirect("carts:cart_detail")
 
+
 @login_required(login_url="/login")
 def replace_items_quantity(request, id, quantity):
     print("cantidad: ", quantity)
@@ -65,6 +72,7 @@ def replace_items_quantity(request, id, quantity):
     cart.replace(product=product, quantity=quantity)
     return redirect("carts:cart_detail")
 
+
 @login_required(login_url="/login")
 def catalog_item_increment(request, id):
     cart = Cart(request)
@@ -72,10 +80,9 @@ def catalog_item_increment(request, id):
     cart.add(product=product)
     return redirect("products:product_catalog")
 
+
 @login_required(login_url="/login")
 def cart_checkout(request):
-
-    
     cart = Cart(request)
 
     if request.method == "POST":
@@ -98,10 +105,9 @@ def cart_checkout(request):
                 cart_dict = cart.cart
 
             for item in cart_dict.values():
-
                 print("item: ", item)
-                product_id = item['product_id']
-                quantity = item['quantity']
+                product_id = item["product_id"]
+                quantity = item["quantity"]
 
                 product = Product.objects.get(id=product_id)
 
@@ -112,13 +118,13 @@ def cart_checkout(request):
                     "currency_id": "ARS",
                 }
                 items.append(item_data)
-            
+
             preference_data = {
                 "items": items,
                 "back_urls": {
                     "success": "http://127.0.0.1:8000/cart/success/",
                     "failure": "http://127.0.0.1:8000/cart/failure",
-                    "pending": "https://127.0.0.1:8000/cart/pending"
+                    "pending": "https://127.0.0.1:8000/cart/pending",
                 },
                 "auto_return": "approved",
                 "binary_mode": True,
@@ -129,11 +135,16 @@ def cart_checkout(request):
 
             # Pass the item IDs to the template context
             item_ids = [item["id"] for item in preference["items"]]
-            return render(request, "carts/mercado_pago.html", {"item_ids": item_ids, "item_id": preference["id"],})
-
+            return render(
+                request,
+                "carts/mercado_pago.html",
+                {
+                    "item_ids": item_ids,
+                    "item_id": preference["id"],
+                },
+            )
 
         elif payment_method == "cash":
-
             customer = Customer.objects.get(id=request.user.id)
 
             # Create a new CartPayment object
@@ -141,8 +152,7 @@ def cart_checkout(request):
                 payment_method=payment_method,
                 id_mercado_pago=mercado_pago_payment_id,
                 status=PaymentStatus.CONFIRMED,
-                currency="ARS"
-
+                currency="ARS",
             )
 
             if isinstance(cart.cart, str):
@@ -151,10 +161,10 @@ def cart_checkout(request):
                 cart_dict = cart.cart
 
             # Iterate through the items in the cart
-            cart_total = 0 
+            cart_total = 0
             for item in cart_dict.values():
-                product_id = item['product_id']
-                quantity = item['quantity']
+                product_id = item["product_id"]
+                quantity = item["quantity"]
 
                 product = Product.objects.get(id=product_id)
 
@@ -163,7 +173,7 @@ def cart_checkout(request):
                     product=product,
                     cart_payment=cart_payment,
                     quantity=quantity,
-                    total=product.price * quantity
+                    total=product.price * quantity,
                 )
 
                 # Update the stock of the product
@@ -182,24 +192,24 @@ def cart_checkout(request):
             # Create the order object with customer information
             order = ProductOrder.objects.create(
                 customer=customer,
-                payment=cart_payment,            
+                payment=cart_payment,
             )
 
             # Store the order id in the session for later reference
             request.session["order_id"] = order.id
 
-            
             cart.clear()
-
 
             return render(
                 request,
                 "orders/order_detail.html",
-                {'order': order},
+                {"order": order},
             )
 
         else:
-            return HttpResponseBadRequest("Se produjo un error. Vuelva a intentar más tarde.")
+            return HttpResponseBadRequest(
+                "Se produjo un error. Vuelva a intentar más tarde."
+            )
 
     return render(
         request,
@@ -210,11 +220,10 @@ def cart_checkout(request):
 
 @login_required(login_url="/login")
 def mercado_pago_success(request):
-    
     payment_method = request.session.get("payment_method")
     mercado_pago_payment_id = request.GET.get("payment_id")
     merchant_order_id = request.GET.get("merchant_order_id")
-    
+
     cart = Cart(request)
 
     customer = Customer.objects.get(id=request.user.id)
@@ -231,11 +240,11 @@ def mercado_pago_success(request):
         cart_dict = json.loads(cart.cart)
     else:
         cart_dict = cart.cart
-         
+
     cart_total = 0
     for item in cart_dict.values():
-        product_id = item['product_id']
-        quantity = item['quantity']
+        product_id = item["product_id"]
+        quantity = item["quantity"]
 
         product = Product.objects.get(id=product_id)
 
@@ -244,7 +253,7 @@ def mercado_pago_success(request):
             product=product,
             cart_payment=cart_payment,
             quantity=quantity,
-            total=product.price * quantity
+            total=product.price * quantity,
         )
 
         # Update the stock of the product
@@ -260,11 +269,10 @@ def mercado_pago_success(request):
     cart_payment.cart_total = cart_total
     cart_payment.save()
 
-    
     # Create the order object with customer information
     order = ProductOrder.objects.create(
         customer=customer,
-        payment=cart_payment,            
+        payment=cart_payment,
     )
 
     # Store the order id in the session for later reference
@@ -275,9 +283,11 @@ def mercado_pago_success(request):
         {
             "product": product_payment.product,
             "quantity": product_payment.quantity,
-            "total_price":product_payment.total,
+            "total_price": product_payment.total,
         }
-        for product_payment in cart_payment.cart_products.through.objects.filter(cart_payment=cart_payment)
+        for product_payment in cart_payment.cart_products.through.objects.filter(
+            cart_payment=cart_payment
+        )
     ]
 
     cart.clear()
@@ -289,8 +299,7 @@ def mercado_pago_success(request):
             "payment_id": mercado_pago_payment_id,
             "merchant_order_id": merchant_order_id,
             "ordered_products": ordered_products,
-            "cart_total":cart_total,
-            
+            "cart_total": cart_total,
         },
     )
 
@@ -299,9 +308,9 @@ def mercado_pago_success(request):
 def mercado_pago_failure(request):
     return render(request, "carts/mercado_pago_failure.html")
 
+
 @login_required(login_url="/login")
 def mercado_pago_pending(request):
-    cart=Cart(request)
+    cart = Cart(request)
     cart.clear()
     return render(request, "carts/mercado_pago_pending.html")
-

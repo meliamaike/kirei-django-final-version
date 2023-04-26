@@ -56,10 +56,11 @@
                                             <span>{{ product_payment.quantity }} unidad(es)</span>
                                           </p>
                                         </div>
-                                        <div class="bf-ui-button-container d-flex justify-content-center align-items-center flex-column mb-2">
-                                            <a href="{% url 'orders:all_order_detail' order_id=order.id product_id=product_payment.product_id %}" class="btn btn-primary mb-2 mr-2 w-100">Ver compra</a>
-                                            <a href="{% url 'products:product_detail' product_name=product_payment.product.name|slugify product_id=product_payment.product_id %}" class="btn btn-custom mt-2 w-100 bg-secondary">Volver a comprar</a>
-                                          </div>
+                                        <div class="bf-ui-button-container d-flex justify-content-center align-items-center flex-column my-2 ">
+                                            <a href="{% url 'orders:all_order_detail' order_id=order.id product_id=product_payment.product_id %}" class="btn btn-primary my-2 mr-2 w-100">Ver compra</a>
+                                            <a href="{% url 'products:product_detail' product_name=product_payment.product.name|slugify product_id=product_payment.product_id %}" class="btn btn-custom my-2 w-100 bg-secondary">Volver a comprar</a>
+                                            <a href="{% url 'invoices:generate_invoice' order_id=order.id product_id=product_payment.product_id%}" target="_blank" class="btn bg-dark my-2 mr-2 w-100">Descargar factura</a>
+                                       </div>
                                       </div> 
                                   </div>
                                   {% endfor %} 

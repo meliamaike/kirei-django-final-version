@@ -224,8 +224,7 @@ CART_SESSION_ID = "cart"
 
 # MEDIA for upload images, etc.
 # Set the base directory for uploaded media files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Set the URL prefix for media files
-MEDIA_URL = '/media/'
-
+MEDIA_URL = "/media/"

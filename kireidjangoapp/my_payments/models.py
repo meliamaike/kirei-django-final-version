@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
-#from orders.models import Order
+
+# from orders.models import Order
 from products.models import Product
 from payments.models import BasePayment, PurchasedItem
 from appointments.models import Appointment
@@ -13,7 +14,7 @@ class AppointmentPayment(BasePayment):
     document_number = models.CharField(max_length=30)
     area_code = models.CharField(max_length=5)
     id_mercado_pago = models.CharField(max_length=30, null=True)
-    total = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal('0.00'))
+    total = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
 
     def get_failure_url(self):
         """
@@ -42,15 +43,18 @@ class AppointmentPayment(BasePayment):
             items.append(purchased_item)
         return items
 
+
 class CartPayment(BasePayment):
-    cart_products = models.ManyToManyField(Product, through='ProductPayment')
+    cart_products = models.ManyToManyField(Product, through="ProductPayment")
     payment_method = models.CharField(max_length=30)
     id_mercado_pago = models.CharField(max_length=30, null=True)
-    cart_total = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal('0.00'))
+    cart_total = models.DecimalField(
+        max_digits=8, decimal_places=2, default=Decimal("0.00")
+    )
 
 
 class ProductPayment(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart_payment = models.ForeignKey(CartPayment, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    total = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal('0.00'))
+    total = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
