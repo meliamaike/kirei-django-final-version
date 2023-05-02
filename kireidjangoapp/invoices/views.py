@@ -40,7 +40,7 @@ def generate_invoice(request, order_id, product_id):
     # Set font and add logo
     pdf.set_font("Arial", "B", 21)
     pdf.image(
-        "/Users/junname/Desktop/Tesis/Kirei/kirei-django-v2/kireidjangoapp/home/static/home/images/logo.png",
+        "{% static 'home/images/logo.png'%}",  # ARREGLAR
         x=5,
         y=12,
         w=50,
@@ -144,9 +144,7 @@ def generate_invoice(request, order_id, product_id):
     from django.http import FileResponse
 
     # Save the PDF to a file
-    filename = (
-        f"/Users/junname/Desktop/Tesis/Kirei/kirei-django-v2/kireidjangoapp/invoice.pdf"
-    )
+    filename = f"/invoice.pdf"
     file_path = os.path.join("path/to/directory", filename)
     with open(file_path, "wb") as f:
         f.write(pdf.output(dest="S").encode("latin1"))

@@ -1,0 +1,14 @@
+{% extends 'staff/base.html'%}
+{% block content %}
+{% load static %}
+{%load plotly_dash%}
+
+<div class="container-fluid">
+    {% plotly_app name='staff_statistic_dashboard' ratio=1%}
+</div>
+
+{% endblock %}
+
+
+
+

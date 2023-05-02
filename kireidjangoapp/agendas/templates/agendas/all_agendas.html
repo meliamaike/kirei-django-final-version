@@ -2,7 +2,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Todas las agendas</h1>
-    <a href="{% url 'agendas:create_agenda' %}" class="btn btn-primary btn-lg">Crear agenda</a>
+    <a href="{% url 'agendas:create_agenda' %}" class="btn btn-primary btn-lg"><i class="bi bi-plus-square-fill"></i> Crear agenda</a>
 </div>
 
 <div class="row">
@@ -26,9 +26,9 @@
                             Más detalles:</div>
                     </div>
                     <div class="col-md-12 mt-3">
-                        <a href="{% url 'agendas:day_modification' agenda.pk %}" class="btn btn-warning mr-2">Modificación por día</a>
-                        <a href="{% url 'agendas:edit_agenda' agenda.pk %}" class="btn btn-success mr-2">Editar Horario</a>
-                        <button type="button" class="btn btn-danger delete-agenda" data-id="{{ agenda.pk }}">Eliminar Agenda</button>
+                        <a href="{% url 'agendas:day_modification' agenda.pk %}" class="btn btn-warning mr-2">Modificación por día <i class="bi bi-calendar-date"></i></a>
+                        <a href="{% url 'agendas:edit_agenda' agenda.pk %}" class="btn btn-success mr-2">Editar Horario <i class="bi bi-clock"></i></a>
+                        <button type="button" class="btn btn-danger delete-agenda" data-id="{{ agenda.pk }}">Eliminar Agenda <i class="bi bi-trash"></i></button>
                     </div>
                       <div class="col-md-12 text-right">
                           <button type="button" class="btn btn-info see-less">-</button>
@@ -36,7 +36,7 @@
                 </div>
                 <div class="row no-gutters align-items-end mt-3">
                     <div class="col-md-12 text-right">
-                        <button type="button" class="btn btn-info see-more">+</button>
+                        <button type="button" class="btn btn-info see-more"><i class="bi bi-plus-lg"></i></button>
                     </div>
                 </div>
             </div>

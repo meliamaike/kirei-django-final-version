@@ -18,6 +18,7 @@ from payments.models import PaymentStatus
 from django.http import HttpResponseBadRequest
 from itertools import groupby
 import mercadopago
+from orders.models import AppointmentOrder
 
 
 def choose_service(request):
@@ -85,31 +86,40 @@ class ChooseSlotView(View):
     def parsing_time(self, time_str):
         time_str_parts = time_str.split()
 
-        if len(time_str_parts) == 8:
-            day, _, month, _, year, _, _, time = time_str_parts
-            hour, minute = time.split(":")
+        if len(time_str_parts) == 5:
+            month, day, year, time, am_pm = time_str_parts
+
+            if len(time) == 1:
+                time += ":00"
+
+            if am_pm == "p.m.":
+                am_pm = "PM"
+            elif am_pm == "a.m.":
+                am_pm = "AM"
 
             months = {
-                "enero": "01",
-                "febrero": "02",
-                "marzo": "03",
-                "abril": "04",
-                "mayo": "05",
-                "junio": "06",
-                "julio": "07",
-                "agosto": "08",
-                "septiembre": "09",
-                "octubre": "10",
-                "noviembre": "11",
-                "diciembre": "12",
+                "Ene.": "01",
+                "Feb.": "02",
+                "Mar.": "03",
+                "Abr.": "04",
+                "May.": "05",
+                "Jun.": "06",
+                "Jul.": "07",
+                "Ago.": "08",
+                "Sep.": "09",
+                "Oct.": "10",
+                "Nov.": "11",
+                "Dic.": "12",
             }
 
+            print(month.rstrip("."))
             # Convert the month name to a number
-            month_number = months[month.lower()]
+            month_number = months[month]
 
             # Construct datetime object
-            date_str = f"{day} {month_number} {year} {time}"
-            date_obj = datetime.strptime(date_str, "%d %m %Y %H:%M")
+            date_str = f"{day} {month_number} {year} {time} {am_pm}"
+
+            date_obj = datetime.strptime(date_str, "%d, %m %Y, %I:%M %p")
 
         return date_obj
 
@@ -263,15 +273,15 @@ def checkout(request):
                 currency="ARS",
                 total=service.price,
                 description=service.service,
-                billing_first_name=customer.first_name,
-                billing_last_name=customer.last_name,
-                billing_email=customer.email,
-                billing_phone=customer.phone_number,
-                document_number=customer.document_number,
-                area_code=customer.area_code,
             )
 
-            request.session["payment_id"] = payment.id
+            order = AppointmentOrder.objects.create(
+                customer=customer,
+                payment=payment,
+            )
+
+            request.session["appointment_payment_id"] = payment.id
+            request.session["appointment_order_id"] = order.id
 
             return render(
                 request,
@@ -281,6 +291,7 @@ def checkout(request):
                     "service": service,
                     "start_date_time": start_date_time,
                     "appointment": appointment,
+                    "order": order,
                 },
             )
 

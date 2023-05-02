@@ -36,12 +36,12 @@
             <div class="card-body">
               <h3 class="card-title">{{ service.service }}</h3>
               <p class="card-text">{{ service.description }}</p>
-              <p class="card-text"><strong>Duration:</strong> {{ service.duration }}</p>
-              <p class="card-text"><strong>Price:</strong> {{ service.price }}</p>
+              <p class="card-text"><strong>Duración:</strong> {{ service.duration }}</p>
+              <p class="card-text"><strong>Precio:</strong> ${{ service.price }}</p>
               <form method="POST" action="{% url 'appointments:choose_service' %}">
                 {% csrf_token %}
                 <input type="hidden" name="service" value="{{ service.id }}">
-                <button type="submit" class="btn btn-primary">Agregar</button>
+                <button type="submit" class="btn btn-primary"> <strong><i class="bi bi-plus-square-fill"></i> Agregar servicio</strong></button>
               </form>
             </div>
           </div>

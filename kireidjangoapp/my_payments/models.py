@@ -11,8 +11,6 @@ from decimal import Decimal
 class AppointmentPayment(BasePayment):
     appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, null=True)
     payment_method = models.CharField(max_length=30)
-    document_number = models.CharField(max_length=30)
-    area_code = models.CharField(max_length=5)
     id_mercado_pago = models.CharField(max_length=30, null=True)
     total = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
 

@@ -23,7 +23,7 @@ class CategoryService(models.Model):
     category = models.CharField(max_length=2, choices=CATEGORY_CHOICES)
 
     def __str__(self):
-        return dict(self.CATEGORY_CHOICES)[self.category]
+        return dict(self.CATEGORY_CHOICES)[self.category][1]
 
 
 class Service(models.Model):

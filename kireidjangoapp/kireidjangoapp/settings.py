@@ -21,6 +21,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Other apps
+    "django_plotly_dash.apps.DjangoPlotlyDashConfig",
     "payments",
     "cart",
     "crispy_forms",
@@ -228,3 +229,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Set the URL prefix for media files
 MEDIA_URL = "/media/"
+
+# DJANGO_PLOYLY_DASH
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
