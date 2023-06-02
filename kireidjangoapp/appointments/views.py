@@ -368,8 +368,6 @@ def mercado_pago_success(request):
         billing_last_name=customer.last_name,
         billing_email=customer.email,
         billing_phone=customer.phone_number,
-        document_number=customer.document_number,
-        area_code=customer.area_code,
     )
 
     return render(

@@ -1,7 +1,8 @@
 {% if register_form %}
+
 <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
+    <div  class="modal-dialog" role="document">
+      <div  class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="registerModalLabel">Registrate ahora</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -9,7 +10,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <form action="{{ current_url }}" method="POST">
+          <form id="register-form" action="{{ current_url }}" method="POST">
             {% csrf_token %}
             <div class="form-row">
                 <div class="form-group col-md-6">
@@ -76,6 +77,18 @@
                 </div>
               </div>
 
+              {% if register_form.errors %}
+              <div class="alert alert-danger">
+                  <ul>
+                      {% for field_errors in register_form.errors.values %}
+                          {% for error in field_errors %}
+                              <li>{{ error }}</li>
+                          {% endfor %}
+                      {% endfor %}
+                  </ul>
+              </div>
+              {% endif %}
+
             <button type="submit" class="btn btn-primary ms-auto" name="register_form_submit">
               Registrarme
           </button>
@@ -93,4 +106,91 @@
       
     </div>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var registerForm = document.getElementById("register-form");
+      var registerModal = document.getElementById("registerModal");
+      var closeButton = document.querySelector(".close");
+  
+      registerForm.addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent default form submission
+  
+        var formData = new FormData(registerForm);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "{% url 'customers:register' %}", true);
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              var response = xhr.responseText;
+              var parser = new DOMParser();
+              var responseDoc = parser.parseFromString(response, "text/html");
+              var newModalContent = responseDoc.getElementById("registerModal");
+  
+              if (newModalContent) {
+                // Replace the entire modal with the updated content
+                registerModal.innerHTML = newModalContent.innerHTML;
+                registerForm = document.getElementById("register-form"); // Reassign the form variable to the updated form
+                registerForm.addEventListener("submit", handleFormSubmit); // Reattach the submit event listener to the updated form
+              } else {
+                // Form is valid, perform desired action (e.g., redirect)
+                $('#registerModal').modal('hide'); // Hide the modal
+                window.location.reload(); // Refresh the page
+              }
+            } else {
+              // Handle error case
+              console.error("Error: " + xhr.status);
+            }
+          }
+        };
+        xhr.send(formData);
+      });
+  
+      function handleFormSubmit(event) {
+        event.preventDefault(); // Prevent default form submission
+  
+        var formData = new FormData(registerForm);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "{% url 'customers:register' %}", true);
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              var response = xhr.responseText;
+              var parser = new DOMParser();
+              var responseDoc = parser.parseFromString(response, "text/html");
+              var newModalContent = responseDoc.getElementById("registerModal");
+  
+              if (newModalContent) {
+                // Replace the entire modal with the updated content
+                registerModal.innerHTML = newModalContent.innerHTML;
+                registerForm = document.getElementById("register-form"); // Reassign the form variable to the updated form
+                registerForm.addEventListener("submit", handleFormSubmit); // Reattach the submit event listener to the updated form
+              } else {
+                // Form is valid, perform desired action (e.g., redirect)
+                $('#registerModal').modal('hide'); // Hide the modal
+                window.location.reload(); // Refresh the page
+              }
+            } else {
+              // Handle error case
+              console.error("Error: " + xhr.status);
+            }
+          }
+        };
+        xhr.send(formData);
+      }
+  
+      closeButton.addEventListener("click", function() {
+        registerForm.removeEventListener("submit", handleFormSubmit); // Remove the submit event listener when the modal is closed
+      });
+    });
+  </script>
+
+  
+
+  
   {% endif %}
+
+  
+  

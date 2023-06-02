@@ -21,6 +21,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Other apps
+    "bootstrap_datepicker_plus",
+    "django_extensions",
     "django_plotly_dash.apps.DjangoPlotlyDashConfig",
     "payments",
     "cart",
@@ -233,3 +235,9 @@ MEDIA_URL = "/media/"
 # DJANGO_PLOYLY_DASH
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
+
+# Graph models
+# GRAPH_MODELS = {
+#   'all_applications': True,
+#   'group_models': True,
+# }

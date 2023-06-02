@@ -39,12 +39,13 @@ def generate_invoice(request, order_id, product_id):
 
     # Set font and add logo
     pdf.set_font("Arial", "B", 21)
-    pdf.image(
-        "{% static 'home/images/logo.png'%}",  # ARREGLAR
-        x=5,
-        y=12,
-        w=50,
-    )
+
+    import os
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    image_path = os.path.join(current_dir, "logo.png")
+
+    pdf.image(image_path, x=5, y=6, w=50)
 
     # Add title and blank lines
     pdf.cell(0, 10, "FACTURA", 0, 0, "C")
@@ -144,8 +145,10 @@ def generate_invoice(request, order_id, product_id):
     from django.http import FileResponse
 
     # Save the PDF to a file
-    filename = f"/invoice.pdf"
-    file_path = os.path.join("path/to/directory", filename)
+
+    filename = "invoice.pdf"
+    file_path = os.path.join(os.path.dirname(__file__), filename)
+
     with open(file_path, "wb") as f:
         f.write(pdf.output(dest="S").encode("latin1"))
 

@@ -1,4 +1,6 @@
 {% extends 'staff/base.html'%}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'staff:staff_appointments_dashboard'%}">Turnos</a>{% endblock %}
+{% block breadcrumb-item-active %}Todos los turnos{% endblock %}
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Todos los turnos</h1>
@@ -36,7 +38,7 @@
                                     <td>{{ group.service }}</td>
                                     <td>{{ appointment.start_time }}</td>
                                     <td>
-                                        <span class="btn btn-primary">
+                                        <span class="btn btn-danger">
                                             <a style="color:white; font-style: normal !important;" href="{% url 'staff:staff_cancel_appointment' %}?ids={% for appointment in group.appointments %}{{ appointment.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
                                                 <i class="bi bi-trash"></i>
                                             </a>
@@ -45,6 +47,7 @@
                                 </tr>
                             {% endwith %}
                         {% endfor %}
+                
                     </tbody>  
                 </table>
             </div>

@@ -1,8 +1,139 @@
 {% extends 'staff/base.html'%}
-
-{% block title%}Kirei-Dashboard{% endblock %}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'staff:staff_main_dashboard'%}">Inicio</a>{% endblock %}
+{% block breadcrumb-item-active %}{% endblock %} 
 {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Inicio</h1>
+</div>
 {% load static %}
-<h1>This is the main_dashboard</h1>
+<div class="card">
+    <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header font-weight-bold text-dark">Métricas de performance</div>
+          <div class="card-body">
+            <div class="row">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total ganancia reservas
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">${{ appointment_total_revenue|default:0 }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Total ganancias productos
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">${{product_total_revenue|default:0}}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Cantidad total de usuarios
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{customer_count}}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-danger  shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        Servicio más reservado
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{most_booked_service}}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header font-weight-bold text-dark">Actividades recientes</div>
+          <div class="card-body">
+            <ul class="list-group">
+              <li class="list-group-item">
+                <span class="font-weight-bold">Nueva orden:</span>
+                <span class="float-right">#{{ last_order.cart_payment.id }}-{{ last_order.cart_payment.created }}</span>
+              </li>
+              <li class="list-group-item">
+                <span class="font-weight-bold">Última reserva:</span>
+                <span class="float-right">{{ last_appointment.created }}</span>
+              </li>
+              <li class="list-group-item">
+                <span class="font-weight-bold">Nuevo cliente:</span>
+                <span class="float-right">{{ last_user.first_name }} {{ last_user.last_name }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header font-weight-bold text-dark">Accesos rápidos</div>
+            <div class="card-body">
+              <a href="{% url 'products:create_product' %}" class="btn btn-primary mr-2">
+                <i class="bi bi-plus-square-fill"></i> Crear nuevo producto
+              </a>
+              <a href="{% url 'agendas:all_agenda'%}" class="btn btn-primary mr-2">
+                <i class="bi bi-book"></i> Modificar agenda del profesional
+              </a>
+              <a href="{% url 'staff:staff_statistic_dashboard' %}" class="btn btn-primary">
+                <i class="bi bi-clipboard-data"></i> Ver estadísticas
+              </a>
+            </div>
+          </div>
+        </div>
+    </div>
+      
+
+</div>
+</div>
 
 {% endblock %}

@@ -1,8 +1,10 @@
 {% extends 'staff/base.html'%}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'agendas:all_agenda'%}">Agendas</a>{% endblock %}
+{% block breadcrumb-item-active %}Todas las agendas{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Todas las agendas</h1>
-    <a href="{% url 'agendas:create_agenda' %}" class="btn btn-primary btn-lg"><i class="bi bi-plus-square-fill"></i> Crear agenda</a>
+    <a href="{% url 'agendas:create_agenda' %}" class="btn btn-primary btn-lg"><i class="bi bi-plus-square-fill"></i> Nueva agenda</a>
 </div>
 
 <div class="row">
@@ -31,12 +33,12 @@
                         <button type="button" class="btn btn-danger delete-agenda" data-id="{{ agenda.pk }}">Eliminar Agenda <i class="bi bi-trash"></i></button>
                     </div>
                       <div class="col-md-12 text-right">
-                          <button type="button" class="btn btn-info see-less">-</button>
+                          <button type="button" class="btn btn-info see-less"><i class="bi bi-chevron-up"></i></button>
                       </div>
                 </div>
                 <div class="row no-gutters align-items-end mt-3">
                     <div class="col-md-12 text-right">
-                        <button type="button" class="btn btn-info see-more"><i class="bi bi-plus-lg"></i></button>
+                        <button type="button" class="btn btn-info see-more"><i class="bi bi-chevron-down"></i></button>
                     </div>
                 </div>
             </div>

@@ -14,5 +14,9 @@ urlpatterns = [
     path("", include(("appointments.urls", "appointments"), namespace="appointments")),
     path("", include(("orders.urls", "orders"), namespace="orders")),
     path("", include(("invoices.urls", "invoices"), namespace="invoices")),
+    path("", include(("services.urls", "services"), namespace="services")),
+    path(
+        "", include(("professionals.urls", "professionals"), namespace="professionals")
+    ),
     path("django_plotly_dash/", include("django_plotly_dash.urls")),
 ]

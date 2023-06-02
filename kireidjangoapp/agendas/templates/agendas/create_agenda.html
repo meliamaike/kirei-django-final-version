@@ -1,8 +1,14 @@
 {% extends 'staff/base.html'%}
-{% block title %}Definir agenda{% endblock %}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'agendas:all_agenda'%}">Agendas</a>{% endblock %}
+{% block breadcrumb-item-active %}Nueva agenda{% endblock %}
+
+                          
+{% block title %}Nueva agenda{% endblock %}
 {% block content %}
+
 {% load crispy_forms_tags %}
 
+  
 <div class="card shadow mb-4">
   
   <div class="card-body">

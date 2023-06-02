@@ -37,9 +37,9 @@ def create_agenda(request):
     return render(request, "agendas/create_agenda.html", context)
 
 
-def agenda_list(request):
+def all_agenda(request):
     agendas = Agenda.objects.all()
-    return render(request, "agendas/all_agendas.html", {"agendas": agendas})
+    return render(request, "agendas/all_agenda.html", {"agendas": agendas})
 
 
 def agenda_modifications_list(request):
@@ -68,14 +68,14 @@ def edit_agenda(request, pk):
                 start_time=form.cleaned_data["start_time"],
                 end_time=form.cleaned_data["end_time"],
             )
-            return redirect("agendas:all_agendas")
+            return redirect("agendas:all_agenda")
     else:
         form = EditAgendaForm(instance=agenda)
         context = {"form": form, "agenda": agenda}
         return render(request, "agendas/edit_agenda.html", context)
 
     context = {"form": form, "agenda": agenda}
-    return render(request, "agendas/all_agendas.html", context)
+    return render(request, "agendas/all_agenda.html", context)
 
 
 def day_modification(request, pk):
@@ -107,5 +107,5 @@ def delete_agenda(request, pk):
     agenda = get_object_or_404(Agenda, pk=pk)
     if request.method == "POST":
         agenda.delete()
-        return redirect("agendas/all_agendas.html")
-    return render(request, "agendas/all_agendas.html", {"agenda": agenda})
+        return redirect("agendas/all_agenda.html")
+    return render(request, "agendas/all_agenda.html", {"agenda": agenda})

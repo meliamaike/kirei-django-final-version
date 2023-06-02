@@ -1,13 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from staff.forms import StaffLoginForm
 from django.contrib.auth import authenticate
 from agendas.models import Agenda
+from orders.models import ProductOrder
 from products.models import Product
 from professionals.models import Professional
 from customers.models import Customer
 from appointments.models import Appointment
-from my_payments.models import ProductPayment
+from my_payments.models import ProductPayment, AppointmentPayment, CartPayment
 from django_plotly_dash import DjangoDash
 from dash import dcc, html
 from dash.dependencies import Input, Output
@@ -25,6 +26,9 @@ import numpy as np
 from django.views.decorators.http import require_GET
 from django.urls import reverse
 from itertools import groupby
+from django.db.models import Sum
+from datetime import date
+from django.db.models import Q
 
 
 # STATISTICS
@@ -88,16 +92,17 @@ app.layout = dbc.Container(
     [dash.dependencies.Input("category-service-chart", "hoverData")],
 )
 def category_service_chart(hoverData):
+    categories = dict(CategoryService.objects.values_list("id", "category"))
+
     services = Service.objects.all().select_related("category")
     df_services = pd.DataFrame.from_records(
-        services.values("id", "service", "category__category")
+        services.values("id", "service", "category__id")
     )
 
-    categories = dict(CategoryService.CATEGORY_CHOICES)
-
-    # Replace the category codes with their human-readable names
-    df_services = df_services.rename(columns={"category__category": "category"})
-    df_services["category"] = df_services["category"].apply(lambda x: categories[x])
+    # Replace the category IDs with their human-readable names
+    df_services["category"] = df_services["category__id"].apply(
+        lambda x: categories.get(x)
+    )
 
     # Count the number of services in each category
     service_counts = df_services["category"].value_counts()
@@ -126,6 +131,7 @@ def category_service_chart(hoverData):
     return fig
 
 
+# Productos x categoria
 @app.callback(
     dash.dependencies.Output("products-category-chart", "figure"),
     [dash.dependencies.Input("products-category-chart", "hoverData")],
@@ -151,6 +157,7 @@ def products_category_chart(hoverData):
     return fig
 
 
+# Cantidad de Agendas según horario de inicio
 @app.callback(
     dash.dependencies.Output("agenda-graph", "figure"),
     [dash.dependencies.Input("agenda-graph", "hoverData")],
@@ -177,6 +184,7 @@ def update_agenda_graph(hoverData):
     return fig
 
 
+# Cantidad de profesionales por día
 @app.callback(
     dash.dependencies.Output("professional-graph", "figure"),
     [dash.dependencies.Input("professional-graph", "hoverData")],
@@ -193,31 +201,38 @@ def update_professional_graph(hoverData):
     # Create a DataFrame from the queryset
     df = pd.DataFrame(professional_counts)
 
-    # Create the plotly figure
-    fig = px.scatter(
-        df,
-        x="start_day",
-        y="count",
-        trendline="ols",
-        title="Cantidad de profesionales según fecha de inicio",
+    df["start_day"] = pd.to_datetime(df["start_day"])
+
+    fig = go.Figure()
+
+    bar_trace = go.Bar(
+        x=df["start_day"],
+        y=df["count"],
+        name="Cantidad de profesionales",
     )
 
-    # Set the x-axis label
-    fig.update_xaxes(title_text="Fecha de inicio")
+    fig.add_trace(bar_trace)
 
-    # Set the y-axis label
-    fig.update_yaxes(title_text="Cantidad de profesionales")
+    fig.update_layout(
+        title="Cantidad de profesionales nuevos por día",
+        xaxis=dict(
+            title="Fecha de inicio",
+            tickformat="%Y-%m-%d",
+            tickmode="array",
+            tickvals=df["start_day"],
+            ticktext=df["start_day"].dt.strftime("%Y-%m-%d"),
+            dtick="M1",  # Display ticks every 1 month
+        ),
+        yaxis=dict(title="Cantidad de profesionales"),
+    )
 
-    # Set the x-axis tick format
-    fig.update_xaxes(tickformat="%Y-%m-%d", tickmode="linear", dtick="D1")
-
-    # Set the y-axis tick format
     fig.update_yaxes(tickmode="linear", dtick=1)
 
     # Display the chart
     return fig
 
 
+# Ganancias Totales por día
 @app.callback(
     dash.dependencies.Output("payment-chart", "figure"),
     [dash.dependencies.Input("payment-chart", "hoverData")],
@@ -276,9 +291,11 @@ def update_payment_chart(hoverData):
     fig.update_layout(title_text="Ganancias Totales por día")
 
     # Return the updated figure
+
     return fig
 
 
+# Cantidad Total de Clientes
 @app.callback(
     Output("customer-graph", "figure"), [Input("customer-graph", "hoverData")]
 )
@@ -287,7 +304,7 @@ def update_customer_graph(n_clicks):
     fig = {
         "data": [
             {
-                "x": ["Total Customers"],
+                "x": ["Clientes totales"],
                 "y": [total_customers],
                 "type": "bar",
                 "text": total_customers,
@@ -300,6 +317,7 @@ def update_customer_graph(n_clicks):
     return fig
 
 
+# Servicios más reservados
 @app.callback(
     Output("most-reserved-service-graph", "figure"),
     [Input("most-reserved-service-graph", "hoverData")],
@@ -333,6 +351,7 @@ def update_most_reserved_service_graph(n):
     return fig
 
 
+# Cantidad de reservas por día
 @app.callback(
     Output("appointment-day-count", "figure"),
     [Input("appointment-day-count", "hoverData")],
@@ -358,6 +377,7 @@ def update_appointment_day_count(n):
     return fig
 
 
+# Cantidad de reservas por mes y por año
 @app.callback(Output("appointment-count", "figure"), [Input("time-period", "value")])
 def update_appointment_count(time_period):
     # Get all appointments and count the number of appointments per month/year
@@ -388,6 +408,7 @@ def update_appointment_count(time_period):
     return fig
 
 
+# Productos más ordenados
 @app.callback(
     Output("most-ordered-product", "figure"), Input("most-ordered-product", "hoverData")
 )
@@ -419,7 +440,40 @@ def staff_statistic_dashboard(request):
 
 
 def staff_main_dashboard(request):
-    return render(request, "staff/main_dashboard.html")
+    appointment_total_revenue = AppointmentPayment.objects.aggregate(
+        total_revenue=Sum("total")
+    )["total_revenue"]
+    product_total_revenue = ProductPayment.objects.aggregate(
+        total_revenue=Sum("total")
+    )["total_revenue"]
+    customer_count = Customer.objects.filter(is_admin=False, is_staff=False).count()
+    most_booked_service = (
+        Service.objects.annotate(reservation_count=Count("appointment"))
+        .order_by("-reservation_count")
+        .first()
+    )
+    last_appointment = AppointmentPayment.objects.order_by("-id").first()
+
+    last_order = ProductPayment.objects.order_by("-id").first()
+
+    last_user = (
+        Customer.objects.filter(is_admin=False, is_staff=False).order_by("-id").first()
+    )
+    context = {
+        "appointment_total_revenue": appointment_total_revenue
+        if appointment_total_revenue is not None
+        else 0,
+        "product_total_revenue": product_total_revenue
+        if product_total_revenue is not None
+        else 0,
+        "customer_count": customer_count,
+        "most_booked_service": most_booked_service,
+        "last_appointment": last_appointment,
+        "last_order": last_order,
+        "last_user": last_user,
+    }
+
+    return render(request, "staff/main_dashboard.html", context)
 
 
 def staff_login(request):
@@ -458,7 +512,11 @@ def staff_logout(request):
 
 
 def staff_appointments_dashboard(request):
-    appointments = Appointment.objects.all().order_by("date", "professional", "service")
+    today = date.today()
+
+    appointments = Appointment.objects.filter(
+        Q(date__gte=today) | Q(date=today)
+    ).order_by("date", "professional", "service")
 
     grouped_appointments = []
     for key, group in groupby(
@@ -477,7 +535,7 @@ def staff_appointments_dashboard(request):
     return render(
         request,
         "staff/appointments_dashboard.html",
-        {"grouped_appointments": grouped_appointments},
+        {"grouped_appointments": grouped_appointments, "appointments": appointments},
     )
 
 
@@ -502,3 +560,105 @@ def staff_customers_dashboard(request):
     context = {"customers": customers}
 
     return render(request, "staff/customers_dashboard.html", context)
+
+
+def staff_create_appointment(request):
+    return render(request, "staff/create_appointment.html")
+
+
+def not_available(request):
+    return render(request, "staff/not_available.html")
+
+
+def staff_orders_dashboard(request):
+    orders = ProductOrder.objects.all()
+
+    return render(request, "staff/orders_dashboard.html", {"orders": orders})
+
+
+def orders_details(request, order_id, product_id):
+    order = get_object_or_404(ProductOrder, pk=order_id)
+    product = get_object_or_404(Product, pk=product_id)
+    payment_method = order.payment.payment_method
+    payment_status = order.payment.status
+    payment_total = order.payment.cart_total
+    specific_product = order.payment.productpayment_set.get(product_id=product_id)
+
+    # get all ProductPayments with the same cart_payment_id
+    product_payments = ProductPayment.objects.filter(
+        cart_payment_id=specific_product.cart_payment_id
+    )
+
+    # sum the quantities of all ProductPayments
+    total_quantity = product_payments.aggregate(Sum("quantity"))["quantity__sum"]
+
+    return render(
+        request,
+        "staff/orders_details.html",
+        {
+            "order": order,
+            "product": product,
+            "payment_method": payment_method,
+            "payment_status": payment_status,
+            "payment_total": payment_total,
+            "specific_product": specific_product,
+            "total_quantity": total_quantity,
+        },
+    )
+
+
+from django.contrib.auth.forms import PasswordResetForm
+from django.core.mail import send_mail, BadHeaderError
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.shortcuts import render, redirect, HttpResponse
+from django.contrib.auth import login, logout
+from django.contrib import messages
+
+
+# Forgot password
+def staff_password_reset(request):
+    if request.method == "POST":
+        password_reset_form = PasswordResetForm(request.POST)
+        if password_reset_form.is_valid():
+            data = password_reset_form.cleaned_data["email"]
+            associated_users = Customer.objects.filter(Q(email=data))
+            if associated_users.exists():
+                for user in associated_users:
+                    subject = "Cambio de contraseña"
+                    email_template_name = "staff/password/password_reset_email.txt"
+
+                    c = {
+                        "email": user.email,
+                        "domain": "127.0.0.1:8000",
+                        "site_name": "Kirei estética",
+                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                        "user": user,
+                        "token": default_token_generator.make_token(user),
+                        "protocol": "http",
+                    }
+                    email = render_to_string(email_template_name, c)
+                    try:
+                        send_mail(
+                            subject,
+                            email,
+                            "hola@kirei.com",
+                            [user.email],
+                            fail_silently=False,
+                        )
+                    except BadHeaderError:
+                        return HttpResponse("Se encontró una cabecera invalida..")
+                    messages.success(
+                        request,
+                        "Te enviamos un e-mail con las instrucciones para poder cambiar la contraseña.",
+                    )
+                    return redirect("staff:staff_login")
+    password_reset_form = PasswordResetForm()
+
+    return render(
+        request=request,
+        template_name="staff/password/password_reset_form.html",
+        context={"form": password_reset_form},
+    )

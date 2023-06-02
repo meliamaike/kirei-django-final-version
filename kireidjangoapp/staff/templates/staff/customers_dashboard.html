@@ -1,4 +1,6 @@
 {% extends 'staff/base.html'%}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'staff:staff_customers_dashboard'%}">Clientes</a>{% endblock %}
+{% block breadcrumb-item-active %}Todos los clientes{% endblock %}
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Todos los clientes</h1>
@@ -13,7 +15,7 @@
                             <th>Nombre y Apellido</th>
                             <th>Nro. DNI</th>
                             <th>E-mail</th>
-                            <th>Cód. de área</th>
+                            {% comment %} <th>Cód. de área</th> {% endcomment %}
                             <th>Nro. Teléfono</th>
                         </tr>
                     </thead>
@@ -22,20 +24,22 @@
                             <th>Nombre y Apellido</th>
                             <th>Nro. DNI</th>
                             <th>E-mail</th>
-                            <th>Cód. de área</th>
+                            {% comment %} <th>Cód. de área</th> {% endcomment %}
                             <th>Nro. Teléfono</th>
                         </tr>
                     </tfoot>
                     
                     <tbody>
                         {% for c in customers %}
+                        {% if not c.is_admin%}
                                 <tr style="text-align: center;">
                                     <td>{{ c.first_name }} {{ c.last_name }}</td>
                                     <td>{{ c.document_number }}</td>
                                     <td>{{ c.email }}</td>
-                                    <td>{{ c.area_code }}</td>
-                                    <td>{{ c.phone_number}}</td>
+                                    <td>{{ c.area_code }}-{{ c.phone_number}}</td>
+                                    {% comment %} <td></td> {% endcomment %}
                                 </tr>
+                        {% endif%}        
                         {% endfor %}
                     </tbody>  
                 </table>

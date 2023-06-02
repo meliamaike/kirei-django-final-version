@@ -12,7 +12,9 @@ class AppointmentPayment(BasePayment):
     appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, null=True)
     payment_method = models.CharField(max_length=30)
     id_mercado_pago = models.CharField(max_length=30, null=True)
-    total = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
+    total = models.DecimalField(
+        max_digits=15, decimal_places=2, default=Decimal("0.00")
+    )
 
     def get_failure_url(self):
         """
@@ -47,7 +49,7 @@ class CartPayment(BasePayment):
     payment_method = models.CharField(max_length=30)
     id_mercado_pago = models.CharField(max_length=30, null=True)
     cart_total = models.DecimalField(
-        max_digits=8, decimal_places=2, default=Decimal("0.00")
+        max_digits=15, decimal_places=2, default=Decimal("0.00")
     )
 
 
@@ -55,4 +57,6 @@ class ProductPayment(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart_payment = models.ForeignKey(CartPayment, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    total = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
+    total = models.DecimalField(
+        max_digits=15, decimal_places=2, default=Decimal("0.00")
+    )

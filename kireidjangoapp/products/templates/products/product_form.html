@@ -1,0 +1,99 @@
+{% extends 'staff/base.html'%}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'products:all_product'%}">Productos</a>{% endblock %}
+{% block breadcrumb-item-active %}Nuevo producto{% endblock %}
+
+                          
+{% block title %}Nuevo producto{% endblock %}
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+  
+<div class="card shadow mb-4">
+  
+  <div class="card-body">
+    <div class="row justify-content-sm-center h-100">
+      <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+        <form method="POST" action="" class="needs-validation" enctype="multipart/form-data" autocomplete="off" id="create-product-form">
+          <div class="mb-3">
+                {% csrf_token %}
+                {{ form|crispy }}
+          </div>
+          <div class="mb-3">
+            <div class="d-flex align-items-center">
+                <button id="submit_create" type="submit" class="btn btn-primary ms-auto" >
+                    Guardar
+                </button>
+                <a href="{% url 'products:all_product' %}" class="btn btn-secondary m-1">
+                  Cancelar
+                </a>
+            </div>
+          </div>    
+      </form>
+      </div>
+  </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const submitBtn = document.querySelector("#submit_create");
+    const form = document.querySelector("#create-product-form");
+  
+    submitBtn.addEventListener("click", async (event) => {
+      event.preventDefault();
+  
+      try {
+        const response = await fetch("/staff/product/create", {
+          method: "POST",
+          body: new FormData(form),
+        });
+  
+        const data = await response.text();
+  
+        if (response.ok) {
+          await Swal.fire({
+            title: "Se creó el producto exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK"
+          });
+  
+          window.location.href = "/staff/product/all";
+        } else {
+          const modalContent = JSON.parse(data.modal_content);
+  
+          Swal.fire({
+            title: modalContent.title,
+            text: modalContent.text,
+            icon: "error",
+            showCloseButton: true,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = "/staff/product/all";
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Intente más tarde o comuníquese con el Administrador.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false
+        }).then(() => {
+          window.location.href = "/staff/product/all";
+        });
+      }
+    });
+  });
+  
+</script>
+
+
+
+
+
+
+{% endblock %}
+
+
+  

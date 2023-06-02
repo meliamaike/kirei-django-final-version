@@ -2,35 +2,17 @@ from django.db import models
 
 
 class CategoryService(models.Model):
-    THREADING = "TH"
-    MANICURE = "MN"
-    PEDICURE = "PD"
-    FACIALS = "FC"
-    BROWS = "BW"
-    EYELASHES = "EL"
-    LIPS = "LP"
-
-    CATEGORY_CHOICES = [
-        (THREADING, "Threading"),
-        (MANICURE, "Manos"),
-        (PEDICURE, "Pies"),
-        (FACIALS, "Cuidado de la piel"),
-        (BROWS, "Cejas"),
-        (EYELASHES, "Pestañas"),
-        (LIPS, "Labios"),
-    ]
-
-    category = models.CharField(max_length=2, choices=CATEGORY_CHOICES)
+    category = models.CharField(max_length=100)
 
     def __str__(self):
-        return dict(self.CATEGORY_CHOICES)[self.category][1]
+        return self.category
 
 
 class Service(models.Model):
     service = models.CharField(max_length=200)
     category = models.ForeignKey(CategoryService, on_delete=models.SET_NULL, null=True)
     description = models.TextField(
-        verbose_name="Product Description",
+        verbose_name="Descripción del producto",
         blank=True,
         default="",
         help_text="Ingrese una breve descripción del servicio.",
@@ -45,7 +27,7 @@ class Service(models.Model):
             (180, "180 min"),
         ]
     )
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=15, decimal_places=0)
 
     def __str__(self):
         return "{} - {} - {} mins ".format(self.category, self.service, self.duration)

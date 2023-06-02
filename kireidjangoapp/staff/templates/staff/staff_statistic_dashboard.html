@@ -1,4 +1,6 @@
 {% extends 'staff/base.html'%}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'staff:staff_statistic_dashboard'%}">Estadísticas</a>{% endblock %}
+{% block breadcrumb-item-active %}Todos las estadísticas{% endblock %}
 {% block content %}
 {% load static %}
 {%load plotly_dash%}

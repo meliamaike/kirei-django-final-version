@@ -1,0 +1,30 @@
+{% extends 'staff/base.html' %}
+
+{% block breadcrumb-item %}
+  <a class="breadcrumb-item" href="{% url 'staff:staff_appointments_dashboard' %}">Turnos</a>
+{% endblock %}
+
+{% block breadcrumb-item-active %}Nuevo turno{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Nuevo turno</h1>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="text-center">
+              <h2 class="font-weight-bold text-dark"><i class="bi bi-emoji-frown-fill"></i> Para reservar, diríjase a la página de reservas de Kirei.</h2>
+              <p class="lead text-gray-800 mb-5">El panel del staff no tiene soporte para reservar turnos en este momento.</p>
+              <a href="/booking/service" class="btn btn-primary mt-3">Ir a Reservar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </div>
+{% endblock %}

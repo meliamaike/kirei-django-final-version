@@ -8,9 +8,8 @@ from django.contrib.auth import views as auth_views
 app_name = "agendas"
 
 urlpatterns = [
-    path("agenda/all", views.agenda_list, name="all_agendas"),
+    path("agenda/all", views.all_agenda, name="all_agenda"),
     path("agenda/create", views.create_agenda, name="create_agenda"),
-    # path("agenda/<int:pk>/", views.agenda_detail, name="agenda_detail"),
     path("agenda/<int:pk>/edit", views.edit_agenda, name="edit_agenda"),
     path(
         "agenda/<int:pk>/day_modification",

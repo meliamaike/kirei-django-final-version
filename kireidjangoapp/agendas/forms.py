@@ -1,5 +1,7 @@
 from django import forms
 from agendas.models import Agenda, AgendaModifications
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Row, Column
 
 
 class AgendaForm(forms.ModelForm):
@@ -8,6 +10,16 @@ class AgendaForm(forms.ModelForm):
         self.fields["professional"].label = "Profesional"
         self.fields["start_time"].label = "Horario de inicio"
         self.fields["end_time"].label = "Horario de finalización"
+
+        self.fields["professional"].choices = [
+            ("", "Elegí el nombre del profesional...")
+        ] + list(self.fields["professional"].choices)[1:]
+        self.fields["start_time"].choices = [
+            ("", "Elegí el horario de inicio...")
+        ] + list(self.fields["start_time"].choices)[1:]
+        self.fields["end_time"].choices = [
+            ("", "Elegí el horario de finalización...")
+        ] + list(self.fields["end_time"].choices)[1:]
 
     class Meta:
         model = Agenda

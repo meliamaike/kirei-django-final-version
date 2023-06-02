@@ -11,9 +11,6 @@
     <meta name="author" content="">
 
     <title> Kirei Staff- Dashboard</title>
-
-    <!-- Custom fonts for this template-->
-    {% comment %} <link href="{% static 'staff/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css"> {% endcomment %}
     
     
     <link
@@ -49,7 +46,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'staff:staff_main_dashboard' %}">
                 <div class="sidebar-brand-text mx-3"><img src="{% static 'home/images/logo.png'%}" style="max-width: 80% !important;"></div>
             </a>
 
@@ -72,8 +69,40 @@
                 Staff
             </div>
 
-
-            <!-- Nav Item - Agendas Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseServicios"
+                    aria-expanded="true" aria-controls="collapseServicios">
+                    <i class="bi bi-clipboard-heart"></i>
+                    <span>Servicios</span>
+                </a>
+                <div id="collapseServicios" class="collapse" aria-labelledby="headingServicios"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Categorías de Servicios</h6>
+                        <a class="collapse-item" href="{% url 'services:all_category_service'%}"><i class="bi bi-collection-fill"></i> Todas las categorías</a>
+                        <a class="collapse-item" href="{% url 'services:create_category_service'%}"><i class="bi bi-plus-square-fill"></i> Nueva categoría</a>
+                        
+                        <div class="collapse-divider"></div>
+                        <h6 class="collapse-header">Servicios</h6>
+                        <a class="collapse-item" href="{% url 'services:all_service'%}"><i class="bi bi-collection-fill"></i> Todos los servicios</a>
+                        <a class="collapse-item" href="{% url 'services:create_service'%}"><i class="bi bi-plus-square-fill"></i> Nuevo servicio</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProfesionales"
+                    aria-expanded="true" aria-controls="collapseProfesionales">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Profesionales</span>
+                </a>
+                <div id="collapseProfesionales" class="collapse" aria-labelledby="headingProfesionales"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{% url 'professionals:all_professional'%}"><i class="bi bi-collection-fill"></i> Todos los profesionales</a>
+                        <a class="collapse-item" href="{% url 'professionals:create_professional' %}"><i class="bi bi-plus-square-fill"></i> Nuevo profesional</a>
+                    </div>
+                </div>
+            </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAgendas"
                     aria-expanded="true" aria-controls="collapseAgendas">
@@ -83,12 +112,28 @@
                 <div id="collapseAgendas" class="collapse" aria-labelledby="headingAgendas"
                     data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Acciones</h6>
-                        <a class="collapse-item" href="{% url 'agendas:all_agendas'%}">Todas las agendas</a>
-                        <a class="collapse-item" href="{% url 'agendas:all_modifications_agenda' %}">Modificaciones en agendas</a>
+                        <a class="collapse-item" href="{% url 'agendas:all_agenda'%}"><i class="bi bi-collection-fill"></i> Todas las agendas</a>
+                        <a class="collapse-item" href="{% url 'agendas:create_agenda' %}"><i class="bi bi-plus-square-fill"></i> Nueva agenda</a>
+                        <a class="collapse-item" href="{% url 'agendas:all_modifications_agenda' %}"><i class="bi bi-pencil-square"></i> Modificaciones</a>
                     </div>
                 </div>
             </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProductos"
+                    aria-expanded="true" aria-controls="collapseProductos">
+                    <i class="bi bi-basket"></i>
+                    <span>Productos</span>
+                </a>
+                <div id="collapseProductos" class="collapse" aria-labelledby="headingProductos"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{% url 'products:all_product'%}"><i class="bi bi-collection-fill"></i> Todos los productos</a>
+                        <a class="collapse-item" href="{% url 'products:create_product' %}"><i class="bi bi-plus-square-fill"></i> Nuevo producto</a>
+                    </div>
+                </div>
+            </li>
+            
+            
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -101,14 +146,24 @@
             <!-- Nav Item - Pages Collapse Menu -->
             
 
-            <!-- Nav Item - Charts -->
+            <!-- Nav Item - Appointments -->
+            
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'staff:staff_appointments_dashboard'%}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAppointments"
+                    aria-expanded="true" aria-controls="collapseAppointments">
                     <i class="bi bi-calendar3"></i>
-                    <span>Turnos</span></a>
+                    <span>Turnos</span>
+                </a>
+                <div id="collapseAppointments" class="collapse" aria-labelledby="headingAppointments"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="{% url 'staff:staff_appointments_dashboard'%}"><i class="bi bi-collection-fill"></i> Todos los turnos</a>
+                        <a class="collapse-item" href="{% url 'staff:staff_create_appointment' %}"><i class="bi bi-plus-square-fill"></i> Nuevo turno</a>
+                    </div>
+                </div>
             </li>
 
-            <!-- Nav Item - Tables -->
+            <!-- Nav Item - Customers -->
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'staff:staff_customers_dashboard'%}"">
                     <i class="bi bi-person-video2"></i>
@@ -119,22 +174,12 @@
                     <i class="bi bi-clipboard-data"></i>
                     <span>Estadísticas</span>
                 </a>
-                 {% comment %} <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-                    aria-expanded="true" aria-controls="collapsePages">
-                    
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'staff:staff_orders_dashboard' %}">
+                    <i class="bi bi-receipt-cutoff"></i>
+                    <span>Órdenes de Compra</span>
                 </a>
-               <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Login Screens:</h6>
-                        <a class="collapse-item" href="login.html">Login</a>
-                        <a class="collapse-item" href="register.html">Register</a>
-                        <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                        <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Other Pages:</h6>
-                        <a class="collapse-item" href="404.html">404 Page</a>
-                        <a class="collapse-item" href="blank.html">Blank Page</a>
-                    </div>
-                </div> {% endcomment %}
             </li>
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -177,11 +222,11 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="/staff/not-available">
                                     <i class="bi bi-person-circle"></i>
                                     Mi perfil
                                 </a>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="/staff/not-available">
                                     <i class="bi bi-gear-fill"></i>
                                     Configuración
                                 </a>
@@ -200,6 +245,14 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+
+                    <div class="container-breadcrumb">
+                        <nav class="breadcrumb">
+                            {% block breadcrumb-item %}{% endblock %}
+                            <span class="breadcrumb-item active">{% block breadcrumb-item-active %}{% endblock %}</span>
+                            
+                       </nav>
+                      </div>
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">

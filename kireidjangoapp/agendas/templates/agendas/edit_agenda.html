@@ -1,4 +1,6 @@
-{% extends 'staff/dashboard.html'%}
+{% extends 'staff/base.html'%}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'agendas:all_agenda'%}">Agendas</a>{% endblock %}
+{% block breadcrumb-item-active %}Editar agenda{% endblock %}
 {% block title %}Editar agenda{% endblock %}
 {% block content %}
 {% load crispy_forms_tags %}
@@ -18,7 +20,7 @@
                 <button type="submit" class="btn btn-primary m-1">
                     Guardar
                 </button>
-                <a href="{% url 'agendas:all_agendas' %}" class="btn btn-secondary m-1">
+                <a href="{% url 'agendas:all_agenda' %}" class="btn btn-secondary m-1">
                   Cancelar
                 </a>
                 

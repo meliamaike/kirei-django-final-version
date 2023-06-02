@@ -1,6 +1,8 @@
 {% extends 'home/base.html' %}
 
 {% load static %}
+{% load my_filters %}
+
 
 {% block content %}
 
@@ -10,7 +12,7 @@
     <div class="col-md-3 py-5">
       <div class="container-breadcrumb">
         <nav class="breadcrumb">
-          <a class="breadcrumb-item" href="/">Inicio</a>
+          <a class="breadcrumb-item text-secondary" href="/">Inicio</a>
           <span class="breadcrumb-item active">Tienda</span>
         </nav>
       </div>
@@ -61,7 +63,7 @@
                     {% for category in categories %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                       <a href="?category={{ category.category }}" class="text-muted{% if category.category == selected_category %}active{% endif %}" style="text-decoration: none;">
-                        {{ category.category }}
+                        {{ category.category|convert_category_key }}
                       </a>
                         {% for name, cont in category_counts.items %}
                           {% if name == category.category %}
@@ -113,7 +115,7 @@
             <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" style="height: 400px;">
           </a>
           <div class="card-body">
-            <h7 class="card-category text-muted">{{ product.category }}</h7>
+            <h7 class="card-category text-muted">{{ product.get_category_display }}</h7>
             <h4 class="card-title mb-5" style="height: 70px;">
               <a href="{% url 'products:product_detail' product_name=product.name|slugify product_id=product.id %}" style="text-decoration: none;color:black;">
                 <strong>{{ product.name }}</strong>

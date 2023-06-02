@@ -1,4 +1,6 @@
 {% extends 'staff/base.html'%}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'agendas:all_agenda'%}">Agendas</a>{% endblock %}
+{% block breadcrumb-item-active %}Modificaciones en las agendas{% endblock %}
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Modificaciones en las agendas</h1>
