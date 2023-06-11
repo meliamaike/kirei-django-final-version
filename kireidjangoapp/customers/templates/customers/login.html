@@ -1,4 +1,4 @@
-
+{% load static %}
 {% if login_form %}
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -6,7 +6,7 @@
         <!-- Modal Header -->
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Iniciar sesión</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="login-modal-btn">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="close-login-modal-btn">
             <span class = "close-modal" aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -14,16 +14,39 @@
         <div class="modal-body">
           {% load crispy_forms_tags %}
           <!-- Your Login Form Here -->
-              <form action="{{ current_url }}" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">   
+              <form id="login-form" action="{{ current_url }}" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">   
               <div class="mb-3 mx-3">
                     {% csrf_token %}
-                    <div class="form-group row">
+                    <div class="form-group">
+                      {% if login_form.non_field_errors %}
+                        <div class="alert alert-danger text-center">
+                          <ul class="errorlist nonfield">
+                            {% for error in login_form.non_field_errors %}
+                              <li class="text-start">&#8226; {{ error }}</li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      {% endif %}
                       <label class="form-label">{{ login_form.login.label_tag }}</label>
                         {{ login_form.login}}
+                        {% if login_form.errors.login %}
+                        <div class="text-danger">
+                            {% for error in login_form.errors.login %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group">
                       <label class="form-label">{{ login_form.password.label_tag }}</label>
                         {{ login_form.password }}
+                        {% if login_form.errors.password %}
+                                <div class="text-danger">
+                                    {% for error in login_form.errors.password %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                     </div>
                     <div class="d-flex align-items-center">
                       <a href="{% url 'customers:password_reset'%}" class="float-start text-secondary">
@@ -40,10 +63,11 @@
           </div>
           <div class="card bg-light py-3 border-0">
             <div class="header text-center">
-              ¿No tenés cuenta? <a href="{% url 'customers:register'%}" class="text-dark"> Registrate </a>
+              ¿No tenés cuenta?<a id="register-link" class="text-dark" data-toggle="modal" data-target="#registerModal">Registrarte</a>
             </div>
         </div>
         </div>
     </div>
   </div>
   {% endif %}
+  <script src="{% static 'customers/js/login.js' %}"></script> 

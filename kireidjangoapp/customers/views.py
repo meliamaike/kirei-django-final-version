@@ -17,9 +17,12 @@ from django.contrib.auth.decorators import login_required
 from customers.forms import ProfileCustomerForm
 from home.forms import ContactForm
 from django.template import loader
+from services.models import Service, CategoryService
 
 
 def signup_view(request):
+    value = False
+
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -29,18 +32,125 @@ def signup_view(request):
                 request, customer, backend="django.contrib.auth.backends.ModelBackend"
             )
             return redirect("home:index")
+        else:
+            value = True
+            print("Form invalido: ", form)
     else:
         form = RegisterForm()
 
+    contact_form = ContactForm()
+    login_form = CustomerLoginForm()
+
     context = {
         "register_form": form,
+        "value_signup": value,
+        "contact_form": contact_form,
+        "login_form": login_form,
     }
     return render(request, "home/index.html", context)
 
 
+def signup_view_from_appointment(request):
+    value = False
+    services = Service.objects.all()
+    categories = CategoryService.objects.all()
+
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            print("El formulario es valido y entro")
+            customer = form.signup(request)
+            login(
+                request, customer, backend="django.contrib.auth.backends.ModelBackend"
+            )
+            return redirect("appointments:choose_service")
+        else:
+            value = True
+    else:
+        form = RegisterForm()
+
+    contact_form = ContactForm()
+    login_form = CustomerLoginForm()
+
+    context = {
+        "register_form": form,
+        "value_signup": value,
+        "contact_form": contact_form,
+        "login_form": login_form,
+        "services": services,
+        "categories": categories,
+    }
+    return render(request, "appointments/choose_service.html", context)
+
+
+def signup_view_from_product(request, context):
+    value = False
+
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            print("El formulario es valido y entro")
+            customer = form.signup(request)
+            login(
+                request, customer, backend="django.contrib.auth.backends.ModelBackend"
+            )
+            return redirect("products:product_catalog")
+        else:
+            value = True
+    else:
+        form = RegisterForm()
+
+    context["register_form"] = form
+    context["value_signup"] = value
+
+    return render(request, "products/products_catalog.html", context)
+
+
 def customer_login(request):
     form = CustomerLoginForm(request=request)
-    print("form: ", form)
+    value = False
+
+    if request.method == "POST":
+        form = CustomerLoginForm(data=request.POST, request=request)
+        if form.is_valid():
+            # Authenticate the user
+            email = form.cleaned_data.get("login")
+            print("Email: ", email)
+            password = form.cleaned_data.get("password")
+            print("Pass: ", password)
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                # Log the user in
+                login(request, user)
+                # Redirect to index
+                return redirect("home:index")
+            else:
+                value = True
+                print("mostrar con Swal mensaje de error.")
+        else:
+            value = True
+            print("Formulario invalido.")
+
+    else:
+        form = CustomerLoginForm(data=request.POST, request=request)
+
+    contact_form = ContactForm()
+    register_form = RegisterForm()
+    context = {
+        "contact_form": contact_form,
+        "register_form": register_form,
+        "login_form": form,
+        "value": value,
+    }
+    return render(request, "home/index.html", context)
+
+
+def customer_login_from_appointment(request):
+    form = CustomerLoginForm(request=request)
+    services = Service.objects.all()
+    categories = CategoryService.objects.all()
+    value = False
+
     if request.method == "POST":
         form = CustomerLoginForm(data=request.POST, request=request)
         if form.is_valid():
@@ -54,13 +164,60 @@ def customer_login(request):
                 # Log the user in
                 login(request, user)
                 # Redirect to a success page
-                return redirect("home:index")
+                return redirect("appointments:choose_service")
             else:
                 # Return an 'invalid login' error message
-                form.add_error(None, "Invalid login")
+                value = True
+        else:
+            value = True
+
     else:
-        return HttpResponse()
-    return HttpResponse(status=400)
+        print("Mostrar mensaje con swal.")
+
+    register_form = RegisterForm()
+    context = {
+        "register_form": register_form,
+        "login_form": form,
+        "value": value,
+        "services": services,
+        "categories": categories,
+    }
+
+    return render(request, "appointments/choose_service.html", context)
+
+
+def customer_login_from_product(request, context):
+    form = CustomerLoginForm(request=request)
+
+    value = False
+
+    if request.method == "POST":
+        form = CustomerLoginForm(data=request.POST, request=request)
+        if form.is_valid():
+            # Authenticate the user
+            email = form.cleaned_data.get("login")
+            print("Email: ", email)
+            password = form.cleaned_data.get("password")
+            print("Pass: ", password)
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                # Log the user in
+                login(request, user)
+                # Redirect to a success page
+                return redirect("appointments:choose_service")
+            else:
+                # Return an 'invalid login' error message
+                value = True
+        else:
+            value = True
+
+    else:
+        print("Mostrar mensaje con swal.")
+
+    context["login_form"] = form
+    context["value"] = value
+
+    return render(request, "products/products_catalog.html", context)
 
 
 # Logout

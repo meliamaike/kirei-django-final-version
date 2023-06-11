@@ -47,17 +47,15 @@
     {% load crispy_forms_tags %}
   </head>
  <body>
-    <!-- Alert Message -->
-    {% include 'home/includes/messages.html' %}
     <!-- Nav Bar -->
     {% include 'home/includes/navbar.html' %}
       <!-- Specific Content -->
       {% block content %}
           
-      {% endblock %} 
+      {% endblock %}  
     
     <!-- Footer -->
-    {% include 'home/includes/footer.html' %}
+    {% include 'home/includes/footer.html' %} 
     <!-- Specific js -->
       {% block scripts %}{% endblock %}
     <!-- More Javascript -->

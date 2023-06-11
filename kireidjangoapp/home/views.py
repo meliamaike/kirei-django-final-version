@@ -4,25 +4,50 @@ from .forms import ContactForm
 from django.core.mail import send_mail, BadHeaderError
 
 from customers.forms import RegisterForm, CustomerLoginForm
+from home.forms import ContactForm
 from customers.views import signup_view, customer_login
+from services.models import Service, CategoryService
+
+
+# def contact_view(request):
+#     contact_form = ContactForm(request.POST)
+#     if contact_form.is_valid():
+#         subject = "Website Inquiry"
+#         body = {
+#             "first_name": contact_form.cleaned_data["first_name"],
+#             "last_name": contact_form.cleaned_data["last_name"],
+#             "email": contact_form.cleaned_data["email_address"],
+#             "message": contact_form.cleaned_data["message"],
+#         }
+#         message = "\n".join(body.values())
+#         try:
+#             send_mail(subject, message, "admin@example.com", ["admin@example.com"])
+#         except BadHeaderError:
+#             return HttpResponse("Invalid header found.")
+#         return redirect("home:index")
 
 
 def contact_view(request):
-    contact_form = ContactForm(request.POST)
-    if contact_form.is_valid():
-        subject = "Website Inquiry"
-        body = {
-            "first_name": contact_form.cleaned_data["first_name"],
-            "last_name": contact_form.cleaned_data["last_name"],
-            "email": contact_form.cleaned_data["email_address"],
-            "message": contact_form.cleaned_data["message"],
-        }
-        message = "\n".join(body.values())
-        try:
-            send_mail(subject, message, "admin@example.com", ["admin@example.com"])
-        except BadHeaderError:
-            return HttpResponse("Invalid header found.")
-        return redirect("home:index")
+    if request.method == "POST":
+        contact_form = ContactForm(request.POST)
+        if contact_form.is_valid():
+            subject = "Website Inquiry"
+            body = {
+                "first_name": contact_form.cleaned_data["first_name"],
+                "last_name": contact_form.cleaned_data["last_name"],
+                "email": contact_form.cleaned_data["email_address"],
+                "message": contact_form.cleaned_data["message"],
+            }
+            message = "\n".join(body.values())
+            try:
+                send_mail(subject, message, "admin@example.com", ["admin@example.com"])
+            except BadHeaderError:
+                return HttpResponse("Invalid header found.")
+            return redirect("home:index")
+    else:
+        contact_form = ContactForm()
+
+    return render(request, "contact.html", {"contact_form": contact_form})
 
 
 def index(request):
@@ -32,7 +57,6 @@ def index(request):
     print("1er Request method:", request.method)
 
     if request.method == "POST":
-        print("ENTRO AL POST")
         if "contact_form_submit" in request.POST:
             return contact_view(request)
         elif "register_form_submit" in request.POST:
@@ -50,3 +74,14 @@ def index(request):
         "current_url": request.path,
     }
     return render(request, "home/index.html", context)
+
+
+def services_index(request):
+    services = Service.objects.all()
+    categories = CategoryService.objects.all()
+    context = {
+        "services": services,
+        "categories": categories,
+    }
+
+    return render(request, "home/services.html", context)

@@ -19,26 +19,48 @@ from django.http import HttpResponseBadRequest
 from itertools import groupby
 import mercadopago
 from orders.models import AppointmentOrder
+from customers.forms import RegisterForm, CustomerLoginForm
+from customers.views import (
+    signup_view_from_appointment,
+    customer_login_from_appointment,
+)
 
 
 def choose_service(request):
     services = Service.objects.all()
     categories = CategoryService.objects.all()
+    register_form = RegisterForm()
+    login_form = CustomerLoginForm()
+
+    show_login_modal = False
     if request.method == "POST":
-        service_id = request.POST["service"]
-        request.session["service_id"] = service_id
-        return redirect("appointments:choose_professional")
+        if "register_form_submit" in request.POST:
+            return signup_view_from_appointment(request)
+        elif "login_form_submit" in request.POST:
+            return customer_login_from_appointment(request)
+        else:
+            if request.user.is_authenticated:
+                service_id = request.POST["service"]
+                request.session["service_id"] = service_id
+                return redirect("appointments:choose_professional")
+            else:
+                show_login_modal = True
+
     context = {
         "services": services,
         "categories": categories,
+        "register_form": register_form,
+        "login_form": login_form,
+        "show_login_modal": show_login_modal,
     }
+
     return render(request, "appointments/choose_service.html", context)
 
 
 def choose_professional(request):
     service_id = request.session.get("service_id")
     if not service_id:
-        messages.error(request, "Elegí un servicio primero!")
+        messages.error(request, "Elegí un servicio primero!")  # Msj con swal
         return redirect("appointments:choose_service")
 
     service = get_object_or_404(Service, pk=service_id)
@@ -240,60 +262,64 @@ def checkout(request):
             )
 
         elif payment_method == "cash":
-            # Calculate the number of slots required based on the appointment duration
-            num_slots = ceil(service.duration / 30)
+            try:
+                customer = Customer.objects.get(id=request.user.id)
 
-            current_slot_id = slot_id
+                # Calculate the number of slots required based on the appointment duration
+                num_slots = ceil(service.duration / 30)
 
-            customer = Customer.objects.get(id=request.user.id)
+                current_slot_id = slot_id
 
-            for i in range(num_slots):
-                # Create the appointment object as before
-                appointment = Appointment.objects.create(
-                    professional_id=professional_id,
-                    service_id=service_id,
-                    date=parsed_appointment_date_solo,
-                    customer=customer,
+                for i in range(num_slots):
+                    # Create the appointment object as before
+                    appointment = Appointment.objects.create(
+                        professional_id=professional_id,
+                        service_id=service_id,
+                        date=parsed_appointment_date_solo,
+                        customer=customer,
+                    )
+
+                    # Mark the selected appointment slot as booked
+                    slot = AppointmentSlot.objects.get(id=current_slot_id)
+                    appointment.appointment_slot.add(slot)
+                    slot.booked = True
+                    slot.save()
+
+                    current_slot_id += 1
+
+                # Create the payment object with status 'waiting'
+
+                payment = AppointmentPayment.objects.create(
+                    appointment=appointment,
+                    payment_method=payment_method,
+                    status=PaymentStatus.WAITING,
+                    currency="ARS",
+                    total=service.price,
+                    description=service.service,
                 )
 
-                # Mark the selected appointment slot as booked
-                slot = AppointmentSlot.objects.get(id=current_slot_id)
-                appointment.appointment_slot.add(slot)
-                slot.booked = True
-                slot.save()
+                order = AppointmentOrder.objects.create(
+                    customer=customer,
+                    payment=payment,
+                )
 
-                current_slot_id += 1
+                request.session["appointment_payment_id"] = payment.id
+                request.session["appointment_order_id"] = order.id
 
-            # Create the payment object with status 'waiting'
+                return render(
+                    request,
+                    "appointments/appointment_detail.html",
+                    {
+                        "professional": professional,
+                        "service": service,
+                        "start_date_time": start_date_time,
+                        "appointment": appointment,
+                        "order": order,
+                    },
+                )
 
-            payment = AppointmentPayment.objects.create(
-                appointment=appointment,
-                payment_method=payment_method,
-                status=PaymentStatus.WAITING,
-                currency="ARS",
-                total=service.price,
-                description=service.service,
-            )
-
-            order = AppointmentOrder.objects.create(
-                customer=customer,
-                payment=payment,
-            )
-
-            request.session["appointment_payment_id"] = payment.id
-            request.session["appointment_order_id"] = order.id
-
-            return render(
-                request,
-                "appointments/appointment_detail.html",
-                {
-                    "professional": professional,
-                    "service": service,
-                    "start_date_time": start_date_time,
-                    "appointment": appointment,
-                    "order": order,
-                },
-            )
+            except Customer.DoesNotExist:
+                print("debe loguearse para continuar")
 
         else:
             return HttpResponseBadRequest("Error en el método de pago.")

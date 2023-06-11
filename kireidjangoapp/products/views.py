@@ -6,6 +6,9 @@ from django.core.paginator import Paginator
 from decimal import Decimal, InvalidOperation
 from products.forms import ProductForm
 
+from customers.forms import RegisterForm, CustomerLoginForm
+from customers.views import signup_view_from_product, customer_login_from_product
+
 
 def product_catalog(request):
     all_products = Product.objects.filter(is_available=True)
@@ -73,6 +76,10 @@ def product_catalog(request):
 
     page_obj = paginator.get_page(page_number)
 
+    # Login & register when not authenticated
+    register_form = RegisterForm()
+    login_form = CustomerLoginForm()
+
     context = {
         "products": products,
         "products_total": products_total,
@@ -87,7 +94,15 @@ def product_catalog(request):
         "selected_min_price": selected_min_price,
         "selected_max_price": selected_max_price,
         "selected_sorting": selected_sorting,
+        "register_form": register_form,
+        "login_form": login_form,
     }
+
+    if request.method == "POST":
+        if "register_form_submit" in request.POST:
+            return signup_view_from_product(request, context)
+        elif "login_form_submit" in request.POST:
+            return customer_login_from_product(request, context)
 
     return render(request, "products/products_catalog.html", context)
 

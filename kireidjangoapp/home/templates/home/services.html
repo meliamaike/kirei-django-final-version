@@ -7,7 +7,7 @@
   <div class="card">
     <div class="card-header pt-3">
       <h4>
-        <strong>Elegí el servicio</strong>
+        <strong>Nuestros servicios</strong>
       </h4>
     </div>
     <div class="card-body">
@@ -42,7 +42,7 @@
               <form method="POST" action="{% url 'appointments:choose_service' %}">
                 {% csrf_token %}
                 <input type="hidden" name="service" value="{{ service.id }}">
-                <button id="add-service-btn" type="submit" class="btn btn-primary"> <strong><i class="bi bi-plus-square-fill"></i> Agregar servicio</strong></button>
+                {% comment %} <button id="add-service-btn" type="submit" class="btn btn-primary"> <strong><i class="bi bi-plus-square-fill"></i> Agregar servicio</strong></button> {% endcomment %}
               </form>
             </div>
           </div>
@@ -144,58 +144,7 @@ glide.on('run.after', function () {
   ss("{{ categories.0.id }}");
 
 
-  {%if show_login_modal%}
-  
-    // Show login modal
-    function showLoginModal() {
-      $('#loginModal').modal('show');
-    }
-  
-    // Close login modal
-    function closeLoginModal() {
-      $('#loginModal').modal('hide');
-    }
-  
-    //Call the showLoginModal function when needed
-    
-    window.addEventListener('DOMContentLoaded', showLoginModal);
-   
-  
-    // Add event listener to the close button
-    const closeBtn = document.querySelector('#close-login-modal-btn');
-    closeBtn.addEventListener('click', closeLoginModal);
 
-    function showLoginModalFromRegister() {
-      var registerModalButton = document.getElementById("register-modal-btn");
-    
-      // Close registerModal manually
-      registerModalButton.click();
-    
-      console.log("SHow login modal")
-      
-    }
-    
-    // Attach the event listener for the "Ingresá" link
-    document.getElementById("login-link").addEventListener("click", function (event) {
-      event.preventDefault(); // Prevent the default link behavior
-      showLoginModalFromRegister();
-      console.log("show login modal from register")
-    });
-
-    
-  
-  {%endif%}
-  {% if value %}
-    document.addEventListener("DOMContentLoaded", function() {
-      document.getElementById("modal-open-login-btn").click();
-    })
-  {% endif %}
-
-  {% if value_signup %}
-    document.addEventListener("DOMContentLoaded", function(){
-      document.getElementById("modal-open-register-btn").click();
-    })
-  {% endif %}
 </script>
 
 

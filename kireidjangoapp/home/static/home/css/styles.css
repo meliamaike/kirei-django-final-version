@@ -2,7 +2,7 @@
 * {
     box-sizing: border-box;
     font-family: Montserrat, sans-serif;
-
+   
 }
 
 
@@ -11,6 +11,7 @@ body {
     background-color: #e4e0e1 !important;
     font: 400 15px Lato, sans-serif;
     line-height: 1.8;
+    overflow-x:hidden !important;
 
 }
 
@@ -26,7 +27,7 @@ a :hover {
 /* Navbar */
 
 
-.navbar.navbar-fixed-top {
+ .navbar.navbar-fixed-top {
     position: fixed;
     top: 0;
     width: 100%;
@@ -34,6 +35,8 @@ a :hover {
     background-color: #e4e0e1;
     font-family: Montserrat, sans-serif;
   }
+
+ 
   
 
 .navbar-brand>img {
@@ -68,16 +71,14 @@ a :hover {
     color: black;
     background-color: #7f7f7f !important;
   }
-  
+
 
 /* Carousel */
-.carousel-item {
-    height: 75vh;
-    width: 100vw; 
-  }
-.carousel-item img {
-   height:75vh;
-}
+
+  
+
+
+
 
 /*Mision*/
 #mission-title{
@@ -106,6 +107,9 @@ a :hover {
     
 
 }
+
+
+
 .thumbnail {
     padding: 0 0 15px 0;
     border: none;
@@ -178,16 +182,3 @@ h2.card-title {
   
 }
 
-@media only screen and (max-width: 900px) {
-    .carousel-item{
-        height: 45vh;
-    }
-    .carousel-item img {
-        object-fit: contain;
-
-        height: 62vh;
-    }
-    .carousel-control-prev-icon, .carousel-control-next-icon{
-        visibility: hidden;
-    }
-  }

@@ -68,7 +68,7 @@
   ul.social-footer2 li {display: inline-block;padding: 0;color:white!important;
     background:  #C92E4F!important;}
   ul.social-footer2 li a:hover {color:black; background-color: #C92E4F;}
-  ul.social-footer2 li a {display: block; height:30px;width: 30px;text-align: center;text-decoration: none !important;}
+  ul.social-footer2 li a {display: block; width: 30px;text-align: center;text-decoration: none !important;}
   .btn{background-color: #C92E4F; color:white;}
   .btn:hover, .btn:focus, .btn.active {background-color: white;color:black;
   -webkit-box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);

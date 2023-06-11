@@ -12,6 +12,10 @@ class ContactForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.fields["first_name"].label = "Nombre"
+        self.fields["last_name"].label = "Apellido"
+        self.fields["email"].label = "Email"
+        self.fields["message"].label = "Mensaje"
         self.helper.layout = Layout(
             "first_name",
             "last_name",
