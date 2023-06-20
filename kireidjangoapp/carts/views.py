@@ -99,7 +99,7 @@ def cart_checkout(request):
 
         if payment_method == "mercadopago":
             # PROD_ACCESS_TOKEN needed
-            sdk = mercadopago.SDK("TEST-2205723796037045-061917-a3112f05ebb5c1edb268154bb57034b4-451500124")
+            sdk = mercadopago.SDK("")
 
             # Create items in the preference
             items = []
