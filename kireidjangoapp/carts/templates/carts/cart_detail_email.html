@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html>
@@ -7,11 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- All of the CSS -->
     <!-- Start CSS -->   
-    <link rel="stylesheet" href="{% static 'home/css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'customers/css/customers-styles.css' %}">
-    <link rel="stylesheet" href="{% static 'products/css/products-styles.css' %}">
-    <link rel="stylesheet" href="{% static 'orders/css/orders-styles.css' %}">
-    <link rel="stylesheet" href="{% static 'appointments/css/appointments-styles.css' %}">
+    
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
 
 
@@ -38,7 +35,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js" integrity="sha512-f0VlzJbcEB6KiW8ZVtL+5HWPDyW1+nJEjguZ5IVnSQkvZbwBt2RfCBY0CBO1PsMAqxxrG4Di6TfsCPP3ZRwKpA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Footer CSS -->
-    <link rel="stylesheet" href="{% static 'home/css/footer.css' %}">
 
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
@@ -46,21 +42,64 @@
 
 <!-- End CSS -->
   <!-- Title -->
-    <title>{% block title %}{% endblock %}</title>
-    {% load crispy_forms_tags %}
+    <title>Reserva pendiente de pago</title>
+    
   </head>
  <body>
-    <!-- Nav Bar -->
-    {% include 'home/includes/navbar.html' %}
-    {% include 'home/includes/messages.html' %}
-
-      <!-- Specific Content -->
-      {% block content %}
-          
-      {% endblock %}  
-    
-    <!-- Footer -->
-    {% include 'home/includes/footer.html' %} 
+    <div class="container my-5 py-5">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="card p-4">
+              <h5 class="card-title mb-4 text-center"><strong>Su compra ha sido realizada exitosamente y se encuentra pendiente de pago.</strong></h5>
+      
+              <p class="card-text text-center">Nro de Orden: #{{ order.id }} - {{ order.payment.created }}</p>
+      
+              <div class="card-header row align-items-center cart mb-3">
+                {% for product_payment in order.payment.productpayment_set.all %}
+                  <div class="card mb-3">
+                    <div class="row g-0">
+                      <div class="col-md-6 col-sm-12 mb-3 mb-md-0 d-flex justify-content-center align-items-center">
+                        <a href="{% url 'products:product_detail' product_name=product_payment.product.name|slugify product_id=product_payment.product_id %}">
+                          <img src="{{ product_payment.product.image.url }}" class="card-img m-3" alt="{{ product_payment.product.name }}" style="max-height: 200px;">
+                        </a>
+                      </div>
+                      <div class="col-md-6 col-sm-12 my-4 mb-md-0 pb-5">
+                        <div class="card-body">
+                          <h5 class="card-title mb-4 font-weight-bold">
+                            <a href= "{% url 'products:product_detail' product_payment.product.name|slugify product_payment.product_id %}" style="color: black; text-decoration: none !important;">
+                              {{ product_payment.product.name }}
+                            </a>
+                          </h5>
+                          <p class="card-text">{{ product_payment.quantity }} uds. x ${{ product_payment.product.price }}</p>
+                          <h4 class="card-text font-weight-bold">$ {{ product_payment.total }}</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+      
+              <div class="card row mb-5">
+                <div class="col-md-12 my-5">
+                  <div class="row align-items-center justify-content-end mb-4">
+                    <div class="col-md-9 text-right">
+                      <h3 class="text-uppercase font-weight-bold">Total</h3>
+                    </div>
+                    <div class="col-md-3 text-right">
+                      <h4 class="font-weight-bold">${{ order.payment.cart_total }}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+      
+              <div class="card-header">
+                <p class="card-text text-center"><strong>Realice el pago en efectivo en el local.</strong></p>
+              </div>
+      
+            </div>
+          </div>
+        </div>
+      </div>
     <!-- Specific js -->
       {% block scripts %}{% endblock %}
     <!-- More Javascript -->

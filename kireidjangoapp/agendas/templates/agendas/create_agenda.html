@@ -32,7 +32,7 @@
   </div>
 </div>
 
-<script>
+{% comment %} <script>
   $(function() {
     $('#submit_create').on('click', function(event) {
       event.preventDefault();
@@ -82,8 +82,79 @@
     });
   });
   
-</script>
+</script> {% endcomment %}
 
+<script>
+  $(function() {
+    $('#submit_create').on('click', function(event) {
+      event.preventDefault();
+      
+      // Check if any select element is not selected
+      const selects = $('#create-agenda-form select');
+      let isNotSelected = false;
+      selects.each(function() {
+        if ($(this).val() === '') {
+          isNotSelected = true;
+        }
+      });
+      
+      if (isNotSelected) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Por favor, seleccione todas las opciones.',
+          icon: 'error',
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+        return;
+      }
+
+      $.ajax({
+        url: '/agenda/create',
+        type: 'post',
+        data: $('#create-agenda-form').serialize(),
+        success: function(data) {
+          if (data.success) {
+            Swal.fire({
+              title: 'Se creó la agenda exitosamente.',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then((result) => {
+              window.location.href = '/agenda/all';
+            });
+          } else {
+            const modal_content = JSON.parse(data.modal_content);
+            Swal.fire({
+              title: modal_content.title,
+              text: modal_content.text,
+              icon: 'error',
+              showCloseButton: true,
+              showConfirmButton: false,
+            }).then((result) => {
+              if (result.dismiss === Swal.DismissReason.close) {
+                window.location.href = '/agenda/all';
+              }
+            });
+          }
+        },
+        error: function() {
+          // If there was a server error, show a generic error message
+          Swal.fire({
+            title: 'Error',
+            text: 'Intente más tarde o comuníquese con el Administrador.',
+            icon: 'error',
+            showCloseButton: true,
+            showConfirmButton: false,
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.close) {
+              window.location.href = '/agenda/all';
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
 
 
 

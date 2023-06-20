@@ -3,7 +3,6 @@
 {% block breadcrumb-item %}
 <a class="breadcrumb-item" href="{% url 'services:all_category_service' %}">Categoría de servicios</a>
 {% endblock %}
-
 {% block breadcrumb-item-active %}
 Nuevo categoría de servicio
 {% endblock %}
@@ -39,7 +38,7 @@ Nueva categoría de servicio
   </div>
 </div>
 
-<script>
+{% comment %} <script>
   document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.querySelector("#submit_create");
     const form = document.querySelector("#create-category-form");
@@ -90,7 +89,83 @@ Nueva categoría de servicio
     });
   });
   
+</script> {% endcomment %}
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const submitBtn = document.querySelector("#submit_create");
+    const form = document.querySelector("#create-category-form");
+  
+    submitBtn.addEventListener("click", async (event) => {
+      event.preventDefault();
+  
+      // Check if the form inputs are empty
+      const formInputs = form.querySelectorAll("input");
+      let isFormEmpty = false;
+
+      formInputs.forEach(input => {
+        if (!input.value.trim()) {
+          isFormEmpty = true;
+          return; // Exit the loop if any input is empty
+        }
+      });
+  
+      if (isFormEmpty) {
+        Swal.fire({
+          title: "Error",
+          text: "Por favor, complete todos los campos del formulario.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false
+        });
+        return; // Stop further execution
+      }
+  
+      try {
+        const response = await fetch("/staff/category-service/create", {
+          method: "POST",
+          body: new FormData(form),
+        });
+  
+        const data = await response.text();
+  
+        if (response.ok) {
+          await Swal.fire({
+            title: "Se creó la categoría exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK"
+          });
+  
+          window.location.href = "/staff/category-service/all";
+        } else {
+          const modalContent = JSON.parse(data.modal_content);
+  
+          Swal.fire({
+            title: modalContent.title,
+            text: modalContent.text,
+            icon: "error",
+            showCloseButton: true,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = "/staff/category-service/all";
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Intente más tarde o comuníquese con el Administrador.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false
+        }).then(() => {
+          window.location.href = "/staff/category-service/all";
+        });
+      }
+    });
+  });
 </script>
+
 
 
 

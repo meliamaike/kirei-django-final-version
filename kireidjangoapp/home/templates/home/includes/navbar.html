@@ -42,7 +42,7 @@
             <a class="nav-link" href="{% url 'home:index'%}">Inicio</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/#servicios">Servicios</a>
+            <a class="nav-link" href="{% url 'home:services' %}">Servicios</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'products:product_catalog'%}">Productos</a>
@@ -59,7 +59,7 @@
             <a class="btn btn-primary" id="modal-open-login-btn" data-toggle="modal" data-target="#loginModal">Ingresar</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'carts:cart_detail' %}">
+            <a class="nav-link" href="">
               <i class="fa fa-shopping-cart"></i>
               <span class="badge badge-pill badge-secondary">{{ cart_total_quantity }}</span>
             </a>
@@ -69,5 +69,20 @@
     {% endif%}
   </nav>
 
-  {% comment %} {% include 'customers/register.html' %}
-  {% include 'customers/login.html' %}  {% endcomment %}
+  {% include 'customers/login.html' %} 
+  {% include 'customers/register.html' %}
+  <script>
+    
+    {% if value %}
+      document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("modal-open-login-btn").click();
+      })
+    {% endif %}
+  
+    {% if value_signup %}
+      document.addEventListener("DOMContentLoaded", function(){
+        document.getElementById("modal-open-register-btn").click();
+      })
+    {% endif %}
+  
+  </script>

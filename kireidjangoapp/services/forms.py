@@ -35,6 +35,7 @@ class CategoryServiceForm(forms.ModelForm):
 
         print("existing category: ", existing_category)
         if existing_category:
+            
             print("if existing category: ", existing_category)
             # raise forms.ValidationError('Category already exists.')
         else:

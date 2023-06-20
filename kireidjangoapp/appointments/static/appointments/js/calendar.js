@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         day: 'Día',
         list: 'Agenda'
       },
-      hiddenDays: [0], // Exclude only 0 = Sunday
+      hiddenDays: [0,6],
       initialView: 'dayGridMonth',
       editable: false,
       events: 'booking/calendar/',

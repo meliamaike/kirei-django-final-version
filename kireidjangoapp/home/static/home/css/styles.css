@@ -72,17 +72,11 @@ a :hover {
     background-color: #7f7f7f !important;
   }
 
-
-/* Carousel */
-
   
-
-
-
 
 /*Mision*/
 #mission-title{
-    padding: 5% 10%;
+    padding: 5% 20%;
     font-family: Montserrat, sans-serif;
     background-color:#d36378 ;
     color: #e4e0e1;
@@ -94,7 +88,7 @@ a :hover {
 #servicios {
     padding-top: 45px;
     padding-bottom: 30px;
-    background-color: #d36378;
+    background-image: linear-gradient(#D98B9D,#d36378);
     font-family: 'Montserrat', sans-serif;
     color: #e4e0e1;
 
@@ -107,7 +101,6 @@ a :hover {
     
 
 }
-
 
 
 .thumbnail {
@@ -128,13 +121,13 @@ textarea.form-control{
 }
 
 #contact-title{
-    background-color:  #d98b9d;
-    color: #472333;
+    background-color:#472333;
+    color: #d98b9d;
 }
 #contact-form-div-form{
     padding: 4em;
-    background-color: #d98b9d;
-    color: #472333;
+    background-color: #472333;
+    color: #d98b9d;
     font-weight: 500;
 }
 

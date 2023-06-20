@@ -130,7 +130,7 @@
             {% if product.stock == 0  %}
             <a href=""  class="btn btn-secondary mt-3 disabled">SIN STOCK</a>
             {% elif product.stock >= 1 %}
-            <a data-authenticated="{{ request.user.is_authenticated|lower }}" id="add-to-cart-btn" href="{% url 'carts:catalog_item_increment' product.id %}" data-quantity="1" class="btn btn-primary mt-3" data-product_id="{{ product.id }}" aria-label="Añade {{ product.name }} a tu carrito" rel="nofollow">Añadir al carrito</a>
+            <a data-authenticated="{{ request.user.is_authenticated|lower }}" id="add-to-cart-btn-{{ product.id }}" href="{% url 'carts:catalog_item_increment' product.id %}" data-quantity="1" class="btn btn-primary mt-3" data-product_id="{{ product.id }}" aria-label="Añade {{ product.name }} a tu carrito" rel="nofollow">Añadir al carrito</a>
             {% endif %}
           </div>
         </div>
@@ -207,20 +207,22 @@ function closeLoginModal() {
   $('#loginModal').modal('hide');
 }
 
-// Check if the user is not authenticated and bind click event to "Añadir al carrito" button
 window.addEventListener('DOMContentLoaded', function() {
-  var addToCartBtn = document.getElementById('add-to-cart-btn');
-  
-  addToCartBtn.addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the default link behavior
-    
-    // Check if the user is not authenticated
-    var isAuthenticated = addToCartBtn.getAttribute('data-authenticated');
-    if (isAuthenticated === 'false') {
-      showLoginModal();
-    }
+// for
+  {% for product in products %}
+  var addToCartBtn = document.getElementById('add-to-cart-btn-'+{{ product.id }});
+      addToCartBtn.addEventListener('click', function(event) {
+      // Check if the user is not authenticated
+      var isAuthenticated = addToCartBtn.getAttribute('data-authenticated');
+      if (isAuthenticated === 'false') {
+        event.preventDefault(); // Prevent the default link behavior
+        showLoginModal();
+      }
   });
-});
+  {% endfor %}
+  // end for
+})
+
 // Add event listener to the close button
 const closeBtn = document.querySelector('#close-login-modal-btn');
 closeBtn.addEventListener('click', closeLoginModal);
@@ -231,7 +233,6 @@ function showLoginModalFromRegister() {
   // Close registerModal manually
   registerModalButton.click();
 
-  console.log("SHow login modal")
   
 }
 
@@ -260,7 +261,13 @@ document.getElementById("login-link").addEventListener("click", function (event)
 </script>
 
 
-
+<style>
+  select {
+    -webkit-appearance: menulist !important;
+    -moz-appearance: menulist !important;
+    appearance: menulist !important;
+  }
+</style>
 
 
 {% endblock %}

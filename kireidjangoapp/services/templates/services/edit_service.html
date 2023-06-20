@@ -32,7 +32,7 @@
   </div>
 </div>
 
-<script>
+{% comment %} <script>
   document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.querySelector("#submit_edit");
     const form = document.querySelector("#edit-service-form");
@@ -80,8 +80,74 @@
   });
   
   
-</script>
+</script> {% endcomment %}
   
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const submitBtn = document.querySelector("#submit_edit");
+    const form = document.querySelector("#edit-service-form");
+
+    submitBtn.addEventListener("click", async (event) => {
+      event.preventDefault();
+
+      // Check if any input is empty
+      const inputs = form.querySelectorAll("input");
+      let isEmpty = false;
+      inputs.forEach((input) => {
+        if (input.value.trim() === "") {
+          isEmpty = true;
+        }
+      });
+
+      if (isEmpty) {
+        Swal.fire({
+          title: "Error",
+          text: "Por favor, complete todos los campos.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+        return;
+      }
+
+      try {
+        const serviceId = {{ service.id }};
+        const response = await fetch("/staff/service/" + serviceId + "/edit/", {
+          method: "POST",
+          body: new FormData(form),
+        });
+
+        if (response.ok) {
+          await Swal.fire({
+            title: "Se editó el servicio exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          window.location.href = "/staff/service/all";
+        } else {
+          const modalContent = await response.json();
+
+          Swal.fire({
+            title: modalContent.title,
+            text: modalContent.text,
+            icon: "error",
+            showCloseButton: true,
+            showConfirmButton: false,
+          });
+          window.location.href = "/staff/service/all";
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Intente más tarde o comuníquese con el Administrador.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+      }
+    });
+  });
+</script>
 
 
 {% endblock %}

@@ -32,7 +32,7 @@
   </div>
   </div>
 </div>
-<script>
+{% comment %} <script>
   document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.querySelector("#submit_edit");
     const form = document.querySelector("#edit-professional-form");
@@ -81,6 +81,75 @@
   });
   
   
+</script> {% endcomment %}
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const submitBtn = document.querySelector("#submit_edit");
+    const form = document.querySelector("#edit-professional-form");
+
+    submitBtn.addEventListener("click", async (event) => {
+      event.preventDefault();
+
+      // Check if any input is empty
+      const inputs = form.querySelectorAll("input");
+      let isEmpty = false;
+      inputs.forEach((input) => {
+        if (input.value.trim() === "") {
+          isEmpty = true;
+        }
+      });
+
+      if (isEmpty) {
+        Swal.fire({
+          title: "Error",
+          text: "Todos los campos deben estar completados.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+        return;
+      }
+
+      try {
+        const professionalId = {{ professional.id }};
+        const response = await fetch("/staff/professional/" + professionalId + "/edit/", {
+          method: "POST",
+          body: new FormData(form),
+        });
+
+        if (response.ok) {
+          await Swal.fire({
+            title: "Se editó el profesional exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          window.location.href = "/staff/professional/all";
+        } else {
+          const modalContent = await response.json();
+
+          Swal.fire({
+            title: modalContent.title,
+            text: modalContent.text,
+            icon: "error",
+            showCloseButton: true,
+            showConfirmButton: false,
+          });
+          window.location.href = "/staff/professional/all";
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Intente más tarde o comuníquese con el Administrador.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+      }
+    });
+  });
 </script>
+
 
 {% endblock %}

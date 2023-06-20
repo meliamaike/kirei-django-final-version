@@ -41,12 +41,13 @@ def all_agenda(request):
     agendas = Agenda.objects.all()
     return render(request, "agendas/all_agenda.html", {"agendas": agendas})
 
-
+from datetime import date
 def agenda_modifications_list(request):
-    modifications = AgendaModifications.objects.all()
-    return render(
-        request, "agendas/all_modifications.html", {"modifications": modifications}
-    )
+
+    today = date.today()
+    modifications = AgendaModifications.objects.filter(date__gte=today)
+    return render(request, "agendas/all_modifications.html", {"modifications": modifications})
+   
 
 
 def agenda_modification_delete(request, pk):

@@ -19,7 +19,7 @@
                 <ul class="errorlist nonfield">
                   {% for field_errors in register_form.errors.values %}
                     {% for error in field_errors %}
-                      <li class="text-start">&#8226; {{ error }}</li>
+                      <li class="text-start">{{ error }}</li>
                     {% endfor %}
                   {% endfor %}
                 </ul>

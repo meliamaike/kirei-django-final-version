@@ -53,6 +53,7 @@
   </div>
 </div>
 
+
 <script>
 
   const services = document.querySelectorAll('.service');
@@ -144,6 +145,18 @@ glide.on('run.after', function () {
   ss("{{ categories.0.id }}");
 
 
+  {% if value %}
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("modal-open-login-btn").click();
+    })
+  {% endif %}
+
+  {% if value_signup %}
+    document.addEventListener("DOMContentLoaded", function(){
+      document.getElementById("modal-open-register-btn").click();
+    })
+  {% endif %}
+
 
 </script>
 
@@ -152,3 +165,5 @@ glide.on('run.after', function () {
 
 
 {% endblock %}
+
+

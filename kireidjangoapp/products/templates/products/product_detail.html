@@ -67,7 +67,7 @@
                             SIN STOCK
                         </button>
                         {% else %}
-                        <button onclick="addToCart()" class="add-to-cart-btn btn btn-primary w-100 mt-3" id="add-to-cart-btn" data-product-id="{{ product.id }}" {% if not product.is_in_stock %}disabled="disabled"{% endif %}>
+                        <button data-authenticated="{{ request.user.is_authenticated|lower }}" onclick="addToCart()" class="add-to-cart-btn btn btn-primary w-100 mt-3" id="add-to-cart-btn" data-product-id="{{ product.id }}" {% if not product.is_in_stock %}disabled="disabled"{% endif %}>
                         Agregar al carrito
                         </button>
                         {% endif %}
@@ -141,6 +141,13 @@
     });
     function addToCart() {
     // get the quantity input value
+    var isAuthenticated = addToCartButton.getAttribute('data-authenticated');
+    if (isAuthenticated === 'false') {
+        showLoginModal();
+        console.log('Usuario no autenticado, debe ingresar')
+        return;
+    }
+    console.log('Usuario autenticado, agregando a carrito')
     var quantity = document.getElementById('quantity').value;
 
     // check if the product is in stock
@@ -164,6 +171,47 @@
     // redirect to the URL
     window.location.href = url;
     }
+
+    // Show login modal
+function showLoginModal() {
+    $('#loginModal').modal('show');
+    console.log("showing login modal");
+  }
+  // Close login modal
+  function closeLoginModal() {
+    $('#loginModal').modal('hide');
+  }
+
+  // Add event listener to the close button
+const closeBtn = document.querySelector('#close-login-modal-btn');
+closeBtn.addEventListener('click', closeLoginModal);
+
+function showLoginModalFromRegister() {
+  var registerModalButton = document.getElementById("register-modal-btn");
+
+  // Close registerModal manually
+  registerModalButton.click();
+
+  
+}
+
+// Attach the event listener for the "Ingresá" link
+document.getElementById("login-link").addEventListener("click", function (event) {
+  event.preventDefault(); // Prevent the default link behavior
+  showLoginModalFromRegister();
+  console.log("show login modal from register")
+});
+
+{% if value %}
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("modal-open-login-btn").click();
+    })
+{% endif %}
+{% if value_signup %}
+  document.addEventListener("DOMContentLoaded", function(){
+    document.getElementById("modal-open-register-btn").click();
+  })
+{% endif %}
 
 
   

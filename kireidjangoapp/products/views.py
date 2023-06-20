@@ -7,7 +7,8 @@ from decimal import Decimal, InvalidOperation
 from products.forms import ProductForm
 
 from customers.forms import RegisterForm, CustomerLoginForm
-from customers.views import signup_view_from_product, customer_login_from_product
+from customers.views import signup_view_from_product, customer_login_from_product,customer_login_from_product_detail, signup_view_from_product_detail
+from django.contrib import messages
 
 
 def product_catalog(request):
@@ -109,8 +110,26 @@ def product_catalog(request):
 
 def product_detail(request, product_name, product_id):
     product = get_object_or_404(Product, pk=product_id)
+    # Login & register when not authenticated
+    register_form = RegisterForm()
+    login_form = CustomerLoginForm()
+
+    context={
+        "product": product, 
+         "id": product_id,
+         "register_form": register_form,
+         "login_form": login_form
+    }
+
+    if request.method == "POST":
+        if "register_form_submit" in request.POST:
+            return signup_view_from_product_detail(request, context)
+        elif "login_form_submit" in request.POST:
+            return customer_login_from_product_detail(request, context)
+
     return render(
-        request, "products/product_detail.html", {"product": product, "id": product_id}
+        request, "products/product_detail.html", context
+        
     )
 
 
@@ -126,8 +145,6 @@ def create_product(request):
         if form.is_valid():
             form.save()
             return redirect("products:all_product")
-        else:
-            print("Form no valid: ", form.errors)
     else:
         form = ProductForm()
     return render(request, "products/product_form.html", {"form": form})

@@ -1,7 +1,10 @@
 {% extends 'staff/base.html'%}
+
 {% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'staff:staff_appointments_dashboard'%}">Turnos</a>{% endblock %}
 {% block breadcrumb-item-active %}Todos los turnos{% endblock %}
 {% block content %}
+
+{% include 'home/includes/messages.html' %}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0 text-gray-800 d-inline-block align-middle">Todos los turnos</h1>
     </div>
@@ -16,6 +19,7 @@
                             <th>Profesional</th>
                             <th>Servicio</th>
                             <th>Horario</th>
+                            <th>Cliente</th>
                             <th>Cancelar reserva</th>
                         </tr>
                     </thead>
@@ -25,6 +29,7 @@
                             <th>Profesional</th>
                             <th>Servicio</th>
                             <th>Horario</th>
+                            <th>Cliente</th>
                             <th>Cancelar reserva</th>
                         </tr>
                     </tfoot>
@@ -37,6 +42,7 @@
                                     <td>{{ group.professional }}</td>
                                     <td>{{ group.service }}</td>
                                     <td>{{ appointment.start_time }}</td>
+                                    <td>{{ group.customer.first_name }} {{ group.customer.last_name}}</td>
                                     <td>
                                         <span class="btn btn-danger">
                                             <a style="color:white; font-style: normal !important;" href="{% url 'staff:staff_cancel_appointment' %}?ids={% for appointment in group.appointments %}{{ appointment.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
@@ -49,58 +55,11 @@
                         {% endfor %}
                 
                     </tbody>  
+                    
                 </table>
             </div>
         </div>
     </div>
 
-
-{% comment %} <script>
-    // Handle the delete of an agenda
-$('.delete-modification-agenda').on('click', function() {
-    var agendaId = $(this).data('id');
-    var csrftoken = getCookie('csrftoken'); // get the CSRF token value from the cookie
-  
-    Swal.fire({
-      title: '¿Estás seguro que desea eliminar esta reserva?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $.ajax({
-          url: '/staff/modification/' + agendaId + '/delete/',
-          type: 'post',
-          headers: {'X-CSRFToken': csrftoken}, // include the CSRF token in the header
-          success: function(data) {
-            location.reload();
-          },
-          error: function(xhr, textStatus, errorThrown) {
-            console.log(xhr.responseText);
-          }
-        });
-      }
-    });
-  });
-  
-  // Function to get the value of the CSRF token from the cookie
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-  }
-  
-</script> {% endcomment %}
-
+   
 {% endblock %}

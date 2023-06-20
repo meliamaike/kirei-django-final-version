@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from professionals.models import Professional
 from professionals.forms import ProfessionalForm
-
+from django.contrib import messages
 
 def all_professional(request):
     professionals = Professional.objects.all()

@@ -1,0 +1,62 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+<div class="container my-5 pt-5">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="text-center">
+          <h1 class="mb-4">Nosotros</h1>
+        </div>
+        <div class="card p-4">
+          <div class="card-body">
+            <p class="mb-4">
+                <strong>Milagros Véliz</strong>
+                 es esteticista y cosmetóloga de profesión con más de 
+                 <strong>10 años de experiencia</strong>
+                  en su país natal, Venezuela. A su llegada a Argentina, comenzó a atender desde su pequeña estética llamada 
+                  <strong>"Kirei"</strong>
+                  .</p>
+  
+            <h2 class="mb-4">Kirei</h2>
+  
+            <p>Kirei es una plataforma de software diseñada específicamente para 
+                <strong>centralizar la reserva de turnos y la venta de productos</strong>
+                 en la estética Kirei. Esta innovadora plataforma brinda a los clientes la oportunidad de reservar cómodamente turnos para servicios de belleza y adquirir productos de cuidado de la piel de manera eficiente y segura.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+<script>
+
+
+
+
+  
+
+
+  {% if value %}
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("modal-open-login-btn").click();
+    })
+  {% endif %}
+
+  {% if value_signup %}
+    document.addEventListener("DOMContentLoaded", function(){
+      document.getElementById("modal-open-register-btn").click();
+    })
+  {% endif %}
+
+
+</script>
+
+
+
+
+
+{% endblock %}
+
+

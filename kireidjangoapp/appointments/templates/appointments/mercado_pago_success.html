@@ -14,7 +14,7 @@
             <div class="mt-3 text-center">            
                 <p class="card-text"><strong>Profesional:</strong> {{ professional }}</p>
                 <p class="card-text"><strong>Servicio:</strong> {{ service }}</p>
-                <p class="card-text"><strong>Fecha y hora:</strong> {{ start_date_time }} horas</p>
+                <p class="card-text"><strong>Fecha y hora:</strong> {{ formatted_date }} a las {{ formatted_time }}horas</p>
                 <p class="card-text"><strong>ID de Pago:</strong> {{ payment_id }}</p>
                 <a href="{% url 'home:index' %}" class="btn appo-custom-btn">Volver al inicio</a>
             </div>

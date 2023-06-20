@@ -76,11 +76,16 @@ def replace_items_quantity(request, id, quantity):
 @login_required(login_url="/login")
 def catalog_item_increment(request, id):
     cart = Cart(request)
+    print("cart: ", cart)
     product = Product.objects.get(id=id)
+    print("product: ", product)
     cart.add(product=product)
     return redirect("products:product_catalog")
 
-
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib import messages
 @login_required(login_url="/login")
 def cart_checkout(request):
     cart = Cart(request)
@@ -94,7 +99,7 @@ def cart_checkout(request):
 
         if payment_method == "mercadopago":
             # PROD_ACCESS_TOKEN needed
-            sdk = mercadopago.SDK("")
+            sdk = mercadopago.SDK("TEST-2205723796037045-061917-a3112f05ebb5c1edb268154bb57034b4-451500124")
 
             # Create items in the preference
             items = []
@@ -118,6 +123,7 @@ def cart_checkout(request):
                     "currency_id": "ARS",
                 }
                 items.append(item_data)
+            
 
             preference_data = {
                 "items": items,
@@ -153,6 +159,10 @@ def cart_checkout(request):
                 id_mercado_pago=mercado_pago_payment_id,
                 status=PaymentStatus.CONFIRMED,
                 currency="ARS",
+                billing_first_name=customer.first_name,
+                billing_last_name=customer.last_name,
+                billing_email=customer.email,
+                billing_phone=customer.phone_number,
             )
 
             if isinstance(cart.cart, str):
@@ -173,7 +183,8 @@ def cart_checkout(request):
                     product=product,
                     cart_payment=cart_payment,
                     quantity=quantity,
-                    total=product.price * quantity,
+                    total=product.price * quantity
+                   
                 )
 
                 # Update the stock of the product
@@ -198,6 +209,27 @@ def cart_checkout(request):
             # Store the order id in the session for later reference
             request.session["order_id"] = order.id
 
+            # Prepare the context data to pass to the template
+            context = {
+                "order": order,
+            }
+
+            # Render the HTML content of the email template
+            html_message = render_to_string("carts/cart_detail_email.html", context)
+
+            # Strip the HTML tags to generate the plain text version of the email
+            plain_message = strip_tags(html_message)
+
+            # Send the email
+            send_mail(
+                subject="Usted ha realizado una compra en Kirei",
+                message=plain_message,
+                from_email="hola@kirei.com", 
+                recipient_list=[customer.email],  
+                html_message=html_message,
+                fail_silently=False,
+            )
+
             cart.clear()
 
             return render(
@@ -207,9 +239,7 @@ def cart_checkout(request):
             )
 
         else:
-            return HttpResponseBadRequest(
-                "Se produjo un error. Vuelva a intentar más tarde."
-            )
+            return messages.error(request, "Error en el método de pago. Intente más tarde.")
 
     return render(
         request,
@@ -234,6 +264,10 @@ def mercado_pago_success(request):
         id_mercado_pago=mercado_pago_payment_id,
         status=PaymentStatus.CONFIRMED,
         currency="ARS",
+        billing_first_name=customer.first_name,
+        billing_last_name=customer.last_name,
+        billing_email=customer.email,
+        billing_phone=customer.phone_number,
     )
 
     if isinstance(cart.cart, str):
@@ -290,17 +324,35 @@ def mercado_pago_success(request):
         )
     ]
 
+    context = {
+        "payment_id": mercado_pago_payment_id,
+        "merchant_order_id": merchant_order_id,
+        "ordered_products": ordered_products,
+        "cart_total": cart_total,
+    }
+
+    # Render the HTML content of the email template
+    html_message = render_to_string("carts/mercado_pago_success_email.html", context)
+
+    # Strip the HTML tags to generate the plain text version of the email
+    plain_message = strip_tags(html_message)
+
+    # Send the email
+    send_mail(
+        subject="Usted ha realizado una compra en Kirei",
+        message=plain_message,
+        from_email="hola@kirei.com", 
+        recipient_list=[customer.email],  
+        html_message=html_message,
+        fail_silently=False,
+    )
+
     cart.clear()
 
     return render(
         request,
         "carts/mercado_pago_success.html",
-        {
-            "payment_id": mercado_pago_payment_id,
-            "merchant_order_id": merchant_order_id,
-            "ordered_products": ordered_products,
-            "cart_total": cart_total,
-        },
+        context
     )
 
 

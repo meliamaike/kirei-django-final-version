@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html>
@@ -7,11 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- All of the CSS -->
     <!-- Start CSS -->   
-    <link rel="stylesheet" href="{% static 'home/css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'customers/css/customers-styles.css' %}">
-    <link rel="stylesheet" href="{% static 'products/css/products-styles.css' %}">
-    <link rel="stylesheet" href="{% static 'orders/css/orders-styles.css' %}">
-    <link rel="stylesheet" href="{% static 'appointments/css/appointments-styles.css' %}">
+    
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
 
 
@@ -38,7 +35,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js" integrity="sha512-f0VlzJbcEB6KiW8ZVtL+5HWPDyW1+nJEjguZ5IVnSQkvZbwBt2RfCBY0CBO1PsMAqxxrG4Di6TfsCPP3ZRwKpA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Footer CSS -->
-    <link rel="stylesheet" href="{% static 'home/css/footer.css' %}">
 
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
@@ -46,21 +42,56 @@
 
 <!-- End CSS -->
   <!-- Title -->
-    <title>{% block title %}{% endblock %}</title>
-    {% load crispy_forms_tags %}
+    <title>Reserva pendiente de pago</title>
+    
   </head>
  <body>
-    <!-- Nav Bar -->
-    {% include 'home/includes/navbar.html' %}
-    {% include 'home/includes/messages.html' %}
-
-      <!-- Specific Content -->
-      {% block content %}
-          
-      {% endblock %}  
-    
-    <!-- Footer -->
-    {% include 'home/includes/footer.html' %} 
+    <div class="container my-5 py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg p-4">
+                    <div class="card-header pt-4 text-center">
+                        <h4 class="card-title">
+                            <strong>¡Gracias por tu compra!</strong>
+                        </h4>
+                        <h6 class="card-title my-4 text-center">Pase a retirar su productos por el establecimiento con su ID de Pago.</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mt-3 text-center">
+                            <p class="card-text"><strong>ID de Pago:</strong> {{ payment_id }}</p>
+                            <div class="ordered-products">
+                              <p class="card-text"><strong>Detalle de la compra:</strong></p>
+                              <h5 class="mt-4"></h5>
+                              <ul class="list-group">
+                                  {% for product in ordered_products %}
+                                  <li class="list-group-item">
+                                      <div class="row align-items-center">
+                                          <div class="col-md-3">
+                                              <img src="{{ product.product.image.url }}" alt="{{ product.product.name }}" class="img-fluid rounded" style="height:15vh !important;">
+                                          </div>
+                                          <div class="col-md-6 my-3">
+                                              <h5>{{ product.product.name }}</h5>
+                                              <p>{{ product.quantity }} unidad(es)</p>
+                                          </div>
+                                          <div class="col-md-3 my-4 text-center">
+                                              <span class="d-block">${{ product.total_price }}</span>
+                                          </div>
+                                      </div>
+                                  </li>
+                                  {% endfor %}
+                                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <h5 class="my-3"><strong>Total</strong></h5>
+                                    <h5 class="my-3"><strong>${{ cart_total }}</strong></h5>
+                                  </li>
+                              </ul>
+                          </div>
+                            <a href="{% url 'home:index' %}" class="btn appo-custom-btn mt-4">Volver al inicio</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Specific js -->
       {% block scripts %}{% endblock %}
     <!-- More Javascript -->
@@ -78,3 +109,4 @@
         crossorigin="anonymous"></script>
   </body>
 </html>
+

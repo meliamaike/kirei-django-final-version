@@ -29,6 +29,8 @@
 
 <body class="bg-gradient-primary">
 
+  {% include 'home/includes/messages.html' %}
+
     <div class="container">
 
         <!-- Outer Row -->
@@ -48,13 +50,36 @@
                       <form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">   
                         <div class="mb-3 mx-3">
                               {% csrf_token %}
+                              {% if form.non_field_errors %}
+                                <div class="alert alert-danger text-center">
+                                  <ul class="errorlist nonfield">
+                                    {% for error in form.non_field_errors %}
+                                      <li class="text-start">{{ error }}</li>
+                                    {% endfor %}
+                                  </ul>
+                                </div>
+                              {% endif %}
                               <div class="form-group row">
                                 <label class="form-label">{{ form.login.label_tag }}</label>
-                                  {{ form.login}}
+                                  {{ form.login }}
+                                  {% if form.errors.login %}
+                                  <div class="text-danger">
+                                      {% for error in form.errors.login %}
+                                          {{ error }}
+                                      {% endfor %}
+                                  </div>
+                                  {% endif %}
                               </div>
                               <div class="form-group row">
                                 <label class="form-label">{{ form.password.label_tag }}</label>
                                   {{ form.password }}
+                                  {% if form.errors.password %}
+                                <div class="text-danger">
+                                    {% for error in form.errors.password %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                  {% endif %}
                               </div>
                               <div class="d-flex align-items-center">
                                 <button type="submit" class="btn btn-primary ms-auto" name="login_form_submit">

@@ -1,4 +1,6 @@
 {% extends 'staff/base.html'%}
+{% block breadcrumb-item %}<a class="breadcrumb-item" href="{% url 'agendas:all_agenda'%}">Agendas</a>{% endblock %}
+{% block breadcrumb-item-active %}Modificar agenda por día{% endblock %}
 {% block title %}Modificar agenda por día{% endblock %}
 {% block content %}
 {% load crispy_forms_tags %}
@@ -27,53 +29,61 @@
   </div>
 </div>
   
-<script>
 
-  $(function() {
-    $('#submit_save_modification').on('click', function(event) {
+
+{% comment %} <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const submitBtn = document.querySelector("#submit_save_modification");
+    const form = document.querySelector("#modification-agenda-form");
+    const dateInput = document.querySelector("#id_date");
+
+    submitBtn.addEventListener("click", async (event) => {
       event.preventDefault();
-      $.ajax({
-        url: '{% url "agendas:day_modification" pk=agenda.pk %}',
-        type: 'post',
-        data: $('#modification-agenda-form').serialize(),
-        success: function(data) {
-          if (data.success) {
-            Swal.fire({
-              title: 'Se agregó la modificación exitosamente.',
-              icon: 'success',
-              confirmButtonText: 'OK'
-            }).then((result) => {
-              window.location.href = '/agenda/all';
-            });
-          } else {
-            Swal.fire({
-              title: 'Error. Ya existe una modificación para este día.',
-              text: 'Si desea modificarla, eliminela y vuelva a crear una nueva.',
-              icon: 'error',
-              showCloseButton: true,
-              showConfirmButton: false,
-            }).then((result) => {
-              if (result.dismiss === Swal.DismissReason.close) {
-                window.location.href = '/agenda/all';
-              }
-            });
-          }
-        },
-        error: function() {
-          // If there was a server error, show a generic error message
+
+      if (!dateInput.value) {
+        Swal.fire({
+          title: "Error",
+          text: "Debe seleccionar una fecha.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch("{% url 'agendas:day_modification' pk=agenda.pk %}", {
+          method: "POST",
+          body: new FormData(form),
+        });
+
+        if (response.ok) {
+          await Swal.fire({
+            title: "Se agregó la modificación exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          window.location.href = "/agenda/all";
+        } else {
           Swal.fire({
-            title: 'Error',
-            text: 'Intente más tarde o comuníquese con el Administrador.',
-            icon: 'error',
+            title: "Error. Ya existe una modificación para este día.",
+            text: "Si desea modificarla, elimínela y vuelva a crear una nueva.",
+            icon: "error",
             showCloseButton: true,
             showConfirmButton: false,
-          }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.close) {
-              window.location.href = '/agenda/all';
-            }
           });
+          window.location.href = "/agenda/all";
         }
-      });
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Intente más tarde o comuníquese con el Administrador.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+        window.location.href = "/agenda/all";
+      }
     });
   });
 
@@ -87,35 +97,136 @@
       if ($(this).is(":checked")) {
         $("#div_id_start_time").show();
         $("#div_id_end_time").show();
-        
       } else {
         $("#div_id_start_time").hide();
         $("#div_id_end_time").hide();
         $("#id_start_time option:selected").val("");
         $("#id_end_time option:selected").val("");
-        
       }
     });
   });
 
   $(document).ready(function() {
-      $('.datepicker').datepicker({
-          format: 'dd/mm/yyyy',
-          autoclose: true,
-          todayHighlight: true,
-          orientation: 'bottom',
-          zIndexOffset: 1000,
-      });
+    $('.datepicker').datepicker({
+      format: 'dd/mm/yyyy',
+      autoclose: true,
+      todayHighlight: true,
+      orientation: 'bottom',
+      zIndexOffset: 1000,
+    });
   });
-
-
-
-
-</script>
-
+</script> {% endcomment %}
 
  
-
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const submitBtn = document.querySelector("#submit_save_modification");
+    const form = document.querySelector("#modification-agenda-form");
+    const dateInput = document.querySelector("#id_date");
+    const startTimeInput = document.querySelector("#id_start_time");
+    const endTimeInput = document.querySelector("#id_end_time");
+    const availableCheckbox = document.querySelector("#id_available");
+  
+    submitBtn.addEventListener("click", async (event) => {
+      event.preventDefault();
+  
+      if (!dateInput.value) {
+        Swal.fire({
+          title: "Error",
+          text: "Debe seleccionar una fecha.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false
+        });
+        return;
+      }
+  
+      if (dateInput.value && availableCheckbox.checked && (!startTimeInput.value || !endTimeInput.value)) {
+        Swal.fire({
+          title: "Error",
+          text: "Debe seleccionar una hora de inicio y una hora de fin.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false
+        });
+        return;
+      }
+  
+      try {
+        const response = await fetch("{% url 'agendas:day_modification' pk=agenda.pk %}", {
+          method: "POST",
+          body: new FormData(form),
+        });
+  
+        if (response.ok) {
+          await Swal.fire({
+            title: "Se agregó la modificación exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          window.location.href = "/agenda/all";
+        } else {
+          Swal.fire({
+            title: "Error. Ya existe una modificación para este día.",
+            text: "Si desea modificarla, elimínela y vuelva a crear una nueva.",
+            icon: "error",
+            showCloseButton: true,
+            showConfirmButton: false,
+          });
+          window.location.href = "/agenda/all";
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Intente más tarde o comuníquese con el Administrador.",
+          icon: "error",
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+        window.location.href = "/agenda/all";
+      }
+    });
+  
+    dateInput.addEventListener("change", () => {
+      if (dateInput.value && !availableCheckbox.checked) {
+        $("#div_id_start_time").hide();
+        $("#div_id_end_time").hide();
+        startTimeInput.value = ""; // Clear the selected start_time value
+        endTimeInput.value = ""; // Clear the selected end_time value
+      }
+    });
+  
+    $(document).ready(function() {
+      // hide the start_time and end_time fields initially
+      $("#div_id_start_time").hide();
+      $("#div_id_end_time").hide();
+  
+      // show or hide the start_time and end_time fields based on the value of the available checkbox
+      $("#id_available").change(function() {
+        if ($(this).is(":checked")) {
+          $("#div_id_start_time").show();
+          $("#div_id_end_time").show();
+        } else {
+          $("#div_id_start_time").hide();
+          $("#div_id_end_time").hide();
+          startTimeInput.value = ""; // Clear the selected start_time value
+          endTimeInput.value = ""; // Clear the selected end_time value
+        }
+      });
+    });
+  
+    $(document).ready(function() {
+      $('.datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+        todayHighlight: true,
+        orientation: 'bottom',
+        zIndexOffset: 1000,
+      });
+    });
+  });
+  
+</script>
  
 
 {% endblock %}

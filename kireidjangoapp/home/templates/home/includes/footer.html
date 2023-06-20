@@ -20,13 +20,13 @@
                     <div class="thumb-content"><a href="/">Inicio</a></div> 
                 </li>
                 <li>
-                    <div class="thumb-content"><a href="#.">Nosotros</a></div> 
+                    <div class="thumb-content"><a href="{% url 'home:kirei_info' %}">Nosotros</a></div> 
                 </li>
                 <li>
-                    <div class="thumb-content"><a href="#servicios">Servicios</a></div> 
+                  <div class="thumb-content"><a href="{% url 'home:faq' %}">FAQ</a></div>
                 </li>
                 <li>
-                    <div class="thumb-content"><a href="#contacto">Contacto</a></div> 
+                    <div class="thumb-content"><a href="{% url 'home:services' %}">Servicios</a></div> 
                 </li>
             </ul>
         </div>
@@ -53,13 +53,15 @@
     </div>
     </div>
       
-    <div class="footer-copyright">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <p>&copy; Kirei 2023 </p>
-                </div>
-            </div>
-    </div>
-    </div>
+    
 </footer>
+
+<div class="footer-copyright">
+  <div class="container">
+      <div class="row">
+          <div class="col-md-12 text-center">
+              <p>&copy; Kirei 2023 </p>
+          </div>
+      </div>
+  </div>
+</div>

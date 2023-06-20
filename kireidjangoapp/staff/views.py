@@ -29,6 +29,15 @@ from itertools import groupby
 from django.db.models import Sum
 from datetime import date
 from django.db.models import Q
+from django.contrib.auth.forms import PasswordResetForm
+from django.core.mail import send_mail, BadHeaderError
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.shortcuts import render, redirect, HttpResponse
+from django.contrib.auth import login, logout
+from django.contrib import messages
 
 
 # STATISTICS
@@ -272,13 +281,13 @@ def update_payment_chart(hoverData):
             x=appointment_dates,
             y=appointment_totals,
             mode="lines",
-            name="Appointment Payments",
+            name="Ganancias x Turnos",
         )
     )
 
     # Add a trace for cart payments
     fig.add_trace(
-        go.Scatter(x=cart_dates, y=cart_totals, mode="lines", name="Cart Payments")
+        go.Scatter(x=cart_dates, y=cart_totals, mode="lines", name="Ganancias x Venta de productos")
     )
 
     # Set the x-axis label
@@ -323,9 +332,9 @@ def update_customer_graph(n_clicks):
     [Input("most-reserved-service-graph", "hoverData")],
 )
 def update_most_reserved_service_graph(n):
-    # Get all appointments and related services
-    appointments = Appointment.objects.all().prefetch_related("service")
-    services = [appointment.service for appointment in appointments]
+    # Get all appointment payments and related services
+    appointment_payments = AppointmentPayment.objects.all().prefetch_related("appointment__service")
+    services = [payment.appointment.service for payment in appointment_payments]
 
     # Count the occurrences of each service
     service_counts = {
@@ -345,10 +354,15 @@ def update_most_reserved_service_graph(n):
                 textposition="auto",
             )
         ],
-        layout={"title": "Servicios más reservados"},
+        layout={
+            "title": "Servicios más reservados",
+            "xaxis": {"title": "Servicio"},
+            "yaxis": {"title": "Cantidad de veces reservado"},
+        },
     )
 
     return fig
+
 
 
 # Cantidad de reservas por día
@@ -358,10 +372,10 @@ def update_most_reserved_service_graph(n):
 )
 def update_appointment_day_count(n):
     # Get all appointments and count the number of appointments per day
-    appointments = Appointment.objects.all()
+    appointments = AppointmentPayment.objects.all()
 
-    df_appointments = pd.DataFrame.from_records(appointments.values("id", "date"))
-    df_counts = df_appointments.groupby("date").count()
+    df_appointments = pd.DataFrame.from_records(appointments.values("id", "appointment__date"))
+    df_counts = df_appointments.groupby("appointment__date").count()
 
     # Create the scatter plot figure
     fig = go.Figure(
@@ -380,20 +394,20 @@ def update_appointment_day_count(n):
 # Cantidad de reservas por mes y por año
 @app.callback(Output("appointment-count", "figure"), [Input("time-period", "value")])
 def update_appointment_count(time_period):
-    # Get all appointments and count the number of appointments per month/year
-    appointments = Appointment.objects.all()
-    df_appointments = pd.DataFrame.from_records(appointments.values("id", "date"))
+    # Get all appointment payments and count the number of payments per month/year
+    appointment_payments = AppointmentPayment.objects.all()
+    df_payments = pd.DataFrame.from_records(appointment_payments.values("id", "appointment__date"))
 
-    df_appointments["date"] = pd.to_datetime(df_appointments["date"])
+    df_payments["appointment__date"] = pd.to_datetime(df_payments["appointment__date"])
 
     if time_period == "month":
-        df_counts = df_appointments.groupby(
-            df_appointments["date"].dt.strftime("%Y-%m")
+        df_counts = df_payments.groupby(
+            df_payments["appointment__date"].dt.strftime("%Y-%m")
         )["id"].count()
         x_title = "Mes"
         y_title = "Cantidad de reservas"
     else:
-        df_counts = df_appointments.groupby(df_appointments["date"].dt.strftime("%Y"))[
+        df_counts = df_payments.groupby(df_payments["appointment__date"].dt.strftime("%Y"))[
             "id"
         ].count()
         x_title = "Año"
@@ -406,6 +420,9 @@ def update_appointment_count(time_period):
     )
 
     return fig
+
+
+
 
 
 # Productos más ordenados
@@ -507,7 +524,7 @@ def staff_login(request):
 
 def staff_logout(request):
     logout(request)
-    # messages.info(request, "Ha cerrado sesión correctamente.")
+    messages.info(request, "Has cerrado sesión correctamente.")
     return redirect("staff:staff_login")
 
 
@@ -529,28 +546,63 @@ def staff_appointments_dashboard(request):
                 "professional": key[1],
                 "service": key[2],
                 "appointments": appointments_list,
+                "customer": appointments_list[0].customer,
             }
         )
 
     return render(
         request,
         "staff/appointments_dashboard.html",
-        {"grouped_appointments": grouped_appointments, "appointments": appointments},
+        {"grouped_appointments": grouped_appointments, 
+         "appointments": appointments
+        },
     )
 
-
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 @require_GET
 def staff_cancel_appointment(request):
     appointment_ids = request.GET.getlist("ids")
     appointment_ids = [int(id) for id in request.GET.get("ids").split(",")]
     appointments = Appointment.objects.filter(id__in=appointment_ids)
+    customer= appointments[0].customer
+
+    # Prepare the appointment details to pass to the email template
+    context = {
+        'service': appointments[0].service,
+        'date': appointments[0].date,
+        'time': appointments[0].start_time,
+        'professional': appointments[0].professional,
+    }
 
     for appointment in appointments:
         for slot in appointment.appointment_slot.all():
             slot.booked = False
             slot.save()
-
+        
         appointment.delete()
+
+    # Render the HTML content of the email template
+    html_message = render_to_string("staff/appointment_cancel_email.html", context)
+
+    # Strip the HTML tags to generate the plain text version of the email
+    plain_message = strip_tags(html_message)
+
+    # Send the email
+    send_mail(
+        subject="Tuvimos que cancelar tu reserva",
+        message=plain_message,
+        from_email="hola@kirei.com", 
+        recipient_list=[customer.email],  
+        html_message=html_message,
+        fail_silently=False,
+    )
+
+    messages.success(
+        request,
+        "Reserva cancelada correctamente. Ya se le ha notificado al cliente en un e-mail.",
+    )
 
     return redirect(reverse("staff:staff_appointments_dashboard"))
 
@@ -607,15 +659,6 @@ def orders_details(request, order_id, product_id):
     )
 
 
-from django.contrib.auth.forms import PasswordResetForm
-from django.core.mail import send_mail, BadHeaderError
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.encoding import force_bytes
-from django.shortcuts import render, redirect, HttpResponse
-from django.contrib.auth import login, logout
-from django.contrib import messages
 
 
 # Forgot password
@@ -629,15 +672,18 @@ def staff_password_reset(request):
                 for user in associated_users:
                     subject = "Cambio de contraseña"
                     email_template_name = "staff/password/password_reset_email.txt"
+                    uid = urlsafe_base64_encode(force_bytes(user.pk))
+                    token = default_token_generator.make_token(user)
+                    protocol = 'http' if request.is_secure() else 'https'
 
                     c = {
                         "email": user.email,
                         "domain": "127.0.0.1:8000",
                         "site_name": "Kirei estética",
-                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                        "uid": uid,
                         "user": user,
-                        "token": default_token_generator.make_token(user),
-                        "protocol": "http",
+                        "token": token,
+                        "protocol": protocol,
                     }
                     email = render_to_string(email_template_name, c)
                     try:
@@ -648,13 +694,22 @@ def staff_password_reset(request):
                             [user.email],
                             fail_silently=False,
                         )
+                        messages.success(
+                            request,
+                            "Te enviamos un e-mail con las instrucciones para poder cambiar la contraseña.",
+                        )
                     except BadHeaderError:
-                        return HttpResponse("Se encontró una cabecera invalida..")
-                    messages.success(
-                        request,
-                        "Te enviamos un e-mail con las instrucciones para poder cambiar la contraseña.",
-                    )
+                        messages.error(request, "Error. Intente más tarde por favor.")
+                        return redirect("staff:staff_password_reset")
+                    
                     return redirect("staff:staff_login")
+            else:
+                messages.error(request, "Error. No existe el usuario.")
+                return redirect("staff:staff_password_reset")
+        else:
+            messages.error(request, "Error. Formulario inválido.")
+            return redirect("staff:staff_password_reset")
+    
     password_reset_form = PasswordResetForm()
 
     return render(
@@ -662,3 +717,4 @@ def staff_password_reset(request):
         template_name="staff/password/password_reset_form.html",
         context={"form": password_reset_form},
     )
+

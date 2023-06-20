@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from services.models import CategoryService, Service
 from services.forms import CategoryServiceForm, ServiceForm, CategoryServiceEditForm
-
+from django.contrib import messages
 
 # Category service
 def all_category_service(request):
@@ -17,6 +17,8 @@ def create_category_service(request):
         if form.is_valid():
             form.save()
             return redirect("services:all_category_service")
+        else:
+            print("Form no valid: ", form.errors)
     else:
         form = CategoryServiceForm()
     return render(request, "services/category_service_form.html", {"form": form})
@@ -29,6 +31,8 @@ def edit_category_service(request, pk):
         if form.is_valid():
             form.save()
             return redirect("services:all_category_service")
+        else:
+            print("Form no valid: ", form.errors)
     else:
         form = CategoryServiceEditForm(instance=category)
     return render(
@@ -61,6 +65,8 @@ def create_service(request):
         if form.is_valid():
             form.save()
             return redirect("services:all_service")
+        else:
+            print("Form no valid: ", form.errors)
     else:
         form = ServiceForm()
     return render(request, "services/service_form.html", {"form": form})
@@ -73,6 +79,8 @@ def edit_service(request, pk):
         if form.is_valid():
             form.save()
             return redirect("services:all_service")
+        else:
+            print("Form no valid: ", form.errors)
     else:
         form = ServiceForm(instance=service)
     return render(

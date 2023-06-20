@@ -13,7 +13,38 @@
       <div class="col-lg-4">
          <div class="card mb-4">
             <div class="card-body text-center">
-               <img src="{% static 'customers/img/default_image_profile.png'%}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+               <form id="profileForm" action="{% url 'customers:profile' %}" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <input type="hidden" name="form_type" value="edit_image">
+                  <label for="fileToUpload">
+                    <div class="profile-pic" style="background-image: url('{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'customers/img/default_image_profile.jpeg' %}{% endif %}')">
+                          <div class="edit-icon">
+                              <i class="bi bi-pencil-square"></i>
+                          </div>
+                      </div>
+                  </label>
+                  <input type="file" name="fileToUpload" id="fileToUpload">
+                  <!-- Modal -->
+                  <div id="myModalProfile" class="modal">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">¿Desea guardar la imagen?</h5>
+                        </div>
+                        <div class="modal-body text-center">
+                          <img id="selectedImage" class="img-fluid" style="max-width: 300px; max-height: 300px; border: 1px solid #ccc; background-color: #f8f9fa; border-radius: 50%;">
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">Guardar</button>
+                          <button type="button" id="cancelBtn" class="btn bg-dark" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  
+              </form>
                <h2 class="mb-1">{{user.first_name}} {{user.last_name}} </h2>
                <p class="text-muted mb-2">{{user.email}}</p>
                <p class="text-muted mb-2">Último Ingreso: {{user.last_login}}</p>
@@ -89,5 +120,120 @@
 </div>
 </div>
 </div>
+
+<script>
+    // Get the file input element
+ const fileInput = document.getElementById('fileToUpload');
+  
+ // Get the image element inside the modal
+ const selectedImage = document.getElementById('selectedImage');
+ 
+ // Get the form element
+ const form = document.getElementById('profileForm');
+ 
+ // Listen for changes in the file input
+ fileInput.addEventListener('change', function() {
+   const file = fileInput.files[0];
+   
+   // Check if a file was selected
+   if (file) {
+     // Create a FileReader object to read the file
+     const reader = new FileReader();
+     
+     // Set up the onload event for the FileReader
+     reader.onload = function(event) {
+       // Update the src attribute of the image with the selected image data
+       selectedImage.src = event.target.result;
+       
+       // Show the modal
+       showModal();
+     };
+     
+     // Read the selected file as a data URL
+     reader.readAsDataURL(file);
+   }
+ });
+ 
+ // Listen for the form submission event
+ form.addEventListener('submit', function(event) {
+   event.preventDefault(); // Prevent the default form submission
+   
+   // Get the selected image URL from the src attribute
+   const imageURL = selectedImage.src;
+   
+   // Perform any necessary validation or processing here
+   
+   // Submit the form programmatically
+   form.submit();
+ });
+ 
+ // Function to show the modal
+ function showModal() {
+   const modal = document.getElementById('myModalProfile');
+   modal.style.display = 'block';
+ }
+ 
+ // Function to hide the modal
+ function hideModal() {
+   const modal = document.getElementById('myModalProfile');
+   modal.style.display = 'none';
+ }
+ 
+ // Listen for the cancel button click event to hide the modal
+ const cancelButton = document.getElementById('cancelBtn');
+ cancelButton.addEventListener('click', hideModal);
+</script>
+<style>
+   .icon-photo {
+     position: absolute;
+     right: 0;
+     bottom: 0;
+   }
+   
+   .profile-pic {
+       border-radius: 50%;
+       height: 150px;
+       width: 150px;
+       background-size: cover;
+       background-position: center;
+       background-blend-mode: multiply;
+       vertical-align: middle;
+       text-align: center;
+       color: transparent;
+       transition: all .3s ease;
+       text-decoration: none;
+       cursor: pointer;
+   }
+   
+  
+  
+   
+   form input[type="file"] {
+             display: none;
+             cursor: pointer;
+    }
+    .profile-pic {
+     position: relative;
+     width: 150px;
+     height: 150px;
+     background-size: cover;
+     background-position: center;
+ }
+ 
+ .edit-icon {
+     position: absolute;
+     bottom: 10px;
+     right: 10px;
+     background-color: white;
+     border-radius: 50%;
+     padding: 5px;
+     cursor: pointer;
+ }
+ 
+ .edit-icon i {
+     color: black;
+ }
+ 
+ </style>
 {% endblock%}
    
