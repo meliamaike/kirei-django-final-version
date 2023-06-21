@@ -122,12 +122,12 @@ WSGI_APPLICATION = "kireidjangoapp.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
 
 #PostgreSQL
 
@@ -141,16 +141,7 @@ WSGI_APPLICATION = "kireidjangoapp.wsgi.application"
 #         'PORT': '5433',
 #     }
 # }
-DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'vAGzD0OlrZW98xcr5UYx',
-        'HOST': 'containers-us-west-129.railway.app',
-        'PORT': '6054',
-    }
-}
+
 
 
 
