@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -141,15 +142,19 @@ WSGI_APPLICATION = "kireidjangoapp.wsgi.application"
 #         'PORT': '5433',
 #     }
 # }
-DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'vAGzD0OlrZW98xcr5UYx',
-        'HOST': 'containers-us-west-129.railway.app',
-        'PORT': '6054',
-    }
+# DATABASES = {
+#     'default': {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         'NAME': 'railway',
+#         'USER': 'postgres',
+#         'PASSWORD': 'vAGzD0OlrZW98xcr5UYx',
+#         'HOST': 'containers-us-west-129.railway.app',
+#         'PORT': '6054',
+#     }
+# }
+
+DATABASE = {
+    "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
 }
 
 
