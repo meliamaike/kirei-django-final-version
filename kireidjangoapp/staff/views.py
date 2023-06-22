@@ -668,7 +668,7 @@ def staff_password_reset(request):
         if password_reset_form.is_valid():
             data = password_reset_form.cleaned_data["email"]
             associated_users = Customer.objects.filter(Q(email=data))
-            if associated_users.exists():
+            if associated_users.exists() and associated_users.first().is_staff:
                 for user in associated_users:
                     subject = "Cambio de contraseña"
                     email_template_name = "staff/password/password_reset_email.txt"
