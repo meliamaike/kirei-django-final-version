@@ -34,3 +34,4 @@ class Service(models.Model):
 
     def get_type(self):
         return "Service"
+

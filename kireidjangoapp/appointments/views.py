@@ -366,6 +366,7 @@ def checkout(request):
                     "formatted_time":formatted_time,
                     "appointment": appointment,
                     "order": order,
+                    "price": service.price,
                 }
 
                 # Render the HTML content of the email template
@@ -400,7 +401,8 @@ def checkout(request):
             "service": service,
             "start_date_time": start_date_time,
             "formatted_time":formatted_time,
-            "formatted_date":formatted_date
+            "formatted_date":formatted_date,
+            "price": service.price,
         },
     )
 
@@ -523,32 +525,83 @@ def appointment_detail(request):
 
 # For the profile
 
+# def all_appointments(request):
+#     today = date.today()
+
+#     appointments = Appointment.objects.filter(Q(customer=request.user) & Q(date__gte=today) | Q(customer=request.user) & Q(date=today)).order_by(
+#         "date", "professional", "service"
+#     )
+
+#     grouped_appointments = []
+#     for key, group in groupby(
+#         appointments, lambda appt: (appt.date, appt.professional, appt.service)
+#     ):
+#         appointments_list = list(group)
+#         grouped_appointments.append(
+#             {
+#                 "date": key[0],
+#                 "professional": key[1],
+#                 "service": key[2],
+#                 "appointments": appointments_list,
+#             }
+#         )
+
+#     return render(
+#         request,
+#         "appointments/all_appointment.html",
+#         {"grouped_appointments": grouped_appointments},
+#     )
+
+from datetime import date, datetime
+from itertools import groupby
 
 def all_appointments(request):
-    appointments = Appointment.objects.filter(customer=request.user).order_by(
-        "date", "professional", "service"
-    )
+    today = date.today()
+    current_time = datetime.now().time()
+
+    appointments = Appointment.objects.filter(
+        Q(customer=request.user) & ((Q(date__gte=today)) | Q(customer=request.user) & Q(date=today))
+    ).order_by("date", "professional", "service")
 
     grouped_appointments = []
     for key, group in groupby(
         appointments, lambda appt: (appt.date, appt.professional, appt.service)
     ):
         appointments_list = list(group)
-        grouped_appointments.append(
-            {
-                "date": key[0],
-                "professional": key[1],
-                "service": key[2],
-                "appointments": appointments_list,
-            }
-        )
+        appointments_with_status = []
+        for appointment in appointments_list:
+            # Get the start_time property
+            start_time = appointment.start_time
+
+            # Check if start_time has passed
+            appointment_has_passed = (
+                appointment.date < today
+                or (appointment.date == today and start_time and start_time <= current_time)
+            )
+
+            if not appointment_has_passed:
+                appointment_data = {
+                    "appointment": appointment,
+                    "has_passed": appointment_has_passed
+                }
+
+                appointments_with_status.append(appointment_data)
+
+        if appointments_with_status:
+            grouped_appointments.append(
+                {
+                    "date": key[0],
+                    "professional": key[1],
+                    "service": key[2],
+                    "appointments": appointments_with_status,
+                }
+            )
 
     return render(
         request,
         "appointments/all_appointment.html",
         {"grouped_appointments": grouped_appointments},
     )
-
 
 @require_GET
 def cancel_appointment(request):

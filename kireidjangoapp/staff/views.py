@@ -309,7 +309,11 @@ def update_payment_chart(hoverData):
     Output("customer-graph", "figure"), [Input("customer-graph", "hoverData")]
 )
 def update_customer_graph(n_clicks):
-    total_customers = Customer.objects.count()
+    total_customers = Customer.objects.filter(
+        ~Q(is_admin=True) & ~Q(is_staff=True)
+    ).count()
+    
+    
     fig = {
         "data": [
             {
@@ -466,6 +470,7 @@ def staff_main_dashboard(request):
     customer_count = Customer.objects.filter(is_admin=False, is_staff=False).count()
     most_booked_service = (
         Service.objects.annotate(reservation_count=Count("appointment"))
+        .filter(reservation_count__gt=0)
         .order_by("-reservation_count")
         .first()
     )
@@ -511,9 +516,9 @@ def staff_login(request):
                 # Redirect to a success page
 
                 return redirect("staff:staff_main_dashboard")
-            else:
+            elif not user.is_staff:
                 # Return an 'invalid login' error message
-                form.add_error(None, "Login inválido")
+                form.add_error(None, "Permiso denegado.")
         else:
             print(form.errors)
     else:

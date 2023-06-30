@@ -34,7 +34,7 @@ def contact_view(request):
 
             message = body
             from_email = contact_form.cleaned_data["email"]
-            recipient_list = ['hola@kirei.com']
+            recipient_list = ['iamjunname@gmail.com']
 
             send_mail(subject, message, from_email, recipient_list, fail_silently=False)
             print("Se envio el email?")

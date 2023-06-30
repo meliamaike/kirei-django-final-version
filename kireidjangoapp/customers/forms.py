@@ -36,13 +36,13 @@ class RegisterForm(SignupForm):
 
     def clean_first_name(self):
         first_name = self.cleaned_data["first_name"]
-        if not first_name.isalpha():
+        if not first_name.replace(" ", "").isalpha():
             raise forms.ValidationError("El nombre solo debe contener letras.")
         return first_name
 
     def clean_last_name(self):
         last_name = self.cleaned_data["last_name"]
-        if not last_name.isalpha():
+        if not last_name.replace(" ", "").isalpha():
             raise forms.ValidationError("El apellido solo debe contener letras.")
         return last_name
 
@@ -50,15 +50,18 @@ class RegisterForm(SignupForm):
         area_code = self.cleaned_data["area_code"]
         if not area_code.isdigit():
             raise forms.ValidationError("El código área solo debe contener números.")
+        if len(area_code) < 2:
+            raise forms.ValidationError("El número de teléfono debe tener al menos 8 dígitos.")
         return area_code
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data["phone_number"]
         if not phone_number.isdigit():
-            raise forms.ValidationError(
-                "El número de teléfono solo debe contener números."
-            )
+            raise forms.ValidationError("El número de teléfono solo debe contener números.")
+        if len(phone_number) < 8:
+            raise forms.ValidationError("El número de teléfono debe tener al menos 8 dígitos.")
         return phone_number
+
 
     def clean_document_number(self):
         document_number = self.cleaned_data["document_number"]
@@ -125,6 +128,64 @@ class CustomerLoginForm(LoginForm):
 
 
 class ProfileCustomerForm(forms.ModelForm):
+
+    first_name = forms.CharField(label="Nombre", max_length=30, required=True)
+    last_name = forms.CharField(label="Apellido", max_length=30, required=True)
+    document_number = forms.CharField(
+        label="Nro. Documento", max_length=30, required=True
+    )
+    area_code = forms.CharField(label="Código Área", max_length=5, required=True)
+    phone_number = forms.CharField(label="Nro. Teléfono", max_length=20, required=True)
+
+    alphanumeric_validator = RegexValidator(
+        r"^[a-zA-Z]*$", "Este campo solo debe contener letras."
+    )
+
+    phone_validator = RegexValidator(
+        r"^[0-9]*$", "Este campo solo debe contener números."
+    )
+
+    def clean_first_name(self):
+        first_name = self.cleaned_data["first_name"]
+        if not first_name.replace(" ", "").isalpha():
+            raise forms.ValidationError("El nombre solo debe contener letras.")
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data["last_name"]
+        if not last_name.replace(" ", "").isalpha():
+            raise forms.ValidationError("El apellido solo debe contener letras.")
+        return last_name
+
+    def clean_area_code(self):
+        area_code = self.cleaned_data["area_code"]
+        if not area_code.isdigit():
+            raise forms.ValidationError("El código área solo debe contener números.")
+        if len(area_code) < 2:
+            raise forms.ValidationError("El número de teléfono debe tener al menos 8 dígitos.")
+        return area_code
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data["phone_number"]
+        if not phone_number.isdigit():
+            raise forms.ValidationError("El número de teléfono solo debe contener números.")
+        if len(phone_number) < 8:
+            raise forms.ValidationError("El número de teléfono debe tener al menos 8 dígitos.")
+        return phone_number
+
+
+    def clean_document_number(self):
+        document_number = self.cleaned_data["document_number"]
+        if len(document_number) < 8:
+            raise forms.ValidationError(
+                "El número de documento debe tener al menos 8 dígitos."
+            )
+        elif not document_number.isdigit():
+            raise forms.ValidationError(
+                "El número de documento solo debe contener números."
+            )
+        return document_number
+
     class Meta:
         model = get_user_model()
         fields = [
@@ -151,3 +212,4 @@ class ProfileCustomerForm(forms.ModelForm):
         self.fields["document_number"].widget.attrs.update({"class": "form-control"})
         self.fields["area_code"].widget.attrs.update({"class": "form-control"})
         self.fields["phone_number"].widget.attrs.update({"class": "form-control"})
+        self.fields["email"].widget.attrs["readonly"] = "readonly"

@@ -15,7 +15,6 @@
                             <th>Nombre y Apellido</th>
                             <th>Nro. DNI</th>
                             <th>E-mail</th>
-                            {% comment %} <th>Cód. de área</th> {% endcomment %}
                             <th>Nro. Teléfono</th>
                         </tr>
                     </thead>
@@ -24,7 +23,6 @@
                             <th>Nombre y Apellido</th>
                             <th>Nro. DNI</th>
                             <th>E-mail</th>
-                            {% comment %} <th>Cód. de área</th> {% endcomment %}
                             <th>Nro. Teléfono</th>
                         </tr>
                     </tfoot>
@@ -37,7 +35,6 @@
                                     <td>{{ c.document_number }}</td>
                                     <td>{{ c.email }}</td>
                                     <td>{{ c.area_code }}-{{ c.phone_number}}</td>
-                                    {% comment %} <td></td> {% endcomment %}
                                 </tr>
                         {% endif%}        
                         {% endfor %}

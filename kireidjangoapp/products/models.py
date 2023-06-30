@@ -29,7 +29,7 @@ class Product(models.Model):
     )
     price = models.DecimalField(max_digits=15, decimal_places=0, default="")
     stock = models.PositiveIntegerField(default=1)
-    image = models.ImageField(upload_to="products/images")
+    image = models.ImageField(upload_to="products/images", null=True, blank=True)
     category = models.CharField(max_length=255, choices=CATEGORY_CHOICES, default="")
     is_available = models.BooleanField(default=True)
 

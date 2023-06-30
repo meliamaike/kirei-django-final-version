@@ -9,7 +9,7 @@
 
 <div class="row">
     {% for agenda in agendas %}
-    <div class="col-xl-3 col-md-6 mb-4">
+    <div class="col-xl-3 col-md-6 mb-4" id="card-{{ agenda.pk }}">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -28,9 +28,9 @@
                             Más detalles:</div>
                     </div>
                     <div class="col-md-12 mt-3">
-                        <a href="{% url 'agendas:day_modification' agenda.pk %}" class="btn btn-warning mr-2">Modificación por día <i class="bi bi-calendar-date"></i></a>
-                        <a href="{% url 'agendas:edit_agenda' agenda.pk %}" class="btn btn-success mr-2">Editar Horario <i class="bi bi-clock"></i></a>
-                        <button type="button" class="btn btn-danger delete-agenda" data-id="{{ agenda.pk }}">Eliminar Agenda <i class="bi bi-trash"></i></button>
+                        <a href="{% url 'agendas:day_modification' agenda.pk %}" class="btn btn-warning m-2">Modificación por día <i class="bi bi-calendar-date"></i></a>
+                        <a href="{% url 'agendas:edit_agenda' agenda.pk %}" class="btn btn-success m-2">Editar Horario <i class="bi bi-clock"></i></a>
+                        <button type="button" class="btn btn-danger delete-agenda m-2" data-id="{{ agenda.pk }}">Eliminar Agenda <i class="bi bi-trash"></i></button>
                     </div>
                       <div class="col-md-12 text-right">
                           <button type="button" class="btn btn-info see-less"><i class="bi bi-chevron-up"></i></button>
@@ -48,6 +48,7 @@
 </div>
 
 <script>
+  
   $(function() {
     // Show more details when "See More" button is clicked
     $('.see-more').on('click', function() {
@@ -62,6 +63,7 @@
       $('.see-more').show();
     });
 
+    
 // Handle the delete of an agenda
 $('.delete-agenda').on('click', function() {
     var agendaId = $(this).data('id');
@@ -82,6 +84,7 @@ $('.delete-agenda').on('click', function() {
           success: function(data) {
             location.href = location.href;
             window.location.href = '/agenda/all';
+            location.replace(location.href); // Simulate a page refresh
           },
           error: function(xhr, textStatus, errorThrown) {
             console.log(xhr.responseText);

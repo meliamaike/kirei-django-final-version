@@ -59,14 +59,14 @@
                   <div class="card mb-3">
                     <div class="row g-0">
                       <div class="col-md-6 col-sm-12 mb-3 mb-md-0 d-flex justify-content-center align-items-center">
-                        <a href="{% url 'products:product_detail' product_name=product_payment.product.name|slugify product_id=product_payment.product_id %}">
+                        {% comment %} <a href="{% url 'products:product_detail' product_name=product_payment.product.name|slugify product_id=product_payment.product_id %}">
                           <img src="{{ product_payment.product.image.url }}" class="card-img m-3" alt="{{ product_payment.product.name }}" style="max-height: 200px;">
-                        </a>
+                        </a> {% endcomment %}
                       </div>
                       <div class="col-md-6 col-sm-12 my-4 mb-md-0 pb-5">
                         <div class="card-body">
                           <h5 class="card-title mb-4 font-weight-bold">
-                            <a href= "{% url 'products:product_detail' product_payment.product.name|slugify product_payment.product_id %}" style="color: black; text-decoration: none !important;">
+                            <a href= "" style="color: black; text-decoration: none !important;">
                               {{ product_payment.product.name }}
                             </a>
                           </h5>
@@ -93,7 +93,7 @@
               </div>
       
               <div class="card-header">
-                <p class="card-text text-center"><strong>Realice el pago en efectivo en el local.</strong></p>
+                <p class="card-text text-center"><strong>Realice el pago en efectivo en el establecimiento (Av.Directorio 3217, 8vo "C").</strong></p>
               </div>
       
             </div>

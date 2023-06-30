@@ -3,7 +3,7 @@
 {% block content %}
 
 
-<div class="glide container mt-5 pt-5" style = "height:100vh !important;">
+<div class="glide container mt-5 pt-5 mb-5" >
   <div class="card">
     <div class="card-header pt-3">
       <h4>
@@ -37,7 +37,7 @@
             <div class="card-body">
               <h3 class="card-title">{{ service.service }}</h3>
               <p class="card-text">{{ service.description }}</p>
-              <p class="card-text"><strong>Duración:</strong> {{ service.duration }}</p>
+              <p class="card-text"><strong>Duración:</strong> {{ service.duration }} mins</p>
               <p class="card-text"><strong>Precio:</strong> ${{ service.price }}</p>
               <form method="POST" action="{% url 'appointments:choose_service' %}">
                 {% csrf_token %}

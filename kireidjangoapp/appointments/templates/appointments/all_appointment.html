@@ -92,10 +92,10 @@
                                                 <td>{{ group.date }}</td>
                                                 <td>{{ group.professional }}</td>
                                                 <td>{{ group.service }}</td>
-                                                <td>{{ appointment.start_time }}</td>
+                                                <td>{{ appointment.appointment.start_time|time:"H:i" }}</td>
                                                 <td>
                                                     <span class="btn btn-primary">
-                                                        <a style="color:white; font-style: normal !important;" href="{% url 'appointments:cancel_appointment' %}?ids={% for appointment in group.appointments %}{{ appointment.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                                                        <a style="color:white; font-style: normal !important;" href="{% url 'appointments:cancel_appointment' %}?ids={% for appointment in group.appointments %}{{ appointment.appointment.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
                                                             <i class="bi bi-trash"></i>
                                                         </a>
                                                     </span>
@@ -123,103 +123,7 @@
 
 <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=XMLHttpRequest,FormData"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-{% comment %} <script>
 
-    function toggleAccordion(target) {
-        // Get the element with the given target
-        const element = document.querySelector(target);
-        if (!element) return;
-      
-        // Check if the element is currently collapsed or expanded
-        const isCollapsed = element.classList.contains("show");
-      
-        // Collapse all the other accordion cards
-        const accordions = document.querySelectorAll(".collapse");
-        accordions.forEach((accordion) => {
-          if (accordion.id !== element.id && accordion.classList.contains("show")) {
-            accordion.classList.remove("show");
-          }
-        });
-      
-        // Toggle the clicked accordion card
-        if (isCollapsed) {
-          element.classList.remove("show");
-        } else {
-          element.classList.add("show");
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Handle form submit event
-        function handleFormSubmit(formId, formType) {
-          var form = document.querySelector(formId);
-          form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submit behavior
-            var form_data = new FormData(this); // Get form data
-            form_data.append('form_type', formType); // Add form type
-            var xhr = new XMLHttpRequest();
-            xhr.open(this.method, this.action);
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            xhr.onload = function() {
-              if (xhr.status === 200) {
-                var response = JSON.parse(xhr.response);
-                if (response.success) { // Check if form submission was successful
-                  // Display success message
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Se actualizaron los datos exitosamente!',
-                  }).then((result) => {
-                    window.location.href = '/profile';
-                  });
-
-                } else { // Handle form validation errors
-                  // Parse error messages from JSON response
-                  var error_dict = JSON.parse(response.error);
-                  var error_messages = '';
-                  for (var key in error_dict) {
-                    error_messages += ' - ' + error_dict[key][0].message + '<br>';
-                  }
-                  // Display error message
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error :(',
-                    html: error_messages,
-                  }).then((result) => {
-                    window.location.href = '/profile';
-                  });
-                }
-              } else { // Handle error response
-                
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error :(',
-                    text: 'Ocurrió un error al intentar guardar los cambios. Por favor, vuelva a intentar más tarde.',
-                  }).then((result) => {
-                    window.location.href = '/profile';
-                  });
-
-              }
-            };
-            xhr.onerror = function() { // Handle network error
-              // Display error message
-              Swal.fire({
-                icon: 'error',
-                title: 'Error :(',
-                text: 'Ocurrió un error al intentar guardar los cambios. Por favor, vuelva a intentar más tarde.',
-              }).then((result) => {
-                window.location.href = '/profile';
-              });
-            };
-            xhr.send(form_data); // Send form data
-          });
-        }
-        
-        handleFormSubmit('#personal-info-form', 'personal_info');
-        handleFormSubmit('#change-password-form', 'change_password');
-      });
-      
-      
-</script> {% endcomment %}
 <script>
    // Get the file input element
  const fileInput = document.getElementById('fileToUpload');
