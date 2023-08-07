@@ -2,8 +2,8 @@
 
 # "Kirei" (Plataforma de Software para Centro de Belleza)
 
-Bienvenidx al repositorio de mi Trabajo Final dee Grado "Kirei", una plataforma de software desarrollada en Django y diseñada específicameente para el centro de belleeza con el mismo nombre.
-Este proyecto representa el resultado muchos meses de trabajo e investigación y busca mejorar y modernizar la gestión de "Kirei" como centro de belleza mediante la centralización de diferentes funciones vitales para el negocio.
+Bienvenidx al repositorio de mi Trabajo Final dee Grado "Kirei", una plataforma de software desarrollada en Django y diseñada específicameente para el centro de belleza con el mismo nombre.
+Este proyecto representa el resultado de muchos meses de trabajo e investigación y busca mejorar y modernizar la gestión de "Kirei" como centro de belleza mediante la centralización de diferentes funciones esenciales para el negocio.
 
 ## Descripción
 
